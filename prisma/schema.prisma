@@ -213,6 +213,19 @@ model Restaurant {
   supplierPayments     SupplierPayment[]
   supplierScorecards   SupplierScorecardPeriod[]
 
+  customerGroups       CustomerGroup[]
+  territories          Territory[]
+  customers            Customer[]
+  salesQuotations      SalesQuotation[]
+  salesOrders          SalesOrder[]
+  deliveryNotes        DeliveryNote[]
+  salesInvoices        SalesInvoice[]
+  customerPayments     CustomerPayment[]
+  warehouses           Warehouse[]
+  materialRequests     MaterialRequest[]
+  stockEntries         StockEntry[]
+  stockReconciliations StockReconciliation[]
+
   @@index([ownerId])
   @@index([isActive])
 }
@@ -306,13 +319,17 @@ model MenuItem {
   updatedAt         DateTime     @updatedAt
   deletedAt         DateTime?
 
-  restaurant     Restaurant              @relation(fields: [restaurantId], references: [id])
-  category       MenuCategory            @relation(fields: [categoryId], references: [id])
-  images         MenuItemImage[]
-  disables       MenuItemAvailability[]
-  variants       MenuItemVariant[]
-  modifierGroups MenuItemModifierGroup[]
-  recipe         RecipeComponent[]
+  restaurant          Restaurant              @relation(fields: [restaurantId], references: [id])
+  category            MenuCategory            @relation(fields: [categoryId], references: [id])
+  images              MenuItemImage[]
+  disables            MenuItemAvailability[]
+  variants            MenuItemVariant[]
+  modifierGroups      MenuItemModifierGroup[]
+  recipe              RecipeComponent[]
+  salesQuotationLines SalesQuotationItem[]
+  salesOrderLines     SalesOrderItem[]
+  deliveryNoteLines   DeliveryNoteItem[]
+  salesInvoiceLines   SalesInvoiceItem[]
 
   @@index([restaurantId])
   @@index([categoryId])
@@ -586,11 +603,20 @@ model StockItem {
   movements       StockMovement[]
   usedIn          RecipeComponent[]
 
-  rfqLines           RfqItem[]
-  quotationLines     SupplierQuotationItem[]
-  purchaseOrderLines PurchaseOrderItem[]
-  receiptLines       PurchaseReceiptItem[]
-  invoiceLines       PurchaseInvoiceItem[]
+  bins                 Bin[]
+  batches              Batch[]
+  materialRequestLines MaterialRequestItem[]
+  stockEntryLines      StockEntryItem[]
+  reconciliationLines  StockReconciliationItem[]
+  salesQuotationLines  SalesQuotationItem[]
+  salesOrderLines      SalesOrderItem[]
+  deliveryNoteLines    DeliveryNoteItem[]
+  salesInvoiceLines    SalesInvoiceItem[]
+  rfqLines             RfqItem[]
+  quotationLines       SupplierQuotationItem[]
+  purchaseOrderLines   PurchaseOrderItem[]
+  receiptLines         PurchaseReceiptItem[]
+  invoiceLines         PurchaseInvoiceItem[]
 
   @@unique([restaurantId, name])
   @@index([restaurantId])
@@ -599,22 +625,30 @@ model StockItem {
 /// An audited change to a StockItem's on-hand. Manual RECEIVE/WASTE/CORRECTION
 /// or SALE_DEPLETION (order placed = negative, void = positive).
 model StockMovement {
-  id                    String            @id @default(cuid())
-  restaurantId          String
-  stockItemId           String
-  type                  StockMovementType
-  quantity              Decimal           @db.Decimal(12, 3)
-  resultingOnHand       Decimal           @db.Decimal(12, 3)
-  reason                String?
-  note                  String?
-  orderId               String?
+  id                        String            @id @default(cuid())
+  restaurantId              String
+  stockItemId               String
+  type                      StockMovementType
+  quantity                  Decimal           @db.Decimal(12, 3)
+  resultingOnHand           Decimal           @db.Decimal(12, 3)
+  reason                    String?
+  note                      String?
+  orderId                   String?
   /// Set when this movement came from submitting a Purchase Receipt.
-  purchaseReceiptItemId String?
-  createdById           String?
-  createdAt             DateTime          @default(now())
+  purchaseReceiptItemId     String?
+  warehouseId               String?
+  deliveryNoteItemId        String?
+  stockEntryItemId          String?
+  stockReconciliationItemId String?
+  createdById               String?
+  createdAt                 DateTime          @default(now())
 
-  stockItem           StockItem            @relation(fields: [stockItemId], references: [id])
-  purchaseReceiptItem PurchaseReceiptItem? @relation(fields: [purchaseReceiptItemId], references: [id])
+  stockItem               StockItem                @relation(fields: [stockItemId], references: [id])
+  purchaseReceiptItem     PurchaseReceiptItem?     @relation(fields: [purchaseReceiptItemId], references: [id])
+  warehouse               Warehouse?               @relation(fields: [warehouseId], references: [id])
+  deliveryNoteItem        DeliveryNoteItem?        @relation(fields: [deliveryNoteItemId], references: [id])
+  stockEntryItem          StockEntryItem?          @relation(fields: [stockEntryItemId], references: [id])
+  stockReconciliationItem StockReconciliationItem? @relation(fields: [stockReconciliationItemId], references: [id])
 
   @@index([stockItemId])
   @@index([restaurantId, createdAt])
@@ -1287,4 +1321,708 @@ model SupplierScorecardPeriod {
 
   @@unique([supplierId, periodStart, periodEnd])
   @@index([restaurantId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  SELLING — ported from ERPNext's Selling module
+//    Quotation → Sales Order → Delivery Note → Sales Invoice → Customer Payment
+//  Statuses mirror ERPNext's own option lists.
+// ═══════════════════════════════════════════════════════════════════════════
+
+enum QuotationStatus {
+  DRAFT
+  OPEN
+  REPLIED
+  PARTIALLY_ORDERED
+  ORDERED
+  LOST
+  EXPIRED
+  CANCELLED
+}
+
+enum SalesOrderStatus {
+  DRAFT
+  ON_HOLD
+  TO_DELIVER_AND_BILL
+  TO_DELIVER
+  TO_BILL
+  COMPLETED
+  CLOSED
+  CANCELLED
+}
+
+enum DeliveryNoteStatus {
+  DRAFT
+  TO_BILL
+  PARTLY_BILLED
+  COMPLETED
+  RETURN
+  CLOSED
+  CANCELLED
+}
+
+enum SalesInvoiceStatus {
+  DRAFT
+  UNPAID
+  PARTLY_PAID
+  PAID
+  OVERDUE
+  RETURN
+  CREDIT_NOTE_ISSUED
+  CANCELLED
+}
+
+/// Classification of a customer (ERPNext Customer Group).
+model CustomerGroup {
+  id                      String    @id @default(cuid())
+  restaurantId            String
+  name                    String
+  defaultPaymentTermsDays Int?
+  defaultDiscountPercent  Decimal?  @db.Decimal(5, 2)
+  notes                   String?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  deletedAt               DateTime?
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  customers  Customer[]
+
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+}
+
+/// Sales territory (ERPNext Territory) — used to segment reporting.
+model Territory {
+  id           String    @id @default(cuid())
+  restaurantId String
+  name         String
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  customers  Customer[]
+
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+}
+
+/// An account customer — corporate clients, caterers, delivery aggregators.
+model Customer {
+  id                 String    @id @default(cuid())
+  restaurantId       String
+  code               String
+  name               String
+  customerGroupId    String?
+  territoryId        String?
+  taxId              String?
+  contactPerson      String?
+  email              String?
+  phone              String?
+  addressLine1       String?
+  addressLine2       String?
+  city               String?
+  state              String?
+  postalCode         String?
+  country            String?
+  currency           String?
+  paymentTermsDays   Int?
+  /// Zero or null means no ceiling.
+  creditLimit        Decimal?  @db.Decimal(14, 2)
+  /// Block new sales orders once the credit limit is passed.
+  blockOnCreditLimit Boolean   @default(true)
+  loyaltyPoints      Int       @default(0)
+  disabled           Boolean   @default(false)
+  notes              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  restaurant    Restaurant        @relation(fields: [restaurantId], references: [id])
+  customerGroup CustomerGroup?    @relation(fields: [customerGroupId], references: [id])
+  territory     Territory?        @relation(fields: [territoryId], references: [id])
+  quotations    SalesQuotation[]
+  salesOrders   SalesOrder[]
+  deliveryNotes DeliveryNote[]
+  salesInvoices SalesInvoice[]
+  payments      CustomerPayment[]
+
+  @@unique([restaurantId, code])
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+  @@index([customerGroupId])
+}
+
+/// A price offered to a customer before they commit (ERPNext Quotation).
+model SalesQuotation {
+  id              String          @id @default(cuid())
+  restaurantId    String
+  number          String
+  customerId      String
+  transactionDate DateTime        @default(now())
+  validUntil      DateTime?
+  status          QuotationStatus @default(DRAFT)
+  currency        String?
+  subtotal        Decimal         @default(0) @db.Decimal(14, 2)
+  discountAmount  Decimal         @default(0) @db.Decimal(14, 2)
+  taxTotal        Decimal         @default(0) @db.Decimal(14, 2)
+  roundOff        Decimal         @default(0) @db.Decimal(14, 2)
+  grandTotal      Decimal         @default(0) @db.Decimal(14, 2)
+  lostReason      String?
+  notes           String?
+  termsText       String?
+  createdById     String?
+  submittedAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  restaurant  Restaurant           @relation(fields: [restaurantId], references: [id])
+  customer    Customer             @relation(fields: [customerId], references: [id])
+  items       SalesQuotationItem[]
+  salesOrders SalesOrder[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([customerId])
+}
+
+model SalesQuotationItem {
+  id              String   @id @default(cuid())
+  quotationId     String
+  menuItemId      String?
+  stockItemId     String?
+  itemName        String
+  description     String?
+  quantity        Decimal  @db.Decimal(12, 3)
+  rate            Decimal  @db.Decimal(14, 2)
+  discountPercent Decimal? @db.Decimal(5, 2)
+  taxRate         Decimal  @default(0) @db.Decimal(5, 2)
+  amount          Decimal  @db.Decimal(14, 2)
+  sortOrder       Int      @default(0)
+
+  quotation  SalesQuotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem?        @relation(fields: [menuItemId], references: [id])
+  stockItem  StockItem?       @relation(fields: [stockItemId], references: [id])
+  orderLines SalesOrderItem[]
+
+  @@index([quotationId])
+}
+
+/// A confirmed customer commitment (ERPNext Sales Order).
+model SalesOrder {
+  id               String           @id @default(cuid())
+  restaurantId     String
+  number           String
+  customerId       String
+  quotationId      String?
+  transactionDate  DateTime         @default(now())
+  deliveryDate     DateTime?
+  status           SalesOrderStatus @default(DRAFT)
+  currency         String?
+  subtotal         Decimal          @default(0) @db.Decimal(14, 2)
+  discountAmount   Decimal          @default(0) @db.Decimal(14, 2)
+  taxTotal         Decimal          @default(0) @db.Decimal(14, 2)
+  roundOff         Decimal          @default(0) @db.Decimal(14, 2)
+  grandTotal       Decimal          @default(0) @db.Decimal(14, 2)
+  deliveredPercent Decimal          @default(0) @db.Decimal(6, 2)
+  billedPercent    Decimal          @default(0) @db.Decimal(6, 2)
+  advanceReceived  Decimal          @default(0) @db.Decimal(14, 2)
+  poNumber         String?
+  notes            String?
+  termsText        String?
+  holdComment      String?
+  createdById      String?
+  submittedAt      DateTime?
+  cancelledAt      DateTime?
+  closedAt         DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  restaurant    Restaurant       @relation(fields: [restaurantId], references: [id])
+  customer      Customer         @relation(fields: [customerId], references: [id])
+  quotation     SalesQuotation?  @relation(fields: [quotationId], references: [id])
+  items         SalesOrderItem[]
+  deliveryNotes DeliveryNote[]
+  invoices      SalesInvoice[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([customerId])
+}
+
+model SalesOrderItem {
+  id                   String    @id @default(cuid())
+  salesOrderId         String
+  menuItemId           String?
+  stockItemId          String?
+  salesQuotationItemId String?
+  itemName             String
+  description          String?
+  quantity             Decimal   @db.Decimal(12, 3)
+  rate                 Decimal   @db.Decimal(14, 2)
+  discountPercent      Decimal?  @db.Decimal(5, 2)
+  taxRate              Decimal   @default(0) @db.Decimal(5, 2)
+  amount               Decimal   @db.Decimal(14, 2)
+  deliveryDate         DateTime?
+  deliveredQty         Decimal   @default(0) @db.Decimal(12, 3)
+  billedQty            Decimal   @default(0) @db.Decimal(12, 3)
+  sortOrder            Int       @default(0)
+
+  salesOrder         SalesOrder          @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  menuItem           MenuItem?           @relation(fields: [menuItemId], references: [id])
+  stockItem          StockItem?          @relation(fields: [stockItemId], references: [id])
+  salesQuotationItem SalesQuotationItem? @relation(fields: [salesQuotationItemId], references: [id])
+  deliveryLines      DeliveryNoteItem[]
+  invoiceLines       SalesInvoiceItem[]
+
+  @@index([salesOrderId])
+}
+
+/// Goods handed to the customer (ERPNext Delivery Note). Submitting one issues
+/// stock out of the warehouse it shipped from.
+model DeliveryNote {
+  id              String             @id @default(cuid())
+  restaurantId    String
+  number          String
+  customerId      String
+  salesOrderId    String?
+  warehouseId     String?
+  postingDate     DateTime           @default(now())
+  status          DeliveryNoteStatus @default(DRAFT)
+  subtotal        Decimal            @default(0) @db.Decimal(14, 2)
+  taxTotal        Decimal            @default(0) @db.Decimal(14, 2)
+  grandTotal      Decimal            @default(0) @db.Decimal(14, 2)
+  billedPercent   Decimal            @default(0) @db.Decimal(6, 2)
+  isReturn        Boolean            @default(false)
+  returnAgainstId String?
+  driverName      String?
+  vehicleNo       String?
+  notes           String?
+  createdById     String?
+  submittedAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  restaurant    Restaurant         @relation(fields: [restaurantId], references: [id])
+  customer      Customer           @relation(fields: [customerId], references: [id])
+  salesOrder    SalesOrder?        @relation(fields: [salesOrderId], references: [id])
+  warehouse     Warehouse?         @relation(fields: [warehouseId], references: [id])
+  returnAgainst DeliveryNote?      @relation("DeliveryReturn", fields: [returnAgainstId], references: [id])
+  returns       DeliveryNote[]     @relation("DeliveryReturn")
+  items         DeliveryNoteItem[]
+  invoices      SalesInvoice[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([customerId])
+}
+
+model DeliveryNoteItem {
+  id               String  @id @default(cuid())
+  deliveryNoteId   String
+  salesOrderItemId String?
+  stockItemId      String?
+  menuItemId       String?
+  itemName         String
+  description      String?
+  quantity         Decimal @db.Decimal(12, 3)
+  rate             Decimal @db.Decimal(14, 2)
+  taxRate          Decimal @default(0) @db.Decimal(5, 2)
+  amount           Decimal @db.Decimal(14, 2)
+  batchNo          String?
+  billedQty        Decimal @default(0) @db.Decimal(12, 3)
+  sortOrder        Int     @default(0)
+
+  deliveryNote   DeliveryNote       @relation(fields: [deliveryNoteId], references: [id], onDelete: Cascade)
+  salesOrderItem SalesOrderItem?    @relation(fields: [salesOrderItemId], references: [id])
+  stockItem      StockItem?         @relation(fields: [stockItemId], references: [id])
+  menuItem       MenuItem?          @relation(fields: [menuItemId], references: [id])
+  movements      StockMovement[]
+  invoiceLines   SalesInvoiceItem[]
+
+  @@index([deliveryNoteId])
+}
+
+/// A customer bill on account (ERPNext Sales Invoice). The POS keeps its own
+/// Order/Payment path; this is the receivables side for account customers.
+model SalesInvoice {
+  id                String             @id @default(cuid())
+  restaurantId      String
+  number            String
+  customerId        String
+  salesOrderId      String?
+  deliveryNoteId    String?
+  postingDate       DateTime           @default(now())
+  dueDate           DateTime
+  status            SalesInvoiceStatus @default(DRAFT)
+  currency          String?
+  subtotal          Decimal            @default(0) @db.Decimal(14, 2)
+  discountAmount    Decimal            @default(0) @db.Decimal(14, 2)
+  taxTotal          Decimal            @default(0) @db.Decimal(14, 2)
+  roundOff          Decimal            @default(0) @db.Decimal(14, 2)
+  grandTotal        Decimal            @default(0) @db.Decimal(14, 2)
+  paidAmount        Decimal            @default(0) @db.Decimal(14, 2)
+  outstandingAmount Decimal            @default(0) @db.Decimal(14, 2)
+  updateStock       Boolean            @default(false)
+  isReturn          Boolean            @default(false)
+  returnAgainstId   String?
+  notes             String?
+  termsText         String?
+  createdById       String?
+  submittedAt       DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  restaurant    Restaurant                  @relation(fields: [restaurantId], references: [id])
+  customer      Customer                    @relation(fields: [customerId], references: [id])
+  salesOrder    SalesOrder?                 @relation(fields: [salesOrderId], references: [id])
+  deliveryNote  DeliveryNote?               @relation(fields: [deliveryNoteId], references: [id])
+  returnAgainst SalesInvoice?               @relation("SalesInvoiceReturn", fields: [returnAgainstId], references: [id])
+  returns       SalesInvoice[]              @relation("SalesInvoiceReturn")
+  items         SalesInvoiceItem[]
+  schedule      SalesPaymentSchedule[]
+  allocations   CustomerPaymentAllocation[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([customerId])
+  @@index([dueDate])
+}
+
+model SalesInvoiceItem {
+  id                 String   @id @default(cuid())
+  salesInvoiceId     String
+  salesOrderItemId   String?
+  deliveryNoteItemId String?
+  stockItemId        String?
+  menuItemId         String?
+  itemName           String
+  description        String?
+  quantity           Decimal  @db.Decimal(12, 3)
+  rate               Decimal  @db.Decimal(14, 2)
+  discountPercent    Decimal? @db.Decimal(5, 2)
+  taxRate            Decimal  @default(0) @db.Decimal(5, 2)
+  amount             Decimal  @db.Decimal(14, 2)
+  sortOrder          Int      @default(0)
+
+  salesInvoice     SalesInvoice      @relation(fields: [salesInvoiceId], references: [id], onDelete: Cascade)
+  salesOrderItem   SalesOrderItem?   @relation(fields: [salesOrderItemId], references: [id])
+  deliveryNoteItem DeliveryNoteItem? @relation(fields: [deliveryNoteItemId], references: [id])
+  stockItem        StockItem?        @relation(fields: [stockItemId], references: [id])
+  menuItem         MenuItem?         @relation(fields: [menuItemId], references: [id])
+
+  @@index([salesInvoiceId])
+}
+
+/// Instalment line of a customer bill (ERPNext Payment Schedule).
+model SalesPaymentSchedule {
+  id             String   @id @default(cuid())
+  salesInvoiceId String
+  dueDate        DateTime
+  invoicePortion Decimal  @db.Decimal(5, 2)
+  amount         Decimal  @db.Decimal(14, 2)
+  paidAmount     Decimal  @default(0) @db.Decimal(14, 2)
+  sortOrder      Int      @default(0)
+
+  salesInvoice SalesInvoice @relation(fields: [salesInvoiceId], references: [id], onDelete: Cascade)
+
+  @@index([salesInvoiceId])
+}
+
+/// Money received from a customer (ERPNext Payment Entry, type Receive).
+model CustomerPayment {
+  id                String      @id @default(cuid())
+  restaurantId      String
+  number            String
+  customerId        String
+  paymentDate       DateTime    @default(now())
+  mode              PaymentMode @default(CASH)
+  amount            Decimal     @db.Decimal(14, 2)
+  unallocatedAmount Decimal     @default(0) @db.Decimal(14, 2)
+  referenceNo       String?
+  referenceDate     DateTime?
+  notes             String?
+  createdById       String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  restaurant  Restaurant                  @relation(fields: [restaurantId], references: [id])
+  customer    Customer                    @relation(fields: [customerId], references: [id])
+  allocations CustomerPaymentAllocation[]
+
+  @@unique([restaurantId, number])
+  @@index([customerId])
+  @@index([restaurantId, paymentDate])
+}
+
+model CustomerPaymentAllocation {
+  id                String  @id @default(cuid())
+  customerPaymentId String
+  salesInvoiceId    String
+  amount            Decimal @db.Decimal(14, 2)
+
+  customerPayment CustomerPayment @relation(fields: [customerPaymentId], references: [id], onDelete: Cascade)
+  salesInvoice    SalesInvoice    @relation(fields: [salesInvoiceId], references: [id])
+
+  @@unique([customerPaymentId, salesInvoiceId])
+  @@index([salesInvoiceId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  STOCK — ported from ERPNext's Stock module
+//    Warehouses + Bin, Material Request, Stock Entry (receipt / issue /
+//    transfer), Stock Reconciliation, Batches.
+// ═══════════════════════════════════════════════════════════════════════════
+
+enum MaterialRequestType {
+  PURCHASE
+  MATERIAL_TRANSFER
+  MATERIAL_ISSUE
+  MANUFACTURE
+}
+
+enum MaterialRequestStatus {
+  DRAFT
+  SUBMITTED
+  PENDING
+  PARTIALLY_ORDERED
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  ISSUED
+  TRANSFERRED
+  STOPPED
+  CANCELLED
+}
+
+enum StockEntryPurpose {
+  MATERIAL_RECEIPT
+  MATERIAL_ISSUE
+  MATERIAL_TRANSFER
+  REPACK
+  MANUFACTURE
+}
+
+enum StockDocStatus {
+  DRAFT
+  SUBMITTED
+  CANCELLED
+}
+
+/// A place stock physically sits — main store, cold room, bar, a second outlet.
+model Warehouse {
+  id           String    @id @default(cuid())
+  restaurantId String
+  name         String
+  code         String?
+  parentId     String?
+  /// Group warehouses hold no stock themselves; they only aggregate children.
+  isGroup      Boolean   @default(false)
+  isDefault    Boolean   @default(false)
+  addressLine1 String?
+  city         String?
+  disabled     Boolean   @default(false)
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  restaurant       Restaurant                @relation(fields: [restaurantId], references: [id])
+  parent           Warehouse?                @relation("WarehouseTree", fields: [parentId], references: [id])
+  children         Warehouse[]               @relation("WarehouseTree")
+  bins             Bin[]
+  movements        StockMovement[]
+  deliveryNotes    DeliveryNote[]
+  materialRequests MaterialRequestItem[]
+  entriesFrom      StockEntryItem[]          @relation("EntryFromWarehouse")
+  entriesTo        StockEntryItem[]          @relation("EntryToWarehouse")
+  reconciliations  StockReconciliationItem[]
+  batches          Batch[]
+
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+  @@index([parentId])
+}
+
+/// Per-item, per-warehouse quantities (ERPNext Bin). `projectedQty` is
+/// actual + ordered − reserved, which is what a reorder decision needs.
+model Bin {
+  id            String   @id @default(cuid())
+  restaurantId  String
+  stockItemId   String
+  warehouseId   String
+  actualQty     Decimal  @default(0) @db.Decimal(12, 3)
+  reservedQty   Decimal  @default(0) @db.Decimal(12, 3)
+  orderedQty    Decimal  @default(0) @db.Decimal(12, 3)
+  indentedQty   Decimal  @default(0) @db.Decimal(12, 3)
+  projectedQty  Decimal  @default(0) @db.Decimal(12, 3)
+  valuationRate Decimal  @default(0) @db.Decimal(14, 4)
+  stockValue    Decimal  @default(0) @db.Decimal(14, 2)
+  updatedAt     DateTime @updatedAt
+
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+
+  @@unique([stockItemId, warehouseId])
+  @@index([restaurantId])
+  @@index([warehouseId])
+}
+
+/// A tracked lot with an expiry — the part of ERPNext batching a kitchen uses.
+model Batch {
+  id              String    @id @default(cuid())
+  restaurantId    String
+  stockItemId     String
+  warehouseId     String?
+  batchNo         String
+  expiryDate      DateTime?
+  manufactureDate DateTime?
+  quantity        Decimal   @default(0) @db.Decimal(12, 3)
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  stockItem StockItem  @relation(fields: [stockItemId], references: [id])
+  warehouse Warehouse? @relation(fields: [warehouseId], references: [id])
+
+  @@unique([stockItemId, batchNo])
+  @@index([restaurantId])
+  @@index([expiryDate])
+}
+
+/// An internal request for goods (ERPNext Material Request).
+model MaterialRequest {
+  id              String                @id @default(cuid())
+  restaurantId    String
+  number          String
+  type            MaterialRequestType   @default(PURCHASE)
+  transactionDate DateTime              @default(now())
+  requiredBy      DateTime?
+  status          MaterialRequestStatus @default(DRAFT)
+  requestedById   String?
+  notes           String?
+  submittedAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  restaurant Restaurant            @relation(fields: [restaurantId], references: [id])
+  items      MaterialRequestItem[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+}
+
+model MaterialRequestItem {
+  id                String    @id @default(cuid())
+  materialRequestId String
+  stockItemId       String
+  warehouseId       String?
+  description       String?
+  quantity          Decimal   @db.Decimal(12, 3)
+  orderedQty        Decimal   @default(0) @db.Decimal(12, 3)
+  receivedQty       Decimal   @default(0) @db.Decimal(12, 3)
+  requiredBy        DateTime?
+  sortOrder         Int       @default(0)
+
+  materialRequest MaterialRequest @relation(fields: [materialRequestId], references: [id], onDelete: Cascade)
+  stockItem       StockItem       @relation(fields: [stockItemId], references: [id])
+  warehouse       Warehouse?      @relation(fields: [warehouseId], references: [id])
+
+  @@index([materialRequestId])
+}
+
+/// Receipt, issue or transfer of stock between warehouses (ERPNext Stock Entry).
+model StockEntry {
+  id           String            @id @default(cuid())
+  restaurantId String
+  number       String
+  purpose      StockEntryPurpose
+  postingDate  DateTime          @default(now())
+  status       StockDocStatus    @default(DRAFT)
+  totalValue   Decimal           @default(0) @db.Decimal(14, 2)
+  reason       String?
+  notes        String?
+  createdById  String?
+  submittedAt  DateTime?
+  cancelledAt  DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  restaurant Restaurant       @relation(fields: [restaurantId], references: [id])
+  items      StockEntryItem[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+}
+
+model StockEntryItem {
+  id              String  @id @default(cuid())
+  stockEntryId    String
+  stockItemId     String
+  /// Set for issues and transfers — where the stock leaves from.
+  fromWarehouseId String?
+  /// Set for receipts and transfers — where the stock lands.
+  toWarehouseId   String?
+  quantity        Decimal @db.Decimal(12, 3)
+  valuationRate   Decimal @default(0) @db.Decimal(14, 4)
+  amount          Decimal @default(0) @db.Decimal(14, 2)
+  batchNo         String?
+  sortOrder       Int     @default(0)
+
+  stockEntry    StockEntry      @relation(fields: [stockEntryId], references: [id], onDelete: Cascade)
+  stockItem     StockItem       @relation(fields: [stockItemId], references: [id])
+  fromWarehouse Warehouse?      @relation("EntryFromWarehouse", fields: [fromWarehouseId], references: [id])
+  toWarehouse   Warehouse?      @relation("EntryToWarehouse", fields: [toWarehouseId], references: [id])
+  movements     StockMovement[]
+
+  @@index([stockEntryId])
+}
+
+/// A counted correction of on-hand and valuation (ERPNext Stock Reconciliation).
+model StockReconciliation {
+  id              String         @id @default(cuid())
+  restaurantId    String
+  number          String
+  postingDate     DateTime       @default(now())
+  status          StockDocStatus @default(DRAFT)
+  differenceValue Decimal        @default(0) @db.Decimal(14, 2)
+  reason          String?
+  notes           String?
+  createdById     String?
+  submittedAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  restaurant Restaurant                @relation(fields: [restaurantId], references: [id])
+  items      StockReconciliationItem[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+}
+
+model StockReconciliationItem {
+  id                    String  @id @default(cuid())
+  stockReconciliationId String
+  stockItemId           String
+  warehouseId           String?
+  /// What the system believed, captured when the count was entered.
+  currentQty            Decimal @default(0) @db.Decimal(12, 3)
+  /// What was actually on the shelf.
+  countedQty            Decimal @db.Decimal(12, 3)
+  valuationRate         Decimal @default(0) @db.Decimal(14, 4)
+  differenceQty         Decimal @default(0) @db.Decimal(12, 3)
+  sortOrder             Int     @default(0)
+
+  stockReconciliation StockReconciliation @relation(fields: [stockReconciliationId], references: [id], onDelete: Cascade)
+  stockItem           StockItem           @relation(fields: [stockItemId], references: [id])
+  warehouse           Warehouse?          @relation(fields: [warehouseId], references: [id])
+  movements           StockMovement[]
+
+  @@index([stockReconciliationId])
 }

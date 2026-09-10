@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TabBar } from "@/components/purchasing/purchasing-ui";
 
 /**
  * Purchasing shares one tab bar across the document chain, so an owner can walk
@@ -22,20 +22,7 @@ export default function PurchasingLayout({
 }) {
   return (
     <div className="flex flex-col">
-      <nav className="overflow-x-auto border-b bg-white">
-        <ul className="flex min-w-max gap-1 px-4 py-2 lg:px-6">
-          {TABS.map((tab) => (
-            <li key={tab.href}>
-              <Link
-                href={tab.href}
-                className="block whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-              >
-                {tab.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <TabBar tabs={TABS} />
       {children}
     </div>
   );

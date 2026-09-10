@@ -23,6 +23,8 @@ import {
   ArmchairIcon,
   BoxesIcon,
   TruckIcon,
+  HandshakeIcon,
+  WarehouseIcon,
   UsersIcon,
   Settings2Icon,
   CircleHelpIcon,
@@ -36,6 +38,8 @@ const navMain = [
   { title: "Tables", url: "/dashboard/tables", icon: <ArmchairIcon /> },
   { title: "Inventory", url: "/dashboard/inventory", icon: <BoxesIcon /> },
   { title: "Purchasing", url: "/dashboard/purchasing", icon: <TruckIcon /> },
+  { title: "Selling", url: "/dashboard/selling", icon: <HandshakeIcon /> },
+  { title: "Stock", url: "/dashboard/stock", icon: <WarehouseIcon /> },
   { title: "Staff", url: "/dashboard/staff", icon: <UsersIcon /> },
 ]
 

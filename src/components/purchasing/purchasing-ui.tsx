@@ -156,3 +156,25 @@ export const DocNumber = ({
       {number}
     </span>
   );
+
+/** Tab strip shared by the purchasing, selling and stock modules. */
+export const TabBar = ({
+  tabs,
+}: {
+  tabs: readonly { href: string; label: string }[];
+}) => (
+  <nav className="overflow-x-auto border-b bg-white">
+    <ul className="flex min-w-max gap-1 px-4 py-2 lg:px-6">
+      {tabs.map((tab) => (
+        <li key={tab.href}>
+          <Link
+            href={tab.href}
+            className="block whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+          >
+            {tab.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </nav>
+);

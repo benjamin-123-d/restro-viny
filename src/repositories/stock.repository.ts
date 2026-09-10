@@ -95,8 +95,14 @@ export interface MovementInput {
   reason: string | null;
   note: string | null;
   orderId: string | null;
-  /// Set when the movement comes from submitting a Purchase Receipt.
+  /// Where the stock moved, once warehouses are in use.
+  warehouseId?: string | null;
+  /// Set when the movement comes from submitting a purchasing, selling or
+  /// stock document — exactly one of these is populated.
   purchaseReceiptItemId?: string | null;
+  deliveryNoteItemId?: string | null;
+  stockEntryItemId?: string | null;
+  stockReconciliationItemId?: string | null;
   createdById: string | null;
 }
 
@@ -115,7 +121,11 @@ const writeMovement = (
       reason: input.reason,
       note: input.note,
       orderId: input.orderId,
+      warehouseId: input.warehouseId ?? null,
       purchaseReceiptItemId: input.purchaseReceiptItemId ?? null,
+      deliveryNoteItemId: input.deliveryNoteItemId ?? null,
+      stockEntryItemId: input.stockEntryItemId ?? null,
+      stockReconciliationItemId: input.stockReconciliationItemId ?? null,
       createdById: input.createdById,
     },
   });

@@ -1,0 +1,75 @@
+import { EmptyState } from "@/components/shared/empty-state";
+import { PageHeader } from "@/components/shared/page-header";
+import {
+  DocTable,
+  Money,
+} from "@/components/purchasing/purchasing-ui";
+import { getManagerContextOrNull } from "@/lib/manager-auth";
+import { listWarehouses } from "@/services/stock-advanced.service";
+
+export default async function WarehousesPage() {
+  const ctx = await getManagerContextOrNull();
+  if (!ctx) {
+    return (
+      <div className="p-4 lg:p-6">
+        <EmptyState
+          title="No restaurant yet"
+          description="Ask an admin to onboard your restaurant."
+        />
+      </div>
+    );
+  }
+
+  const rows = await listWarehouses(ctx, { includeDisabled: true });
+
+  return (
+    <div className="flex flex-col gap-6 p-4 lg:p-6">
+      <PageHeader
+        title="Warehouses"
+        description="Where stock physically sits — main store, cold room, bar, a second outlet."
+      />
+      {rows.length === 0 ? (
+        <EmptyState
+          title="No warehouses yet"
+          description="Create a warehouse to start tracking stock by location."
+        />
+      ) : (
+        <DocTable
+          headers={[
+            { label: "Name" },
+            { label: "Code" },
+            { label: "Parent" },
+            { label: "City" },
+            { label: "Items", align: "right" },
+            { label: "Stock value", align: "right" }
+          ]}
+        >
+          {rows.map((row) => (
+            <tr key={row.id} className="border-b last:border-0">
+              <td className="px-3 py-2">
+                <span className="font-medium text-zinc-900">{row.name}</span>
+                {row.isGroup && (
+                  <span className="ml-2 rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-600">group</span>
+                )}
+                {row.isDefault && (
+                  <span className="ml-2 rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700">
+                    default
+                  </span>
+                )}
+                {row.disabled && (
+                  <span className="ml-2 rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-600">disabled</span>
+                )}
+              </td>
+              <td className="px-3 py-2 font-mono text-xs text-zinc-500">{row.code ?? "—"}</td>
+              <td className="px-3 py-2 text-zinc-600">{row.parentName ?? "—"}</td>
+              <td className="px-3 py-2 text-zinc-600">{row.city ?? "—"}</td>
+              <td className="px-3 py-2 text-right tabular-nums">{row.itemCount}</td>
+              <td className="px-3 py-2 text-right"><Money value={row.stockValue} /></td>
+            </tr>
+          ))}
+
+        </DocTable>
+      )}
+    </div>
+  );
+}
