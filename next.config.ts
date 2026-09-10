@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Standalone bundles the server and only the files it traced, so the app can
+  // be copied somewhere else and run with plain node.
+  output: "standalone",
   reactCompiler: true,
   allowedDevOrigins: ['192.168.1.*'],
   experimental: {
