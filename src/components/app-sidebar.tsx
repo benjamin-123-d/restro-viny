@@ -26,6 +26,7 @@ import {
   HandshakeIcon,
   WarehouseIcon,
   ShieldCheckIcon,
+  BookOpenCheckIcon,
   UsersIcon,
   Settings2Icon,
   CircleHelpIcon,
@@ -41,6 +42,7 @@ const navMain = [
   { title: "Purchasing", url: "/dashboard/purchasing", icon: <TruckIcon /> },
   { title: "Selling", url: "/dashboard/selling", icon: <HandshakeIcon /> },
   { title: "Stock", url: "/dashboard/stock", icon: <WarehouseIcon /> },
+  { title: "Accounting", url: "/dashboard/accounting", icon: <BookOpenCheckIcon /> },
   { title: "Staff", url: "/dashboard/staff", icon: <UsersIcon /> },
 ]
 

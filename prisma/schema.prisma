@@ -227,8 +227,12 @@ model Restaurant {
   stockEntries         StockEntry[]
   stockReconciliations StockReconciliation[]
 
-  members RestaurantMember[]
-  roles   AppRole[]
+  accounts    Account[]
+  fiscalYears FiscalYear[]
+  journals    JournalEntry[]
+  glEntries   GLEntry[]
+  members     RestaurantMember[]
+  roles       AppRole[]
 
   @@index([ownerId])
   @@index([isActive])
@@ -2051,6 +2055,7 @@ enum PermissionModule {
   TABLES
   STAFF
   REPORTS
+  ACCOUNTING
   SETTINGS
 }
 
@@ -2138,4 +2143,170 @@ model MemberRole {
 
   @@unique([memberId, roleId])
   @@index([roleId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ACCOUNTING — ported from ERPNext's Accounts module
+//    Chart of Accounts → Journal Entry → GL Entry → Trial balance / P&L /
+//    Balance sheet.
+//  Double entry throughout: a journal only posts when debits equal credits.
+// ═══════════════════════════════════════════════════════════════════════════
+
+enum AccountRootType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+/// ERPNext's account_type, trimmed to what a restaurant's chart needs.
+enum AccountSubType {
+  BANK
+  CASH
+  RECEIVABLE
+  PAYABLE
+  STOCK
+  FIXED_ASSET
+  TAX
+  COST_OF_GOODS_SOLD
+  DEPRECIATION
+  EQUITY
+  INCOME_ACCOUNT
+  EXPENSE_ACCOUNT
+  ROUND_OFF
+  OTHER
+}
+
+enum JournalStatus {
+  DRAFT
+  POSTED
+  CANCELLED
+}
+
+/// ERPNext's voucher types, as far as this app produces them.
+enum VoucherType {
+  JOURNAL_ENTRY
+  OPENING_ENTRY
+  PURCHASE_INVOICE
+  SALES_INVOICE
+  PAYMENT_ENTRY
+  STOCK_ENTRY
+}
+
+/// One line of the chart of accounts. Group accounts total their children and
+/// never carry postings themselves.
+model Account {
+  id           String          @id @default(cuid())
+  restaurantId String
+  code         String
+  name         String
+  rootType     AccountRootType
+  accountType  AccountSubType  @default(OTHER)
+  parentId     String?
+  isGroup      Boolean         @default(false)
+  /// Frozen accounts stay visible but refuse new postings.
+  isFrozen     Boolean         @default(false)
+  currency     String?
+  description  String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  deletedAt    DateTime?
+
+  restaurant   Restaurant         @relation(fields: [restaurantId], references: [id])
+  parent       Account?           @relation("AccountTree", fields: [parentId], references: [id])
+  children     Account[]          @relation("AccountTree")
+  journalLines JournalEntryLine[]
+  glEntries    GLEntry[]
+
+  @@unique([restaurantId, code])
+  @@index([restaurantId, rootType])
+  @@index([parentId])
+}
+
+/// The accounting year postings are dated into.
+model FiscalYear {
+  id           String   @id @default(cuid())
+  restaurantId String
+  name         String
+  startDate    DateTime
+  endDate      DateTime
+  /// A closed year refuses new postings.
+  isClosed     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+}
+
+/// A manual double-entry document.
+model JournalEntry {
+  id           String        @id @default(cuid())
+  restaurantId String
+  number       String
+  postingDate  DateTime      @default(now())
+  status       JournalStatus @default(DRAFT)
+  voucherType  VoucherType   @default(JOURNAL_ENTRY)
+  /// Total of the debit column — equal to the credit total by construction.
+  totalDebit   Decimal       @default(0) @db.Decimal(14, 2)
+  totalCredit  Decimal       @default(0) @db.Decimal(14, 2)
+  reference    String?
+  narration    String?
+  createdById  String?
+  postedAt     DateTime?
+  cancelledAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  restaurant Restaurant         @relation(fields: [restaurantId], references: [id])
+  lines      JournalEntryLine[]
+  glEntries  GLEntry[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([postingDate])
+}
+
+model JournalEntryLine {
+  id             String  @id @default(cuid())
+  journalEntryId String
+  accountId      String
+  debit          Decimal @default(0) @db.Decimal(14, 2)
+  credit         Decimal @default(0) @db.Decimal(14, 2)
+  description    String?
+  sortOrder      Int     @default(0)
+
+  journalEntry JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account      Account      @relation(fields: [accountId], references: [id])
+
+  @@index([journalEntryId])
+  @@index([accountId])
+}
+
+/// The general ledger. Written only when a journal is posted, never edited —
+/// a cancellation writes reversing entries instead.
+model GLEntry {
+  id             String      @id @default(cuid())
+  restaurantId   String
+  accountId      String
+  journalEntryId String?
+  postingDate    DateTime
+  voucherType    VoucherType @default(JOURNAL_ENTRY)
+  voucherNumber  String
+  debit          Decimal     @default(0) @db.Decimal(14, 2)
+  credit         Decimal     @default(0) @db.Decimal(14, 2)
+  description    String?
+  isCancelled    Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+
+  restaurant   Restaurant    @relation(fields: [restaurantId], references: [id])
+  account      Account       @relation(fields: [accountId], references: [id])
+  journalEntry JournalEntry? @relation(fields: [journalEntryId], references: [id])
+
+  @@index([restaurantId, postingDate])
+  @@index([accountId, postingDate])
+  @@index([journalEntryId])
 }

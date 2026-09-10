@@ -17,6 +17,7 @@ export const PERMISSION_MODULES = [
   "TABLES",
   "STAFF",
   "REPORTS",
+  "ACCOUNTING",
   "SETTINGS",
 ] as const;
 
@@ -192,6 +193,7 @@ export const DEFAULT_ROLES: readonly {
       INVENTORY: "READ",
       ORDERS: "READ",
       REPORTS: "READ",
+      ACCOUNTING: "EDIT",
     },
   },
   {
@@ -224,5 +226,6 @@ export const MODULE_LABEL: Readonly<Record<PermissionModule, string>> = {
   TABLES: "Tables",
   STAFF: "Staff",
   REPORTS: "Reports",
+  ACCOUNTING: "Accounting",
   SETTINGS: "Settings",
 };

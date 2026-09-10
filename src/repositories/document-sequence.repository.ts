@@ -16,7 +16,8 @@ export type PurchaseDocType =
   | "CPAY"
   | "MREQ"
   | "STE"
-  | "STRECO";
+  | "STRECO"
+  | "JV";
 
 const PREFIX: Readonly<Record<PurchaseDocType, string>> = {
   RFQ: "RFQ",
@@ -33,6 +34,7 @@ const PREFIX: Readonly<Record<PurchaseDocType, string>> = {
   MREQ: "MR",
   STE: "STE",
   STRECO: "REC-CNT",
+  JV: "JV",
 };
 
 const format = (docType: PurchaseDocType, value: number): string =>
