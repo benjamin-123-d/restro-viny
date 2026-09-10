@@ -50,7 +50,12 @@ export default async function SalesInvoicesPage() {
         >
           {rows.map((row) => (
             <tr key={row.id} className="border-b last:border-0">
-              <td className="px-3 py-2"><DocNumber number={row.number} /></td>
+              <td className="px-3 py-2">
+                <DocNumber
+                  number={row.number}
+                  href={`/dashboard/selling/invoices/${row.id}`}
+                />
+              </td>
               <td className="px-3 py-2 font-medium text-zinc-900">{row.customerName}</td>
               <td className="px-3 py-2"><DocDate iso={row.postingDate} /></td>
               <td className="px-3 py-2">
