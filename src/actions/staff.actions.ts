@@ -35,8 +35,9 @@ export const deleteStaffAction = withManagerValidation(
   (data, ctx) => deleteStaff(ctx, data),
 );
 
-export const resetPinAction = withManagerValidation(resetPinSchema, (data, ctx) =>
-  resetPin(ctx, data),
+export const resetPinAction = withManagerValidation(
+  resetPinSchema,
+  (data, ctx) => resetPin(ctx, data),
 );
 
 export const uploadStaffPhotoAction = async (
@@ -76,6 +77,8 @@ export const removeStaffPhotoAction = async (
     await removeStaffPhoto(ctx.restaurantId, staffId);
     return success(undefined);
   } catch (error) {
-    return failure(error instanceof Error ? error.message : "Something went wrong");
+    return failure(
+      error instanceof Error ? error.message : "Something went wrong",
+    );
   }
 };

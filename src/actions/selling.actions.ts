@@ -5,7 +5,7 @@
  * Delivery Note → Sales Invoice → Customer Payment.
  */
 
-import { withManagerValidation } from "@/actions/helpers";
+import { withPermission } from "@/actions/helpers";
 import {
   createCustomerGroupSchema,
   createCustomerPaymentSchema,
@@ -64,143 +64,209 @@ import {
 } from "@/services/sales.document.service";
 
 // Customers, groups and territories.
-export const createCustomerAction = withManagerValidation(
+export const createCustomerAction = withPermission(
+  "SELLING",
+  "EDIT",
   createCustomerSchema,
   (data, ctx) => createCustomer(ctx, data),
 );
-export const updateCustomerAction = withManagerValidation(
+export const updateCustomerAction = withPermission(
+  "SELLING",
+  "EDIT",
   updateCustomerSchema,
   (data, ctx) => updateCustomer(ctx, data),
 );
-export const deleteCustomerAction = withManagerValidation(
+export const deleteCustomerAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => deleteCustomer(ctx, data),
 );
-export const createCustomerGroupAction = withManagerValidation(
+export const createCustomerGroupAction = withPermission(
+  "SELLING",
+  "EDIT",
   createCustomerGroupSchema,
   (data, ctx) => createCustomerGroup(ctx, data),
 );
-export const updateCustomerGroupAction = withManagerValidation(
+export const updateCustomerGroupAction = withPermission(
+  "SELLING",
+  "EDIT",
   updateCustomerGroupSchema,
   (data, ctx) => updateCustomerGroup(ctx, data),
 );
-export const deleteCustomerGroupAction = withManagerValidation(
+export const deleteCustomerGroupAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => deleteCustomerGroup(ctx, data),
 );
-export const createTerritoryAction = withManagerValidation(
+export const createTerritoryAction = withPermission(
+  "SELLING",
+  "EDIT",
   createTerritorySchema,
   (data, ctx) => createTerritory(ctx, data),
 );
-export const updateTerritoryAction = withManagerValidation(
+export const updateTerritoryAction = withPermission(
+  "SELLING",
+  "EDIT",
   updateTerritorySchema,
   (data, ctx) => updateTerritory(ctx, data),
 );
-export const deleteTerritoryAction = withManagerValidation(
+export const deleteTerritoryAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => deleteTerritory(ctx, data),
 );
 
 // Quotations.
-export const createSalesQuotationAction = withManagerValidation(
+export const createSalesQuotationAction = withPermission(
+  "SELLING",
+  "EDIT",
   createSalesQuotationSchema,
   (data, ctx) => createSalesQuotation(ctx, data),
 );
-export const updateSalesQuotationAction = withManagerValidation(
+export const updateSalesQuotationAction = withPermission(
+  "SELLING",
+  "EDIT",
   updateSalesQuotationSchema,
   (data, ctx) => updateSalesQuotation(ctx, data),
 );
-export const submitSalesQuotationAction = withManagerValidation(
+export const submitSalesQuotationAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => submitSalesQuotation(ctx, data),
 );
-export const markQuotationLostAction = withManagerValidation(
+export const markQuotationLostAction = withPermission(
+  "SELLING",
+  "EDIT",
   markQuotationLostSchema,
   (data, ctx) => markQuotationLost(ctx, data),
 );
-export const cancelSalesQuotationAction = withManagerValidation(
+export const cancelSalesQuotationAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => cancelSalesQuotation(ctx, data),
 );
-export const deleteSalesQuotationAction = withManagerValidation(
+export const deleteSalesQuotationAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => deleteSalesQuotation(ctx, data),
 );
 
 // Sales orders — creation is gated on the customer's credit limit.
-export const createSalesOrderAction = withManagerValidation(
+export const createSalesOrderAction = withPermission(
+  "SELLING",
+  "EDIT",
   createSalesOrderSchema,
   (data, ctx) => createSalesOrder(ctx, data),
 );
-export const updateSalesOrderAction = withManagerValidation(
+export const updateSalesOrderAction = withPermission(
+  "SELLING",
+  "EDIT",
   updateSalesOrderSchema,
   (data, ctx) => updateSalesOrder(ctx, data),
 );
-export const submitSalesOrderAction = withManagerValidation(
+export const submitSalesOrderAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => submitSalesOrder(ctx, data),
 );
-export const holdSalesOrderAction = withManagerValidation(
+export const holdSalesOrderAction = withPermission(
+  "SELLING",
+  "EDIT",
   holdSalesOrderSchema,
   (data, ctx) => holdSalesOrder(ctx, data),
 );
-export const closeSalesOrderAction = withManagerValidation(
+export const closeSalesOrderAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => closeSalesOrder(ctx, data),
 );
-export const cancelSalesOrderAction = withManagerValidation(
+export const cancelSalesOrderAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => cancelSalesOrder(ctx, data),
 );
-export const deleteSalesOrderAction = withManagerValidation(
+export const deleteSalesOrderAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => deleteSalesOrder(ctx, data),
 );
-export const orderFromQuotationAction = withManagerValidation(
+export const orderFromQuotationAction = withPermission(
+  "SELLING",
+  "EDIT",
   orderFromQuotationSchema,
   (data, ctx) => orderFromQuotation(ctx, data),
 );
 
 // Delivery notes — submission issues stock from the shipping warehouse.
-export const createDeliveryNoteAction = withManagerValidation(
+export const createDeliveryNoteAction = withPermission(
+  "SELLING",
+  "EDIT",
   createDeliveryNoteSchema,
   (data, ctx) => createDeliveryNote(ctx, data),
 );
-export const submitDeliveryNoteAction = withManagerValidation(
+export const submitDeliveryNoteAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => submitDeliveryNote(ctx, data),
 );
-export const cancelDeliveryNoteAction = withManagerValidation(
+export const cancelDeliveryNoteAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => cancelDeliveryNote(ctx, data),
 );
-export const deleteDeliveryNoteAction = withManagerValidation(
+export const deleteDeliveryNoteAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => deleteDeliveryNote(ctx, data),
 );
 
 // Sales invoices and receipts.
-export const createSalesInvoiceAction = withManagerValidation(
+export const createSalesInvoiceAction = withPermission(
+  "SELLING",
+  "EDIT",
   createSalesInvoiceSchema,
   (data, ctx) => createSalesInvoice(ctx, data),
 );
-export const submitSalesInvoiceAction = withManagerValidation(
+export const submitSalesInvoiceAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => submitSalesInvoice(ctx, data),
 );
-export const cancelSalesInvoiceAction = withManagerValidation(
+export const cancelSalesInvoiceAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => cancelSalesInvoice(ctx, data),
 );
-export const deleteSalesInvoiceAction = withManagerValidation(
+export const deleteSalesInvoiceAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => deleteSalesInvoice(ctx, data),
 );
-export const createCustomerPaymentAction = withManagerValidation(
+export const createCustomerPaymentAction = withPermission(
+  "SELLING",
+  "EDIT",
   createCustomerPaymentSchema,
   (data, ctx) => createCustomerPayment(ctx, data),
 );
-export const removeCustomerPaymentAction = withManagerValidation(
+export const removeCustomerPaymentAction = withPermission(
+  "SELLING",
+  "EDIT",
   entityIdSchema,
   (data, ctx) => removeCustomerPayment(ctx, data),
 );

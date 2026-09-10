@@ -26,8 +26,9 @@ export const createOrderAction = withManagerValidation(
   (data, ctx) => createOrder(ctx, data),
 );
 
-export const addItemsAction = withManagerValidation(addItemsSchema, (data, ctx) =>
-  addItems(ctx, data),
+export const addItemsAction = withManagerValidation(
+  addItemsSchema,
+  (data, ctx) => addItems(ctx, data),
 );
 
 export const fireOrderAction = withManagerValidation(
@@ -40,8 +41,9 @@ export const serveLineAction = withManagerValidation(
   (data, ctx) => serveLine(ctx, data),
 );
 
-export const voidLineAction = withManagerValidation(voidLineSchema, (data, ctx) =>
-  voidLine(ctx, data),
+export const voidLineAction = withManagerValidation(
+  voidLineSchema,
+  (data, ctx) => voidLine(ctx, data),
 );
 
 export const voidOrderAction = withManagerValidation(
@@ -49,8 +51,9 @@ export const voidOrderAction = withManagerValidation(
   (data, ctx) => voidWholeOrder(ctx, data),
 );
 
-export const settleOrderAction = withManagerValidation(settleSchema, (data, ctx) =>
-  settle(ctx, data),
+export const settleOrderAction = withManagerValidation(
+  settleSchema,
+  (data, ctx) => settle(ctx, data),
 );
 
 export const settleTableAction = withManagerValidation(

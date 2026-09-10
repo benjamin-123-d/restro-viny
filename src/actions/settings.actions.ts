@@ -172,7 +172,9 @@ export const uploadVideoAction = async (
     await uploadVideoFile(
       ctx.restaurantId,
       { buffer, type: file.type, size: file.size },
-      typeof caption === "string" && caption.trim() ? caption.trim() : undefined,
+      typeof caption === "string" && caption.trim()
+        ? caption.trim()
+        : undefined,
     );
     return success(undefined);
   } catch (error) {

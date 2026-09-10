@@ -25,6 +25,7 @@ import {
   TruckIcon,
   HandshakeIcon,
   WarehouseIcon,
+  ShieldCheckIcon,
   UsersIcon,
   Settings2Icon,
   CircleHelpIcon,
@@ -44,6 +45,7 @@ const navMain = [
 ]
 
 const navSecondary = [
+  { title: "Roles & access", url: "/dashboard/settings/roles", icon: <ShieldCheckIcon /> },
   { title: "Settings", url: "/dashboard/settings", icon: <Settings2Icon /> },
   { title: "Get Help", url: "#", icon: <CircleHelpIcon /> },
 ]

@@ -112,7 +112,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  ownedRestaurants Restaurant[] @relation("RestaurantOwner")
+  ownedRestaurants Restaurant[]       @relation("RestaurantOwner")
+  memberships      RestaurantMember[]
 
   @@index([role])
 }
@@ -225,6 +226,9 @@ model Restaurant {
   materialRequests     MaterialRequest[]
   stockEntries         StockEntry[]
   stockReconciliations StockReconciliation[]
+
+  members RestaurantMember[]
+  roles   AppRole[]
 
   @@index([ownerId])
   @@index([isActive])
@@ -2025,4 +2029,113 @@ model StockReconciliationItem {
   movements           StockMovement[]
 
   @@index([stockReconciliationId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ACCESS CONTROL — Discord-shaped roles
+//
+//  A person joins a restaurant as a member, and carries any number of roles.
+//  Each role grants a level per module; a member's effective level for a module
+//  is the highest any of their roles grants. The owner always has full access
+//  and cannot be locked out.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// The areas of the app a role can be granted access to.
+enum PermissionModule {
+  PURCHASING
+  SELLING
+  STOCK
+  INVENTORY
+  MENU
+  ORDERS
+  TABLES
+  STAFF
+  REPORTS
+  SETTINGS
+}
+
+/// What a role may do in a module. Levels are ordered: NONE < READ < EDIT.
+enum PermissionLevel {
+  NONE
+  READ
+  EDIT
+}
+
+/// A person's membership of a restaurant. The owner gets one automatically and
+/// it can never be disabled.
+model RestaurantMember {
+  id           String   @id @default(cuid())
+  restaurantId String
+  userId       String
+  isOwner      Boolean  @default(false)
+  /// Free-text label shown instead of the account name, like a Discord nickname.
+  displayName  String?
+  invitedById  String?
+  joinedAt     DateTime @default(now())
+  disabled     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant   @relation(fields: [restaurantId], references: [id])
+  user       User         @relation(fields: [userId], references: [id])
+  roles      MemberRole[]
+
+  @@unique([restaurantId, userId])
+  @@index([restaurantId])
+  @@index([userId])
+}
+
+/// A named bundle of permissions (ERPNext calls these Roles; the shape here is
+/// Discord's — colours, ranking, and members holding several at once).
+model AppRole {
+  id           String    @id @default(cuid())
+  restaurantId String
+  name         String
+  /// Hex colour used for the member's badge, e.g. "#8B54FE".
+  color        String?
+  /// Higher ranks sort first and show as the member's primary badge.
+  rank         Int       @default(0)
+  /// Grants everything, regardless of the per-module rows.
+  isAdmin      Boolean   @default(false)
+  /// Seeded roles that cannot be deleted, only edited.
+  isSystem     Boolean   @default(false)
+  description  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  restaurant  Restaurant       @relation(fields: [restaurantId], references: [id])
+  permissions RolePermission[]
+  members     MemberRole[]
+
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+}
+
+/// One role's level in one module. A missing row means NONE.
+model RolePermission {
+  id     String           @id @default(cuid())
+  roleId String
+  module PermissionModule
+  level  PermissionLevel  @default(NONE)
+
+  role AppRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, module])
+  @@index([roleId])
+}
+
+/// A member holds a role. Members can hold several; levels combine by taking
+/// the highest.
+model MemberRole {
+  id         String   @id @default(cuid())
+  memberId   String
+  roleId     String
+  assignedAt DateTime @default(now())
+
+  member RestaurantMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  role   AppRole          @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, roleId])
+  @@index([roleId])
 }

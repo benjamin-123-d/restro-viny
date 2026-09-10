@@ -55,6 +55,8 @@ export const removePinAction = async (): Promise<ActionResult<void>> => {
     await removeManagerPin(userId);
     return success();
   } catch (error) {
-    return failure(error instanceof Error ? error.message : "Something went wrong");
+    return failure(
+      error instanceof Error ? error.message : "Something went wrong",
+    );
   }
 };

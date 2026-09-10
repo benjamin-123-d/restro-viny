@@ -1,8 +1,14 @@
 import { z, type ZodError, type ZodType } from "zod";
 
 import { getAdminContextOrNull, type AdminContext } from "@/lib/admin-auth";
+import {
+  can,
+  type PermissionLevel,
+  type PermissionModule,
+} from "@/lib/permissions";
 import { getManagerContextOrNull, type ManagerContext } from "@/lib/manager-auth";
 import { getStaffContextOrNull, type StaffContext } from "@/lib/staff-auth";
+import { resolveAccess } from "@/services/access.service";
 import { failure, success, type ActionResult } from "@/types";
 
 const extractFieldErrors = (error: ZodError): Record<string, string[]> => {
@@ -112,6 +118,42 @@ export const withStaffValidation = <TSchema extends ZodType, TOutput>(
     }
     if (options.role && ctx.role !== options.role) {
       return failure<TOutput>("STAFF_FORBIDDEN");
+    }
+    const parsed = schema.safeParse(raw);
+    if (!parsed.success) {
+      return failure<TOutput>(
+        "Validation failed",
+        extractFieldErrors(parsed.error),
+      );
+    }
+    return runHandler<TOutput>(() => handler(parsed.data, ctx));
+  };
+};
+
+/**
+ * Require a permission level in a module, validate input, then delegate.
+ *
+ * This is the teeth behind the roles screen: without it a member with READ
+ * could still call a mutating action directly. Owners and admin roles pass
+ * everything; anyone else is checked against their combined roles.
+ */
+export const withPermission = <TSchema extends ZodType, TOutput>(
+  module: PermissionModule,
+  level: PermissionLevel,
+  schema: TSchema,
+  handler: (
+    data: z.infer<TSchema>,
+    ctx: ManagerContext,
+  ) => Promise<ActionResult<TOutput>> | Promise<TOutput>,
+) => {
+  return async (raw: unknown): Promise<ActionResult<TOutput>> => {
+    const ctx = await getManagerContextOrNull();
+    if (!ctx) {
+      return failure<TOutput>("NO_RESTAURANT");
+    }
+    const access = await resolveAccess(ctx.userId, ctx.restaurantId);
+    if (!access || !can(access, module, level)) {
+      return failure<TOutput>("FORBIDDEN");
     }
     const parsed = schema.safeParse(raw);
     if (!parsed.success) {
