@@ -95,6 +95,8 @@ export interface MovementInput {
   reason: string | null;
   note: string | null;
   orderId: string | null;
+  /// Set when the movement comes from submitting a Purchase Receipt.
+  purchaseReceiptItemId?: string | null;
   createdById: string | null;
 }
 
@@ -113,31 +115,37 @@ const writeMovement = (
       reason: input.reason,
       note: input.note,
       orderId: input.orderId,
+      purchaseReceiptItemId: input.purchaseReceiptItemId ?? null,
       createdById: input.createdById,
     },
   });
 
+/**
+ * Increment on-hand and record the movement inside a caller-supplied
+ * transaction. Purchasing calls this so a goods receipt and the stock ledger
+ * commit together — there is exactly one implementation of "move stock".
+ */
+export const applyMovementInTx = async (
+  tx: Prisma.TransactionClient,
+  input: MovementInput,
+): Promise<StockMovement> => {
+  const item = await tx.stockItem.update({
+    where: { id: input.stockItemId },
+    data: { onHand: { increment: input.delta } },
+    select: { onHand: true },
+  });
+  return writeMovement(tx, input, item.onHand);
+};
+
 /** Atomically increment on-hand by a signed delta + record the movement. */
 export const applyMovement = (input: MovementInput): Promise<StockMovement> =>
-  prisma.$transaction(async (tx) => {
-    const item = await tx.stockItem.update({
-      where: { id: input.stockItemId },
-      data: { onHand: { increment: input.delta } },
-      select: { onHand: true },
-    });
-    return writeMovement(tx, input, item.onHand);
-  });
+  prisma.$transaction((tx) => applyMovementInTx(tx, input));
 
 /** Apply many signed-delta movements in one transaction (bulk receive / depletion). */
 export const applyMovements = (inputs: MovementInput[]): Promise<void> =>
   prisma.$transaction(async (tx) => {
     for (const input of inputs) {
-      const item = await tx.stockItem.update({
-        where: { id: input.stockItemId },
-        data: { onHand: { increment: input.delta } },
-        select: { onHand: true },
-      });
-      await writeMovement(tx, input, item.onHand);
+      await applyMovementInTx(tx, input);
     }
   });
 

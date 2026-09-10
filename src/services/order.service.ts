@@ -1,4 +1,4 @@
-import type { OrderStatus } from "@/generated/prisma/client";
+import type { OrderStatus, PaymentMode } from "@/generated/prisma/client";
 import type {
   AddItemsInput,
   CreateOrderInput,
@@ -27,7 +27,10 @@ import {
 } from "@/services/stock-depletion.service";
 import { resolveTableForOrder } from "@/services/table.service";
 import type { MenuDTO } from "@/types/menu";
-import type { OrderDTO } from "@/types/order";
+import type {
+  OrderDTO,
+  PaymentMode as SalesPaymentMode,
+} from "@/types/order";
 
 export const ORDER_NOT_FOUND = "ORDER_NOT_FOUND";
 export const ORDER_FORBIDDEN = "ORDER_FORBIDDEN";
@@ -45,6 +48,18 @@ export interface OrderContext {
   /** Who placed the lines — defaults to STAFF (waiter/POS). Guests pass SELF_ORDER. */
   readonly source?: "STAFF" | "SELF_ORDER";
 }
+
+/**
+ * The shared `PaymentMode` enum also carries the B2B modes used by supplier
+ * payments. The POS never writes those, so sales DTOs keep the narrower union
+ * and anything outside it degrades to OTHER rather than widening the till.
+ */
+const SALES_PAYMENT_MODES = ["CASH", "UPI", "CARD", "OTHER"] as const;
+
+const toSalesPaymentMode = (mode: PaymentMode): SalesPaymentMode =>
+  (SALES_PAYMENT_MODES as readonly string[]).includes(mode)
+    ? (mode as SalesPaymentMode)
+    : "OTHER";
 
 const num = (v: unknown): number => Number(v);
 
@@ -90,7 +105,7 @@ export const mapOrder = (o: OrderWithRelations): OrderDTO => ({
   })),
   payments: o.payments.map((p) => ({
     id: p.id,
-    mode: p.mode,
+    mode: toSalesPaymentMode(p.mode),
     amount: num(p.amount),
     tendered: p.tendered != null ? num(p.tendered) : null,
     reference: p.reference,

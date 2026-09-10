@@ -68,6 +68,11 @@ enum PaymentMode {
   UPI
   CARD
   OTHER
+  // Added for supplier payments (purchasing). The POS offers only the four
+  // above; its TS union in types/order.ts is deliberately narrower.
+  BANK_TRANSFER
+  CHEQUE
+  MOBILE_MONEY
 }
 
 enum DiscountType {
@@ -104,8 +109,8 @@ model User {
   pinFailedAttempts Int       @default(0)
   pinLockedUntil    DateTime?
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   ownedRestaurants Restaurant[] @relation("RestaurantOwner")
 
@@ -126,15 +131,15 @@ enum RestaurantFormat {
 }
 
 model Restaurant {
-  id          String    @id @default(cuid())
-  name        String
-  slug        String    @unique
-  username    String?   @unique
-  email       String?
-  phone       String?
-  city        String?
-  country     String    @default("IN")
-  timezone    String?
+  id       String  @id @default(cuid())
+  name     String
+  slug     String  @unique
+  username String? @unique
+  email    String?
+  phone    String?
+  city     String?
+  country  String  @default("IN")
+  timezone String?
 
   // GST / tax profile (opt-in; drives the correct default tax at billing time)
   gstRegistrationType GstRegistrationType @default(UNREGISTERED)
@@ -161,19 +166,19 @@ model Restaurant {
   facebookUrl      String?
   googleUrl        String?
   restaurantFormat RestaurantFormat?
-  cuisines         String[]           @default([])
+  cuisines         String[]          @default([])
   seatingCapacity  Int?
   fssaiLicense     String?
   fssaiExpiry      DateTime?
   panNumber        String?
-  serviceDineIn    Boolean            @default(true)
-  serviceTakeaway  Boolean            @default(true)
-  serviceDelivery  Boolean            @default(false)
-  defaultOrderType OrderType          @default(TAKEAWAY)
+  serviceDineIn    Boolean           @default(true)
+  serviceTakeaway  Boolean           @default(true)
+  serviceDelivery  Boolean           @default(false)
+  defaultOrderType OrderType         @default(TAKEAWAY)
   businessHours    Json?
 
   // Public guest self-ordering (`/order/[username]`); off until the owner opts in.
-  selfOrderEnabled Boolean            @default(false)
+  selfOrderEnabled Boolean @default(false)
 
   // Custom note printed at the foot of the invoice/bill (owner-editable).
   invoiceFooterNote String?
@@ -196,6 +201,17 @@ model Restaurant {
   videos         RestaurantVideo[]
   stockItems     StockItem[]
   staff          Staff[]
+
+  documentSequences    DocumentSequence[]
+  supplierGroups       SupplierGroup[]
+  suppliers            Supplier[]
+  requestsForQuotation RequestForQuotation[]
+  supplierQuotations   SupplierQuotation[]
+  purchaseOrders       PurchaseOrder[]
+  purchaseReceipts     PurchaseReceipt[]
+  purchaseInvoices     PurchaseInvoice[]
+  supplierPayments     SupplierPayment[]
+  supplierScorecards   SupplierScorecardPeriod[]
 
   @@index([ownerId])
   @@index([isActive])
@@ -403,15 +419,15 @@ model MenuItemModifierGroup {
 /// A physical dining table the floor seats guests at. Owned by a Restaurant.
 /// Soft-deleted (never hard-removed) so historical orders keep their link.
 model DiningTable {
-  id           String     @id @default(cuid())
+  id           String    @id @default(cuid())
   restaurantId String
   label        String
   seats        Int?
   section      String?
-  sortOrder    Int        @default(0)
-  isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  sortOrder    Int       @default(0)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
@@ -424,13 +440,13 @@ model DiningTable {
 /// A customer order (takeaway / dine-in tab / manual delivery). Stays OPEN and
 /// mutable until settled; lines snapshot price + tax so old bills never change.
 model Order {
-  id              String       @id @default(cuid())
+  id              String      @id @default(cuid())
   restaurantId    String
   orderNumber     Int
   invoiceNumber   Int?
-  idempotencyKey  String       @unique
-  orderType       OrderType    @default(TAKEAWAY)
-  status          OrderStatus  @default(OPEN)
+  idempotencyKey  String      @unique
+  orderType       OrderType   @default(TAKEAWAY)
+  status          OrderStatus @default(OPEN)
   tableLabel      String?
   tableId         String?
   customerName    String?
@@ -450,14 +466,14 @@ model Order {
 
   placedById      String?
   placedByStaffId String?
-  voidedById String?
-  voidReason String?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  settledAt  DateTime?
-  deletedAt  DateTime?
+  voidedById      String?
+  voidReason      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  settledAt       DateTime?
+  deletedAt       DateTime?
 
-  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
+  restaurant Restaurant   @relation(fields: [restaurantId], references: [id])
   table      DiningTable? @relation(fields: [tableId], references: [id])
   items      OrderItem[]
   payments   Payment[]
@@ -546,25 +562,35 @@ enum StockMovementType {
 /// An inventory item the restaurant stocks. On-hand is the running total of
 /// typed StockMovements — never edited directly. Soft-deleted.
 model StockItem {
-  id           String    @id @default(cuid())
-  restaurantId String
-  name         String
-  unit         StockUnit
-  category     String?
-  onHand       Decimal   @default(0) @db.Decimal(12, 3)
-  reorderLevel Decimal?  @db.Decimal(12, 3)
-  parLevel     Decimal?  @db.Decimal(12, 3)
-  costPerUnit  Decimal?  @db.Decimal(12, 2)
-  supplier     String?
-  notes        String?
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
+  id                String    @id @default(cuid())
+  restaurantId      String
+  name              String
+  unit              StockUnit
+  category          String?
+  onHand            Decimal   @default(0) @db.Decimal(12, 3)
+  reorderLevel      Decimal?  @db.Decimal(12, 3)
+  parLevel          Decimal?  @db.Decimal(12, 3)
+  costPerUnit       Decimal?  @db.Decimal(12, 2)
+  /// Legacy free-text supplier hint, kept for existing rows. New code reads
+  /// `defaultSupplier` first and falls back to this.
+  supplier          String?
+  defaultSupplierId String?
+  notes             String?
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
 
-  restaurant Restaurant        @relation(fields: [restaurantId], references: [id])
-  movements  StockMovement[]
-  usedIn     RecipeComponent[]
+  restaurant      Restaurant        @relation(fields: [restaurantId], references: [id])
+  defaultSupplier Supplier?         @relation(fields: [defaultSupplierId], references: [id])
+  movements       StockMovement[]
+  usedIn          RecipeComponent[]
+
+  rfqLines           RfqItem[]
+  quotationLines     SupplierQuotationItem[]
+  purchaseOrderLines PurchaseOrderItem[]
+  receiptLines       PurchaseReceiptItem[]
+  invoiceLines       PurchaseInvoiceItem[]
 
   @@unique([restaurantId, name])
   @@index([restaurantId])
@@ -573,19 +599,22 @@ model StockItem {
 /// An audited change to a StockItem's on-hand. Manual RECEIVE/WASTE/CORRECTION
 /// or SALE_DEPLETION (order placed = negative, void = positive).
 model StockMovement {
-  id              String            @id @default(cuid())
-  restaurantId    String
-  stockItemId     String
-  type            StockMovementType
-  quantity        Decimal           @db.Decimal(12, 3)
-  resultingOnHand Decimal           @db.Decimal(12, 3)
-  reason          String?
-  note            String?
-  orderId         String?
-  createdById     String?
-  createdAt       DateTime          @default(now())
+  id                    String            @id @default(cuid())
+  restaurantId          String
+  stockItemId           String
+  type                  StockMovementType
+  quantity              Decimal           @db.Decimal(12, 3)
+  resultingOnHand       Decimal           @db.Decimal(12, 3)
+  reason                String?
+  note                  String?
+  orderId               String?
+  /// Set when this movement came from submitting a Purchase Receipt.
+  purchaseReceiptItemId String?
+  createdById           String?
+  createdAt             DateTime          @default(now())
 
-  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+  stockItem           StockItem            @relation(fields: [stockItemId], references: [id])
+  purchaseReceiptItem PurchaseReceiptItem? @relation(fields: [purchaseReceiptItemId], references: [id])
 
   @@index([stockItemId])
   @@index([restaurantId, createdAt])
@@ -675,12 +704,12 @@ model Staff {
 /// server upserts by the unique triple.
 model PushToken {
   id            String   @id @default(cuid())
-  subjectKind   String   // "manager" | "staff"
-  subjectId     String   // User.id or Staff.id (application-managed FK; polymorphic)
+  subjectKind   String // "manager" | "staff"
+  subjectId     String // User.id or Staff.id (application-managed FK; polymorphic)
   restaurantId  String?
   deviceId      String
   expoPushToken String
-  platform      String   // "ios" | "android"
+  platform      String // "ios" | "android"
   appVersion    String
   locale        String
   createdAt     DateTime @default(now())
@@ -688,5 +717,574 @@ model PushToken {
 
   @@unique([subjectKind, subjectId, deviceId])
   @@index([subjectKind, subjectId])
+  @@index([restaurantId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  PURCHASING — ported from ERPNext's Buying module
+//
+//  Document chain, faithful to ERPNext:
+//    Request for Quotation → Supplier Quotation → Purchase Order
+//      → Purchase Receipt → Purchase Invoice → Supplier Payment
+//
+//  Deliberate reuse (no parallel structures):
+//    · Purchase lines reference the existing `StockItem` — there is no second
+//      item catalogue.
+//    · Submitting a Purchase Receipt writes ordinary `StockMovement` RECEIVE
+//      rows through the same repository the manual receive flow uses, linked
+//      back via `StockMovement.purchaseReceiptItemId`. One stock ledger only.
+//    · Supplier payments reuse the shared `PaymentMode` enum, extended with the
+//      B2B modes; the POS keeps its own narrower union.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Why a supplier is on hold — mirrors ERPNext's Supplier `hold_type`.
+enum SupplierHoldType {
+  ALL
+  INVOICES
+  PAYMENTS
+}
+
+enum RfqStatus {
+  DRAFT
+  SUBMITTED
+  CANCELLED
+}
+
+enum SupplierQuotationStatus {
+  DRAFT
+  SUBMITTED
+  PARTIALLY_ORDERED
+  ORDERED
+  STOPPED
+  EXPIRED
+  CANCELLED
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  ON_HOLD
+  TO_RECEIVE_AND_BILL
+  TO_RECEIVE
+  TO_BILL
+  COMPLETED
+  CLOSED
+  CANCELLED
+}
+
+enum PurchaseReceiptStatus {
+  DRAFT
+  TO_BILL
+  PARTLY_BILLED
+  COMPLETED
+  RETURN
+  CLOSED
+  CANCELLED
+}
+
+enum PurchaseInvoiceStatus {
+  DRAFT
+  UNPAID
+  PARTLY_PAID
+  PAID
+  OVERDUE
+  RETURN
+  DEBIT_NOTE_ISSUED
+  CANCELLED
+}
+
+/// Scorecard banding — ERPNext ships these as editable "standings"; Restro
+/// computes them from real purchase history instead of manual criteria.
+enum ScorecardStanding {
+  EXCELLENT
+  VERY_GOOD
+  GOOD
+  AVERAGE
+  POOR
+}
+
+/// Per-restaurant, per-document-type counter behind human-readable numbers
+/// (ERPNext's `naming_series`). Sales invoices keep their own
+/// `Restaurant.nextInvoiceSeq` — this covers the purchasing documents.
+model DocumentSequence {
+  id           String   @id @default(cuid())
+  restaurantId String
+  docType      String
+  nextValue    Int      @default(1)
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@unique([restaurantId, docType])
+}
+
+/// Supplier classification (ERPNext Supplier Group) — carries the default
+/// payment terms new suppliers inherit.
+model SupplierGroup {
+  id                      String    @id @default(cuid())
+  restaurantId            String
+  name                    String
+  defaultPaymentTermsDays Int?
+  notes                   String?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  deletedAt               DateTime?
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  suppliers  Supplier[]
+
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+}
+
+/// A vendor the restaurant buys from (ERPNext Supplier, trimmed to the fields a
+/// single-company restaurant actually uses).
+model Supplier {
+  id               String            @id @default(cuid())
+  restaurantId     String
+  code             String
+  name             String
+  supplierGroupId  String?
+  taxId            String?
+  contactPerson    String?
+  email            String?
+  phone            String?
+  website          String?
+  addressLine1     String?
+  addressLine2     String?
+  city             String?
+  state            String?
+  postalCode       String?
+  country          String?
+  /// null = the restaurant's own currency.
+  currency         String?
+  /// Default days from invoice date to due date.
+  paymentTermsDays Int?
+  onHold           Boolean           @default(false)
+  holdType         SupplierHoldType?
+  releaseDate      DateTime?
+  preventRfq       Boolean           @default(false)
+  preventPo        Boolean           @default(false)
+  disabled         Boolean           @default(false)
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
+
+  restaurant       Restaurant                @relation(fields: [restaurantId], references: [id])
+  supplierGroup    SupplierGroup?            @relation(fields: [supplierGroupId], references: [id])
+  suppliedItems    StockItem[]
+  rfqInvitations   RfqSupplier[]
+  quotations       SupplierQuotation[]
+  purchaseOrders   PurchaseOrder[]
+  receipts         PurchaseReceipt[]
+  invoices         PurchaseInvoice[]
+  payments         SupplierPayment[]
+  scorecardPeriods SupplierScorecardPeriod[]
+
+  @@unique([restaurantId, code])
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
+  @@index([supplierGroupId])
+}
+
+/// Request for Quotation — asks several suppliers to price the same basket.
+model RequestForQuotation {
+  id              String    @id @default(cuid())
+  restaurantId    String
+  number          String
+  transactionDate DateTime  @default(now())
+  requiredBy      DateTime?
+  status          RfqStatus @default(DRAFT)
+  message         String?
+  termsText       String?
+  createdById     String?
+  submittedAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  restaurant Restaurant          @relation(fields: [restaurantId], references: [id])
+  items      RfqItem[]
+  suppliers  RfqSupplier[]
+  quotations SupplierQuotation[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+}
+
+model RfqItem {
+  id          String    @id @default(cuid())
+  rfqId       String
+  stockItemId String
+  description String?
+  quantity    Decimal   @db.Decimal(12, 3)
+  requiredBy  DateTime?
+  sortOrder   Int       @default(0)
+
+  rfq            RequestForQuotation     @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  stockItem      StockItem               @relation(fields: [stockItemId], references: [id])
+  quotationLines SupplierQuotationItem[]
+
+  @@index([rfqId])
+  @@index([stockItemId])
+}
+
+/// One supplier invited onto an RFQ.
+model RfqSupplier {
+  id          String    @id @default(cuid())
+  rfqId       String
+  supplierId  String
+  emailSentAt DateTime?
+  respondedAt DateTime?
+
+  rfq      RequestForQuotation @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  supplier Supplier            @relation(fields: [supplierId], references: [id])
+
+  @@unique([rfqId, supplierId])
+  @@index([supplierId])
+}
+
+/// A supplier's priced answer — standalone, or against an RFQ so quotes can be
+/// compared line by line.
+model SupplierQuotation {
+  id              String                  @id @default(cuid())
+  restaurantId    String
+  number          String
+  supplierId      String
+  rfqId           String?
+  transactionDate DateTime                @default(now())
+  validUntil      DateTime?
+  status          SupplierQuotationStatus @default(DRAFT)
+  currency        String?
+  subtotal        Decimal                 @default(0) @db.Decimal(14, 2)
+  discountAmount  Decimal                 @default(0) @db.Decimal(14, 2)
+  taxTotal        Decimal                 @default(0) @db.Decimal(14, 2)
+  grandTotal      Decimal                 @default(0) @db.Decimal(14, 2)
+  notes           String?
+  termsText       String?
+  createdById     String?
+  submittedAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  restaurant     Restaurant              @relation(fields: [restaurantId], references: [id])
+  supplier       Supplier                @relation(fields: [supplierId], references: [id])
+  rfq            RequestForQuotation?    @relation(fields: [rfqId], references: [id])
+  items          SupplierQuotationItem[]
+  purchaseOrders PurchaseOrder[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([supplierId])
+  @@index([rfqId])
+}
+
+model SupplierQuotationItem {
+  id              String   @id @default(cuid())
+  quotationId     String
+  stockItemId     String
+  rfqItemId       String?
+  description     String?
+  quantity        Decimal  @db.Decimal(12, 3)
+  rate            Decimal  @db.Decimal(14, 2)
+  discountPercent Decimal? @db.Decimal(5, 2)
+  taxRate         Decimal  @default(0) @db.Decimal(5, 2)
+  amount          Decimal  @db.Decimal(14, 2)
+  leadTimeDays    Int?
+  sortOrder       Int      @default(0)
+
+  quotation SupplierQuotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  stockItem StockItem           @relation(fields: [stockItemId], references: [id])
+  rfqItem   RfqItem?            @relation(fields: [rfqItemId], references: [id])
+  orderedIn PurchaseOrderItem[]
+
+  @@index([quotationId])
+  @@index([stockItemId])
+}
+
+/// Purchase Order — the commitment to buy. `receivedPercent` / `billedPercent`
+/// drive the ERPNext status ladder (To Receive and Bill → … → Completed).
+model PurchaseOrder {
+  id                  String              @id @default(cuid())
+  restaurantId        String
+  number              String
+  supplierId          String
+  supplierQuotationId String?
+  transactionDate     DateTime            @default(now())
+  scheduleDate        DateTime?
+  status              PurchaseOrderStatus @default(DRAFT)
+  currency            String?
+  subtotal            Decimal             @default(0) @db.Decimal(14, 2)
+  discountAmount      Decimal             @default(0) @db.Decimal(14, 2)
+  taxTotal            Decimal             @default(0) @db.Decimal(14, 2)
+  roundOff            Decimal             @default(0) @db.Decimal(14, 2)
+  grandTotal          Decimal             @default(0) @db.Decimal(14, 2)
+  receivedPercent     Decimal             @default(0) @db.Decimal(6, 2)
+  billedPercent       Decimal             @default(0) @db.Decimal(6, 2)
+  advancePaid         Decimal             @default(0) @db.Decimal(14, 2)
+  notes               String?
+  termsText           String?
+  holdComment         String?
+  createdById         String?
+  submittedAt         DateTime?
+  cancelledAt         DateTime?
+  closedAt            DateTime?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  restaurant        Restaurant          @relation(fields: [restaurantId], references: [id])
+  supplier          Supplier            @relation(fields: [supplierId], references: [id])
+  supplierQuotation SupplierQuotation?  @relation(fields: [supplierQuotationId], references: [id])
+  items             PurchaseOrderItem[]
+  receipts          PurchaseReceipt[]
+  invoices          PurchaseInvoice[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([supplierId])
+}
+
+model PurchaseOrderItem {
+  id                      String    @id @default(cuid())
+  purchaseOrderId         String
+  stockItemId             String
+  supplierQuotationItemId String?
+  description             String?
+  quantity                Decimal   @db.Decimal(12, 3)
+  rate                    Decimal   @db.Decimal(14, 2)
+  discountPercent         Decimal?  @db.Decimal(5, 2)
+  taxRate                 Decimal   @default(0) @db.Decimal(5, 2)
+  amount                  Decimal   @db.Decimal(14, 2)
+  scheduleDate            DateTime?
+  receivedQty             Decimal   @default(0) @db.Decimal(12, 3)
+  billedQty               Decimal   @default(0) @db.Decimal(12, 3)
+  sortOrder               Int       @default(0)
+
+  purchaseOrder         PurchaseOrder          @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  stockItem             StockItem              @relation(fields: [stockItemId], references: [id])
+  supplierQuotationItem SupplierQuotationItem? @relation(fields: [supplierQuotationItemId], references: [id])
+  receiptLines          PurchaseReceiptItem[]
+  invoiceLines          PurchaseInvoiceItem[]
+
+  @@index([purchaseOrderId])
+  @@index([stockItemId])
+}
+
+/// Goods receipt. Submitting one is what actually moves stock — each accepted
+/// line writes a RECEIVE `StockMovement`.
+model PurchaseReceipt {
+  id                   String                @id @default(cuid())
+  restaurantId         String
+  number               String
+  supplierId           String
+  purchaseOrderId      String?
+  postingDate          DateTime              @default(now())
+  status               PurchaseReceiptStatus @default(DRAFT)
+  supplierDeliveryNote String?
+  subtotal             Decimal               @default(0) @db.Decimal(14, 2)
+  taxTotal             Decimal               @default(0) @db.Decimal(14, 2)
+  grandTotal           Decimal               @default(0) @db.Decimal(14, 2)
+  billedPercent        Decimal               @default(0) @db.Decimal(6, 2)
+  isReturn             Boolean               @default(false)
+  returnAgainstId      String?
+  notes                String?
+  createdById          String?
+  submittedAt          DateTime?
+  cancelledAt          DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  restaurant    Restaurant            @relation(fields: [restaurantId], references: [id])
+  supplier      Supplier              @relation(fields: [supplierId], references: [id])
+  purchaseOrder PurchaseOrder?        @relation(fields: [purchaseOrderId], references: [id])
+  returnAgainst PurchaseReceipt?      @relation("ReceiptReturn", fields: [returnAgainstId], references: [id])
+  returns       PurchaseReceipt[]     @relation("ReceiptReturn")
+  items         PurchaseReceiptItem[]
+  invoices      PurchaseInvoice[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([supplierId])
+  @@index([purchaseOrderId])
+}
+
+model PurchaseReceiptItem {
+  id                  String    @id @default(cuid())
+  purchaseReceiptId   String
+  stockItemId         String
+  purchaseOrderItemId String?
+  description         String?
+  /// Quantity accepted into stock.
+  quantity            Decimal   @db.Decimal(12, 3)
+  /// Quantity refused — recorded for the scorecard, never added to stock.
+  rejectedQuantity    Decimal   @default(0) @db.Decimal(12, 3)
+  rate                Decimal   @db.Decimal(14, 2)
+  taxRate             Decimal   @default(0) @db.Decimal(5, 2)
+  amount              Decimal   @db.Decimal(14, 2)
+  batchNo             String?
+  expiryDate          DateTime?
+  billedQty           Decimal   @default(0) @db.Decimal(12, 3)
+  sortOrder           Int       @default(0)
+
+  purchaseReceipt   PurchaseReceipt       @relation(fields: [purchaseReceiptId], references: [id], onDelete: Cascade)
+  stockItem         StockItem             @relation(fields: [stockItemId], references: [id])
+  purchaseOrderItem PurchaseOrderItem?    @relation(fields: [purchaseOrderItemId], references: [id])
+  movements         StockMovement[]
+  invoiceLines      PurchaseInvoiceItem[]
+
+  @@index([purchaseReceiptId])
+  @@index([stockItemId])
+}
+
+/// Supplier bill. `updateStock` covers ERPNext's "invoice without receipt"
+/// case, where the invoice itself is what moves stock.
+model PurchaseInvoice {
+  id                String                @id @default(cuid())
+  restaurantId      String
+  number            String
+  /// The supplier's own invoice number (ERPNext `bill_no`).
+  supplierInvoiceNo String?
+  supplierId        String
+  purchaseOrderId   String?
+  purchaseReceiptId String?
+  postingDate       DateTime              @default(now())
+  dueDate           DateTime
+  status            PurchaseInvoiceStatus @default(DRAFT)
+  currency          String?
+  subtotal          Decimal               @default(0) @db.Decimal(14, 2)
+  discountAmount    Decimal               @default(0) @db.Decimal(14, 2)
+  taxTotal          Decimal               @default(0) @db.Decimal(14, 2)
+  roundOff          Decimal               @default(0) @db.Decimal(14, 2)
+  grandTotal        Decimal               @default(0) @db.Decimal(14, 2)
+  paidAmount        Decimal               @default(0) @db.Decimal(14, 2)
+  outstandingAmount Decimal               @default(0) @db.Decimal(14, 2)
+  updateStock       Boolean               @default(false)
+  isReturn          Boolean               @default(false)
+  returnAgainstId   String?
+  notes             String?
+  termsText         String?
+  createdById       String?
+  submittedAt       DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  restaurant      Restaurant                  @relation(fields: [restaurantId], references: [id])
+  supplier        Supplier                    @relation(fields: [supplierId], references: [id])
+  purchaseOrder   PurchaseOrder?              @relation(fields: [purchaseOrderId], references: [id])
+  purchaseReceipt PurchaseReceipt?            @relation(fields: [purchaseReceiptId], references: [id])
+  returnAgainst   PurchaseInvoice?            @relation("InvoiceReturn", fields: [returnAgainstId], references: [id])
+  returns         PurchaseInvoice[]           @relation("InvoiceReturn")
+  items           PurchaseInvoiceItem[]
+  schedule        PurchasePaymentSchedule[]
+  allocations     SupplierPaymentAllocation[]
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId, status])
+  @@index([supplierId])
+  @@index([dueDate])
+}
+
+model PurchaseInvoiceItem {
+  id                    String   @id @default(cuid())
+  purchaseInvoiceId     String
+  stockItemId           String
+  purchaseOrderItemId   String?
+  purchaseReceiptItemId String?
+  description           String?
+  quantity              Decimal  @db.Decimal(12, 3)
+  rate                  Decimal  @db.Decimal(14, 2)
+  discountPercent       Decimal? @db.Decimal(5, 2)
+  taxRate               Decimal  @default(0) @db.Decimal(5, 2)
+  amount                Decimal  @db.Decimal(14, 2)
+  sortOrder             Int      @default(0)
+
+  purchaseInvoice     PurchaseInvoice      @relation(fields: [purchaseInvoiceId], references: [id], onDelete: Cascade)
+  stockItem           StockItem            @relation(fields: [stockItemId], references: [id])
+  purchaseOrderItem   PurchaseOrderItem?   @relation(fields: [purchaseOrderItemId], references: [id])
+  purchaseReceiptItem PurchaseReceiptItem? @relation(fields: [purchaseReceiptItemId], references: [id])
+
+  @@index([purchaseInvoiceId])
+  @@index([stockItemId])
+}
+
+/// Instalment line of a supplier bill (ERPNext Payment Schedule).
+model PurchasePaymentSchedule {
+  id                String   @id @default(cuid())
+  purchaseInvoiceId String
+  dueDate           DateTime
+  invoicePortion    Decimal  @db.Decimal(5, 2)
+  amount            Decimal  @db.Decimal(14, 2)
+  paidAmount        Decimal  @default(0) @db.Decimal(14, 2)
+  sortOrder         Int      @default(0)
+
+  purchaseInvoice PurchaseInvoice @relation(fields: [purchaseInvoiceId], references: [id], onDelete: Cascade)
+
+  @@index([purchaseInvoiceId])
+}
+
+/// Money paid out to a supplier (ERPNext Payment Entry, type Pay). Allocated
+/// across one or more invoices; the remainder sits in `unallocatedAmount`.
+model SupplierPayment {
+  id                String      @id @default(cuid())
+  restaurantId      String
+  number            String
+  supplierId        String
+  paymentDate       DateTime    @default(now())
+  mode              PaymentMode @default(CASH)
+  amount            Decimal     @db.Decimal(14, 2)
+  unallocatedAmount Decimal     @default(0) @db.Decimal(14, 2)
+  referenceNo       String?
+  referenceDate     DateTime?
+  notes             String?
+  createdById       String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  restaurant  Restaurant                  @relation(fields: [restaurantId], references: [id])
+  supplier    Supplier                    @relation(fields: [supplierId], references: [id])
+  allocations SupplierPaymentAllocation[]
+
+  @@unique([restaurantId, number])
+  @@index([supplierId])
+  @@index([restaurantId, paymentDate])
+}
+
+model SupplierPaymentAllocation {
+  id                String  @id @default(cuid())
+  supplierPaymentId String
+  purchaseInvoiceId String
+  amount            Decimal @db.Decimal(14, 2)
+
+  supplierPayment SupplierPayment @relation(fields: [supplierPaymentId], references: [id], onDelete: Cascade)
+  purchaseInvoice PurchaseInvoice @relation(fields: [purchaseInvoiceId], references: [id])
+
+  @@unique([supplierPaymentId, purchaseInvoiceId])
+  @@index([purchaseInvoiceId])
+}
+
+/// A supplier's computed performance over a window — ERPNext's scorecard, but
+/// derived from receipts and orders rather than hand-entered criteria.
+model SupplierScorecardPeriod {
+  id                     String            @id @default(cuid())
+  restaurantId           String
+  supplierId             String
+  periodStart            DateTime
+  periodEnd              DateTime
+  onTimeDeliveryPercent  Decimal           @db.Decimal(5, 2)
+  qualityAcceptedPercent Decimal           @db.Decimal(5, 2)
+  priceVariancePercent   Decimal           @db.Decimal(6, 2)
+  totalOrders            Int               @default(0)
+  totalReceipts          Int               @default(0)
+  totalPurchaseAmount    Decimal           @default(0) @db.Decimal(14, 2)
+  score                  Decimal           @db.Decimal(5, 2)
+  standing               ScorecardStanding
+  generatedAt            DateTime          @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  supplier   Supplier   @relation(fields: [supplierId], references: [id])
+
+  @@unique([supplierId, periodStart, periodEnd])
   @@index([restaurantId])
 }
