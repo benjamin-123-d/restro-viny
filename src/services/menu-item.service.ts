@@ -54,10 +54,10 @@ interface TaxProfile {
   readonly serviceGstRate: number | null;
   readonly pricesTaxInclusive: boolean;
   readonly sacCode: string | null;
-  /** Absent on profiles predating French VAT, which keep the GST behaviour. */
-  readonly taxSystem?: TaxSystem;
-  /** French VAT: which territory's rates apply. Continental France if absent. */
-  readonly vatTerritory?: VatTerritory;
+  // Required on purpose: when these were optional, the profile builder below
+  // silently dropped them and every French menu fell back to GST at 0 %.
+  readonly taxSystem: TaxSystem;
+  readonly vatTerritory: VatTerritory;
 }
 
 /**
@@ -284,11 +284,15 @@ const taxProfile = (r: {
   serviceGstRate: unknown;
   pricesTaxInclusive: boolean;
   sacCode: string | null;
+  taxSystem: TaxSystem;
+  vatTerritory: VatTerritory;
 }): TaxProfile => ({
   gstRegistrationType: r.gstRegistrationType,
   serviceGstRate: r.serviceGstRate != null ? num(r.serviceGstRate) : null,
   pricesTaxInclusive: r.pricesTaxInclusive,
   sacCode: r.sacCode,
+  taxSystem: r.taxSystem,
+  vatTerritory: r.vatTerritory,
 });
 
 /** The full menu (categories + items with resolved tax + computed availability). */

@@ -35,6 +35,8 @@ const REGULAR = {
   serviceGstRate: 5,
   pricesTaxInclusive: false,
   sacCode: "996331",
+  taxSystem: "IN_GST" as const,
+  vatTerritory: "METROPOLE" as const,
 };
 
 const servedItem = {
@@ -214,6 +216,7 @@ describe("resolveItemTax — French VAT", () => {
     pricesTaxInclusive: false,
     sacCode: null,
     taxSystem: "FR_VAT" as const,
+    vatTerritory: "METROPOLE" as const,
   };
   const item = {
     itemType: "SERVED" as const,
@@ -249,5 +252,83 @@ describe("resolveItemTax — French VAT", () => {
   it("ignores GST registration entirely under French VAT", () => {
     const tax = resolveItemTax({ ...item, sectionVatCategory: "FOOD" }, profile);
     expect(tax.separatelyCharged).toBe(true);
+  });
+});
+
+/**
+ * The seam that broke once: getMenu builds its own tax profile from the
+ * restaurant row, and it used to drop the tax system — so French restaurants
+ * silently sold at 0 % while every unit test of resolveItemTax still passed.
+ * This test goes through getMenu itself.
+ */
+describe("getMenu — tax profile reaches the menu", () => {
+  const menuItemRow = (o: Record<string, unknown> = {}) => ({
+    id: "m1",
+    restaurantId: "res_1",
+    categoryId: "cat_1",
+    name: "Limonade",
+    shortDescription: null,
+    longDescription: null,
+    itemType: "SERVED",
+    dietaryType: null,
+    price: 3.5,
+    priceTaxInclusive: null,
+    goodsGstRate: null,
+    hsnSacCode: null,
+    vatCategory: null,
+    sortOrder: 0,
+    isActive: true,
+    deletedAt: null,
+    category: { id: "cat_1", isActive: true, deletedAt: null, vatCategory: "SOFT_DRINK" },
+    disables: [],
+    images: [],
+    variants: [],
+    modifierGroups: [],
+    ...o,
+  });
+
+  it("applies French VAT to every item of a French restaurant", async () => {
+    const { findRestaurantById } = await import("@/repositories/restaurant.repository");
+    const { findCategoriesByRestaurant } = await import("@/repositories/menu-category.repository");
+    const { findMenuItemsByRestaurant } = await import("@/repositories/menu-item.repository");
+    vi.mocked(findRestaurantById).mockResolvedValue({
+      id: "res_1",
+      deletedAt: null,
+      gstRegistrationType: "UNREGISTERED",
+      serviceGstRate: null,
+      pricesTaxInclusive: false,
+      sacCode: null,
+      taxSystem: "FR_VAT",
+      vatTerritory: "METROPOLE",
+    } as never);
+    vi.mocked(findCategoriesByRestaurant).mockResolvedValue([]);
+    vi.mocked(findMenuItemsByRestaurant).mockResolvedValue([menuItemRow()] as never);
+
+    const { getMenu } = await import("./menu-item.service");
+    const menu = await getMenu("res_1");
+
+    expect(menu.items[0].tax.kind).toBe("VAT");
+    expect(menu.items[0].tax.ratesByService?.TAKEAWAY).toBe(5.5);
+  });
+
+  it("uses the restaurant's territory, not continental France, when set", async () => {
+    const { findRestaurantById } = await import("@/repositories/restaurant.repository");
+    const { findMenuItemsByRestaurant } = await import("@/repositories/menu-item.repository");
+    vi.mocked(findRestaurantById).mockResolvedValue({
+      id: "res_1",
+      deletedAt: null,
+      gstRegistrationType: "UNREGISTERED",
+      serviceGstRate: null,
+      pricesTaxInclusive: false,
+      sacCode: null,
+      taxSystem: "FR_VAT",
+      vatTerritory: "REUNION",
+    } as never);
+    vi.mocked(findMenuItemsByRestaurant).mockResolvedValue([menuItemRow()] as never);
+
+    const { getMenu } = await import("./menu-item.service");
+    const menu = await getMenu("res_1");
+
+    expect(menu.items[0].tax.rate).toBe(2.1);
   });
 });
