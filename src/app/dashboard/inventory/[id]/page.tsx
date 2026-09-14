@@ -42,7 +42,10 @@ export default async function StockHistoryPage({
       ) : (
         <ul className="divide-y rounded-lg border">
           {movements.map((m) => (
-            <li key={m.id} className="flex items-center justify-between gap-3 p-3">
+            <li
+              key={m.id}
+              className="flex items-center justify-between gap-3 p-3"
+            >
               <div className="min-w-0">
                 <p className="text-sm font-medium">{MOVEMENT_LABELS[m.type]}</p>
                 <p className="text-muted-foreground text-xs">

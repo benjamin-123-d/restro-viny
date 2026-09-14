@@ -26,20 +26,31 @@ export default async function BalanceSheetPage() {
   const section = (title: string, rows: typeof sheet.assets, total: number) => (
     <>
       <tr className="bg-zinc-50">
-        <td className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500" colSpan={3}>
+        <td
+          className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500"
+          colSpan={3}
+        >
           {title}
         </td>
       </tr>
       {rows.map((row) => (
         <tr key={row.accountId} className="border-b last:border-0">
-          <td className="px-3 py-2 font-mono text-xs text-zinc-500">{row.code}</td>
+          <td className="px-3 py-2 font-mono text-xs text-zinc-500">
+            {row.code}
+          </td>
           <td className="px-3 py-2 text-zinc-800">{row.name}</td>
-          <td className="px-3 py-2 text-right"><Money value={row.balance} /></td>
+          <td className="px-3 py-2 text-right">
+            <Money value={row.balance} />
+          </td>
         </tr>
       ))}
       <tr className="border-b font-medium">
-        <td className="px-3 py-2" colSpan={2}>Total {title.toLowerCase()}</td>
-        <td className="px-3 py-2 text-right"><Money value={total} /></td>
+        <td className="px-3 py-2" colSpan={2}>
+          Total {title.toLowerCase()}
+        </td>
+        <td className="px-3 py-2 text-right">
+          <Money value={total} />
+        </td>
       </tr>
     </>
   );
@@ -59,7 +70,9 @@ export default async function BalanceSheetPage() {
         <>
           <p
             className={`rounded-md px-3 py-2 text-sm ${
-              sheet.isBalanced ? "bg-green-50 text-green-800" : "bg-red-50 text-red-700"
+              sheet.isBalanced
+                ? "bg-green-50 text-green-800"
+                : "bg-red-50 text-red-700"
             }`}
           >
             {sheet.isBalanced
@@ -81,13 +94,24 @@ export default async function BalanceSheetPage() {
                 Profit for the period
               </td>
               <td className="px-3 py-2 text-right">
-                <Money value={sheet.retainedProfit} tone={sheet.retainedProfit < 0 ? "danger" : undefined} />
+                <Money
+                  value={sheet.retainedProfit}
+                  tone={sheet.retainedProfit < 0 ? "danger" : undefined}
+                />
               </td>
             </tr>
             <tr className="bg-zinc-50 font-semibold">
-              <td className="px-3 py-2" colSpan={2}>Liabilities + equity + profit</td>
+              <td className="px-3 py-2" colSpan={2}>
+                Liabilities + equity + profit
+              </td>
               <td className="px-3 py-2 text-right">
-                <Money value={sheet.totalLiabilities + sheet.totalEquity + sheet.retainedProfit} />
+                <Money
+                  value={
+                    sheet.totalLiabilities +
+                    sheet.totalEquity +
+                    sheet.retainedProfit
+                  }
+                />
               </td>
             </tr>
           </DocTable>

@@ -1,12 +1,11 @@
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
-import {
-  DocTable,
-  Money,
-} from "@/components/purchasing/purchasing-ui";
+import { DocTable, Money } from "@/components/purchasing/purchasing-ui";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listBins } from "@/services/stock-advanced.service";
 
+import { HelpBox } from "@/components/forms/help-box";
+import { DocActions, NewButton } from "@/components/forms/doc-actions";
 export default async function BinsPage() {
   const ctx = await getManagerContextOrNull();
   if (!ctx) {
@@ -28,6 +27,17 @@ export default async function BinsPage() {
         title="Stock by warehouse"
         description="What each item holds in each warehouse. Projected is actual plus ordered, less reserved."
       />
+      <HelpBox
+        defaultOpen={false}
+        title="Aide — Stock par entrepôt"
+        intro="Chaque ligne = un article dans un entrepôt."
+        steps={[
+          "« Actual » = ce qui est physiquement sur l'étagère.",
+          "« Ordered » = commandé, pas encore reçu. « Reserved » = promis à un client.",
+          "« Projected » = Actual + Ordered − Reserved : ce sur quoi compter pour décider de recommander.",
+        ]}
+        tips={[]}
+      />
       {rows.length === 0 ? (
         <EmptyState
           title="Nothing in stock yet"
@@ -43,22 +53,35 @@ export default async function BinsPage() {
             { label: "Ordered", align: "right" },
             { label: "Projected", align: "right" },
             { label: "Rate", align: "right" },
-            { label: "Value", align: "right" }
+            { label: "Value", align: "right" },
           ]}
         >
           {rows.map((row) => (
             <tr key={row.id} className="border-b last:border-0">
               <td className="px-3 py-2 text-zinc-600">{row.warehouseName}</td>
-              <td className="px-3 py-2 font-medium text-zinc-900">{row.stockItemName}</td>
-              <td className="px-3 py-2 text-right tabular-nums">{row.actualQty} {row.unit}</td>
-              <td className="px-3 py-2 text-right tabular-nums text-zinc-500">{row.reservedQty}</td>
-              <td className="px-3 py-2 text-right tabular-nums text-zinc-500">{row.orderedQty}</td>
-              <td className="px-3 py-2 text-right tabular-nums font-medium">{row.projectedQty}</td>
-              <td className="px-3 py-2 text-right"><Money value={row.valuationRate} /></td>
-              <td className="px-3 py-2 text-right"><Money value={row.stockValue} /></td>
+              <td className="px-3 py-2 font-medium text-zinc-900">
+                {row.stockItemName}
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums">
+                {row.actualQty} {row.unit}
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums text-zinc-500">
+                {row.reservedQty}
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums text-zinc-500">
+                {row.orderedQty}
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums font-medium">
+                {row.projectedQty}
+              </td>
+              <td className="px-3 py-2 text-right">
+                <Money value={row.valuationRate} />
+              </td>
+              <td className="px-3 py-2 text-right">
+                <Money value={row.stockValue} />
+              </td>
             </tr>
           ))}
-
         </DocTable>
       )}
     </div>

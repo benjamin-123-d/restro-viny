@@ -48,18 +48,32 @@ export default async function LedgerPage() {
         >
           {entries.map((entry) => (
             <tr key={entry.id} className="border-b last:border-0">
-              <td className="px-3 py-2"><DocDate iso={entry.postingDate} /></td>
-              <td className="px-3 py-2"><DocNumber number={entry.voucherNumber} /></td>
               <td className="px-3 py-2">
-                <span className="font-mono text-xs text-zinc-500">{entry.accountCode}</span>
+                <DocDate iso={entry.postingDate} />
+              </td>
+              <td className="px-3 py-2">
+                <DocNumber number={entry.voucherNumber} />
+              </td>
+              <td className="px-3 py-2">
+                <span className="font-mono text-xs text-zinc-500">
+                  {entry.accountCode}
+                </span>
                 <span className="ml-2 text-zinc-800">{entry.accountName}</span>
               </td>
-              <td className="px-3 py-2 text-zinc-600">{entry.description ?? "\u2014"}</td>
-              <td className="px-3 py-2 text-right">
-                <Money value={entry.debit} tone={entry.debit === 0 ? "muted" : undefined} />
+              <td className="px-3 py-2 text-zinc-600">
+                {entry.description ?? "\u2014"}
               </td>
               <td className="px-3 py-2 text-right">
-                <Money value={entry.credit} tone={entry.credit === 0 ? "muted" : undefined} />
+                <Money
+                  value={entry.debit}
+                  tone={entry.debit === 0 ? "muted" : undefined}
+                />
+              </td>
+              <td className="px-3 py-2 text-right">
+                <Money
+                  value={entry.credit}
+                  tone={entry.credit === 0 ? "muted" : undefined}
+                />
               </td>
             </tr>
           ))}

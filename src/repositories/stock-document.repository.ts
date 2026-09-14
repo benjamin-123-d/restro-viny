@@ -11,6 +11,8 @@ import { claimDocumentNumber } from "@/repositories/document-sequence.repository
 import { applyMovementInTx } from "@/repositories/stock.repository";
 import { binQuantity, bumpBin } from "@/repositories/warehouse.repository";
 
+export const INSUFFICIENT_STOCK = "INSUFFICIENT_STOCK";
+
 // ----------------------------------------------------- material request ---
 
 export interface MaterialRequestLineWriteData {
@@ -204,6 +206,16 @@ export const submitStockEntry = (
       const rate = Number(item.valuationRate);
 
       if (item.fromWarehouseId) {
+        // Never issue stock the warehouse does not hold. Checked inside the
+        // transaction so two entries racing for the same bin cannot both pass.
+        const available = await binQuantity(
+          tx,
+          item.stockItemId,
+          item.fromWarehouseId,
+        );
+        if (available < qty) {
+          throw new Error(INSUFFICIENT_STOCK);
+        }
         await applyMovementInTx(tx, {
           restaurantId: entry.restaurantId,
           stockItemId: item.stockItemId,

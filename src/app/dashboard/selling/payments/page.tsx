@@ -9,6 +9,8 @@ import {
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listCustomerPayments } from "@/services/sales.document.service";
 
+import { HelpBox } from "@/components/forms/help-box";
+import { DocActions, NewButton } from "@/components/forms/doc-actions";
 export default async function CustomerPaymentsPage() {
   const ctx = await getManagerContextOrNull();
   if (!ctx) {
@@ -30,6 +32,22 @@ export default async function CustomerPaymentsPage() {
         title="Customer receipts"
         description="Money received, and which invoices each receipt settled."
       />
+      <div className="-mt-2 flex justify-end">
+        <NewButton
+          href="/dashboard/selling/payments/new"
+          label="Encaisser un client"
+        />
+      </div>
+      <HelpBox
+        defaultOpen={false}
+        title="Aide — Encaissements"
+        intro=""
+        steps={[
+          "« Encaisser un client » quand un client vous paie.",
+          "« Settles » liste les factures réglées ; « On account » = argent reçu non encore affecté.",
+        ]}
+        tips={[]}
+      />
       {rows.length === 0 ? (
         <EmptyState
           title="No receipts yet"
@@ -45,28 +63,40 @@ export default async function CustomerPaymentsPage() {
             { label: "Reference" },
             { label: "Settles" },
             { label: "On account", align: "right" },
-            { label: "Amount", align: "right" }
+            { label: "Amount", align: "right" },
           ]}
         >
           {rows.map((row) => (
             <tr key={row.id} className="border-b last:border-0">
-              <td className="px-3 py-2"><DocNumber number={row.number} /></td>
-              <td className="px-3 py-2 font-medium text-zinc-900">{row.customerName}</td>
-              <td className="px-3 py-2"><DocDate iso={row.paymentDate} /></td>
+              <td className="px-3 py-2">
+                <DocNumber number={row.number} />
+              </td>
+              <td className="px-3 py-2 font-medium text-zinc-900">
+                {row.customerName}
+              </td>
+              <td className="px-3 py-2">
+                <DocDate iso={row.paymentDate} />
+              </td>
               <td className="px-3 py-2 text-zinc-600">{row.mode}</td>
-              <td className="px-3 py-2 text-zinc-600">{row.referenceNo ?? "—"}</td>
+              <td className="px-3 py-2 text-zinc-600">
+                {row.referenceNo ?? "—"}
+              </td>
               <td className="px-3 py-2 text-zinc-600">
                 {row.allocations.length === 0
                   ? "On account"
                   : row.allocations.map((a) => a.invoiceNumber).join(", ")}
               </td>
               <td className="px-3 py-2 text-right">
-                <Money value={row.unallocatedAmount} tone={row.unallocatedAmount === 0 ? "muted" : undefined} />
+                <Money
+                  value={row.unallocatedAmount}
+                  tone={row.unallocatedAmount === 0 ? "muted" : undefined}
+                />
               </td>
-              <td className="px-3 py-2 text-right"><Money value={row.amount} /></td>
+              <td className="px-3 py-2 text-right">
+                <Money value={row.amount} />
+              </td>
             </tr>
           ))}
-
         </DocTable>
       )}
     </div>

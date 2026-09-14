@@ -55,21 +55,39 @@ export default async function TrialBalancePage() {
           >
             {tb.rows.map((row) => (
               <tr key={row.accountId} className="border-b last:border-0">
-                <td className="px-3 py-2 font-mono text-xs text-zinc-500">{row.code}</td>
-                <td className="px-3 py-2 font-medium text-zinc-900">{row.name}</td>
-                <td className="px-3 py-2 text-zinc-600">{ROOT_TYPE_LABEL[row.rootType]}</td>
-                <td className="px-3 py-2 text-right">
-                  <Money value={row.debit} tone={row.debit === 0 ? "muted" : undefined} />
+                <td className="px-3 py-2 font-mono text-xs text-zinc-500">
+                  {row.code}
+                </td>
+                <td className="px-3 py-2 font-medium text-zinc-900">
+                  {row.name}
+                </td>
+                <td className="px-3 py-2 text-zinc-600">
+                  {ROOT_TYPE_LABEL[row.rootType]}
                 </td>
                 <td className="px-3 py-2 text-right">
-                  <Money value={row.credit} tone={row.credit === 0 ? "muted" : undefined} />
+                  <Money
+                    value={row.debit}
+                    tone={row.debit === 0 ? "muted" : undefined}
+                  />
+                </td>
+                <td className="px-3 py-2 text-right">
+                  <Money
+                    value={row.credit}
+                    tone={row.credit === 0 ? "muted" : undefined}
+                  />
                 </td>
               </tr>
             ))}
             <tr className="bg-zinc-50 font-semibold">
-              <td className="px-3 py-2" colSpan={3}>Total</td>
-              <td className="px-3 py-2 text-right"><Money value={tb.totalDebit} /></td>
-              <td className="px-3 py-2 text-right"><Money value={tb.totalCredit} /></td>
+              <td className="px-3 py-2" colSpan={3}>
+                Total
+              </td>
+              <td className="px-3 py-2 text-right">
+                <Money value={tb.totalDebit} />
+              </td>
+              <td className="px-3 py-2 text-right">
+                <Money value={tb.totalCredit} />
+              </td>
             </tr>
           </DocTable>
         </>

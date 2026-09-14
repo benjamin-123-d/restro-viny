@@ -10,6 +10,13 @@ import {
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listPurchaseInvoices } from "@/services/purchase-invoice.service";
 
+import { HelpBox } from "@/components/forms/help-box";
+import { DocActions, NewButton } from "@/components/forms/doc-actions";
+import {
+  cancelPurchaseInvoiceAction,
+  deletePurchaseInvoiceAction,
+  submitPurchaseInvoiceAction,
+} from "@/actions/purchasing.actions";
 export default async function PurchaseInvoicesPage() {
   const ctx = await getManagerContextOrNull();
   if (!ctx) {
@@ -32,6 +39,23 @@ export default async function PurchaseInvoicesPage() {
         title="Supplier bills"
         description="What you owe, and when it falls due."
       />
+      <div className="-mt-2 flex justify-end">
+        <NewButton
+          href="/dashboard/purchasing/invoices/new"
+          label="Nouvelle facture fournisseur"
+        />
+      </div>
+      <HelpBox
+        defaultOpen={false}
+        title="Aide — Factures fournisseurs"
+        intro=""
+        steps={[
+          "« + Nouvelle facture fournisseur » pour saisir une facture reçue.",
+          "« Valider » la transforme en dette ; « Outstanding » montre ce qui reste à payer.",
+          "Payez-la depuis l'onglet « Payments ».",
+        ]}
+        tips={["« +12d » à côté de l'échéance = en retard de 12 jours."]}
+      />
       {invoices.length === 0 ? (
         <EmptyState
           title="No supplier bills yet"
@@ -48,6 +72,7 @@ export default async function PurchaseInvoicesPage() {
             { label: "Status" },
             { label: "Total", align: "right" },
             { label: "Outstanding", align: "right" },
+            { label: "", align: "right" },
           ]}
         >
           {invoices.map((invoice) => (
@@ -87,6 +112,38 @@ export default async function PurchaseInvoicesPage() {
                       : invoice.daysOverdue > 0
                         ? "danger"
                         : undefined
+                  }
+                />
+              </td>
+              <td className="px-3 py-2 text-right">
+                <DocActions
+                  id={invoice.id}
+                  actions={
+                    invoice.status === "DRAFT"
+                      ? [
+                          {
+                            label: "Valider",
+                            action: submitPurchaseInvoiceAction,
+                            tone: "primary",
+                          },
+                          {
+                            label: "Supprimer",
+                            action: deletePurchaseInvoiceAction,
+                            tone: "danger",
+                            confirm: "Supprimer ce brouillon ?",
+                          },
+                        ]
+                      : ["UNPAID", "OVERDUE"].includes(invoice.status)
+                        ? [
+                            {
+                              label: "Annuler",
+                              action: cancelPurchaseInvoiceAction,
+                              tone: "danger",
+                              confirm:
+                                "Annuler cette facture ? Ses effets seront inversés.",
+                            },
+                          ]
+                        : []
                   }
                 />
               </td>

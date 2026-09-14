@@ -12,7 +12,10 @@ export default async function PosPage() {
   if (!ctx) {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
-        <PageHeader title="POS" description="Take orders and send them to the kitchen." />
+        <PageHeader
+          title="POS"
+          description="Take orders and send them to the kitchen."
+        />
         <EmptyState
           title="No restaurant yet"
           description="Ask an admin to onboard your restaurant, then come back to start taking orders."

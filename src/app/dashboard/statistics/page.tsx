@@ -69,7 +69,10 @@ const MonthlyBars = ({ months }: { months: readonly SeriesPoint[] }) => {
 
       <div className="mt-5 flex items-end justify-between gap-3 sm:gap-6">
         {months.map((month) => (
-          <div key={month.label} className="flex flex-1 flex-col items-center gap-2">
+          <div
+            key={month.label}
+            className="flex flex-1 flex-col items-center gap-2"
+          >
             <div className="flex h-40 w-full items-end justify-center gap-1">
               <div
                 className="w-1/3 rounded-t bg-blue-500"
@@ -122,9 +125,7 @@ const Leaderboard = ({
                     style={{ width: `${share}%` }}
                   />
                 </div>
-                <span className="text-xs text-zinc-400">
-                  {row.count} inv.
-                </span>
+                <span className="text-xs text-zinc-400">{row.count} inv.</span>
               </div>
             </li>
           );
@@ -162,7 +163,10 @@ export default async function StatisticsPage() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Sales billed" value={formatCurrency(s.salesTotal)} />
-        <Stat label="Purchases billed" value={formatCurrency(s.purchaseTotal)} />
+        <Stat
+          label="Purchases billed"
+          value={formatCurrency(s.purchaseTotal)}
+        />
         <Stat
           label="Gross margin"
           value={formatCurrency(s.grossMargin)}
@@ -201,7 +205,11 @@ export default async function StatisticsPage() {
         <Stat
           label="Quotation win rate"
           value={s.quotationWinRate === null ? "—" : `${s.quotationWinRate}%`}
-          sub={s.quotationWinRate === null ? "nothing decided yet" : "of decided quotes"}
+          sub={
+            s.quotationWinRate === null
+              ? "nothing decided yet"
+              : "of decided quotes"
+          }
         />
       </div>
 
@@ -221,13 +229,12 @@ export default async function StatisticsPage() {
       </div>
 
       <DocTable
-        headers={[
-          { label: "Watch list" },
-          { label: "Count", align: "right" },
-        ]}
+        headers={[{ label: "Watch list" }, { label: "Count", align: "right" }]}
       >
         <tr className="border-b">
-          <td className="px-3 py-2 text-zinc-800">Items at or below reorder level</td>
+          <td className="px-3 py-2 text-zinc-800">
+            Items at or below reorder level
+          </td>
           <td className="px-3 py-2 text-right">
             <span
               className={
@@ -241,7 +248,9 @@ export default async function StatisticsPage() {
           </td>
         </tr>
         <tr className="border-b">
-          <td className="px-3 py-2 text-zinc-800">Batches expiring within 14 days</td>
+          <td className="px-3 py-2 text-zinc-800">
+            Batches expiring within 14 days
+          </td>
           <td className="px-3 py-2 text-right">
             <span
               className={
@@ -255,7 +264,9 @@ export default async function StatisticsPage() {
           </td>
         </tr>
         <tr>
-          <td className="px-3 py-2 text-zinc-800">Net position (owed to you − you owe)</td>
+          <td className="px-3 py-2 text-zinc-800">
+            Net position (owed to you − you owe)
+          </td>
           <td className="px-3 py-2 text-right">
             <Money
               value={s.receivable - s.payable}

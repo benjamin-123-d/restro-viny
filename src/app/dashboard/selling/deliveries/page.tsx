@@ -45,7 +45,7 @@ export default async function DeliveryNotesPage() {
             { label: "Posted" },
             { label: "Status" },
             { label: "Billed" },
-            { label: "Total", align: "right" }
+            { label: "Total", align: "right" },
           ]}
         >
           {rows.map((row) => (
@@ -58,14 +58,23 @@ export default async function DeliveryNotesPage() {
                   </span>
                 )}
               </td>
-              <td className="px-3 py-2 font-medium text-zinc-900">{row.customerName}</td>
-              <td className="px-3 py-2"><DocDate iso={row.postingDate} /></td>
-              <td className="px-3 py-2"><StatusBadge status={row.status} /></td>
-              <td className="px-3 py-2"><Progress percent={row.billedPercent} /></td>
-              <td className="px-3 py-2 text-right"><Money value={row.grandTotal} /></td>
+              <td className="px-3 py-2 font-medium text-zinc-900">
+                {row.customerName}
+              </td>
+              <td className="px-3 py-2">
+                <DocDate iso={row.postingDate} />
+              </td>
+              <td className="px-3 py-2">
+                <StatusBadge status={row.status} />
+              </td>
+              <td className="px-3 py-2">
+                <Progress percent={row.billedPercent} />
+              </td>
+              <td className="px-3 py-2 text-right">
+                <Money value={row.grandTotal} />
+              </td>
             </tr>
           ))}
-
         </DocTable>
       )}
     </div>

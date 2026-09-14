@@ -8,7 +8,8 @@ import { findRestaurantById } from "@/repositories/restaurant.repository";
 import { getOrder } from "@/services/order.service";
 import type { OrderLineDTO } from "@/types/order";
 
-const round2 = (n: number): number => Math.round((n + Number.EPSILON) * 100) / 100;
+const round2 = (n: number): number =>
+  Math.round((n + Number.EPSILON) * 100) / 100;
 const money = (n: number): string => n.toFixed(2);
 
 const TYPE_LABEL: Record<string, string> = {

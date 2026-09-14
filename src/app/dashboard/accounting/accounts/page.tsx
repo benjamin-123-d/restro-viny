@@ -5,6 +5,8 @@ import { ROOT_TYPE_LABEL } from "@/lib/accounting";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listAccounts } from "@/services/accounting.service";
 
+import { HelpBox } from "@/components/forms/help-box";
+import { DocActions, NewButton } from "@/components/forms/doc-actions";
 export default async function ChartOfAccountsPage() {
   const ctx = await getManagerContextOrNull();
   if (!ctx) {
@@ -25,6 +27,23 @@ export default async function ChartOfAccountsPage() {
       <PageHeader
         title="Chart of accounts"
         description="Every account the books can post to. Group accounts total their children and take no postings of their own."
+      />
+      <div className="-mt-2 flex justify-end">
+        <NewButton
+          href="/dashboard/accounting/accounts/new"
+          label="Nouveau compte"
+        />
+      </div>
+      <HelpBox
+        defaultOpen={false}
+        title="Aide — Plan comptable"
+        intro=""
+        steps={[
+          "Les lignes en gras sont des regroupements : ils totalisent les comptes en dessous.",
+          "« Balance » = solde du compte, du bon côté (positif = normal).",
+          "Ajoutez un compte seulement s'il vous manque (ex. une seconde banque).",
+        ]}
+        tips={[]}
       />
       <DocTable
         headers={[
@@ -62,22 +81,36 @@ export default async function ChartOfAccountsPage() {
               {ROOT_TYPE_LABEL[account.rootType]}
             </td>
             <td className="px-3 py-2 text-xs text-zinc-500">
-              {account.isGroup ? "Group" : account.accountType.replace(/_/g, " ").toLowerCase()}
+              {account.isGroup
+                ? "Group"
+                : account.accountType.replace(/_/g, " ").toLowerCase()}
             </td>
             <td className="px-3 py-2 text-right">
-              <Money value={account.debit} tone={account.debit === 0 ? "muted" : undefined} />
+              <Money
+                value={account.debit}
+                tone={account.debit === 0 ? "muted" : undefined}
+              />
             </td>
             <td className="px-3 py-2 text-right">
-              <Money value={account.credit} tone={account.credit === 0 ? "muted" : undefined} />
+              <Money
+                value={account.credit}
+                tone={account.credit === 0 ? "muted" : undefined}
+              />
             </td>
             <td className="px-3 py-2 text-right font-medium">
-              <Money value={account.balance} tone={account.balance < 0 ? "danger" : undefined} />
+              <Money
+                value={account.balance}
+                tone={account.balance < 0 ? "danger" : undefined}
+              />
             </td>
           </tr>
         ))}
       </DocTable>
       {accounts.length === 0 && (
-        <EmptyState title="No accounts" description="The starter chart could not be created." />
+        <EmptyState
+          title="No accounts"
+          description="The starter chart could not be created."
+        />
       )}
     </div>
   );

@@ -61,7 +61,9 @@ const SupplierRow = ({ supplier }: { supplier: SupplierSummaryDTO }) => (
     </td>
     <td
       className={`px-3 py-2 text-right tabular-nums ${
-        supplier.overdueAmount > 0 ? "font-semibold text-red-600" : "text-zinc-400"
+        supplier.overdueAmount > 0
+          ? "font-semibold text-red-600"
+          : "text-zinc-400"
       }`}
     >
       {formatCurrency(supplier.overdueAmount)}
@@ -96,9 +98,16 @@ export default async function PurchasingPage() {
 
   const outstanding = suppliers.reduce((s, x) => s + x.outstandingAmount, 0);
   const overdue = suppliers.reduce((s, x) => s + x.overdueAmount, 0);
-  const openOrders = orders.filter((order) => !["DRAFT", "COMPLETED", "CLOSED", "CANCELLED"].includes(order.status)).length;
-  const toBill = receipts.filter((receipt) => ["TO_BILL", "PARTLY_BILLED"].includes(receipt.status)).length;
-  const openInvoices = invoices.filter((invoice) => ["UNPAID", "PARTLY_PAID", "OVERDUE"].includes(invoice.status)).length;
+  const openOrders = orders.filter(
+    (order) =>
+      !["DRAFT", "COMPLETED", "CLOSED", "CANCELLED"].includes(order.status),
+  ).length;
+  const toBill = receipts.filter((receipt) =>
+    ["TO_BILL", "PARTLY_BILLED"].includes(receipt.status),
+  ).length;
+  const openInvoices = invoices.filter((invoice) =>
+    ["UNPAID", "PARTLY_PAID", "OVERDUE"].includes(invoice.status),
+  ).length;
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">

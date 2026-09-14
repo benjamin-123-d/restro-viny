@@ -12,7 +12,8 @@ import type {
 import { prisma } from "@/lib/prisma";
 import { claimDocumentNumber } from "@/repositories/document-sequence.repository";
 import { applyMovementInTx } from "@/repositories/stock.repository";
-import { bumpBin } from "@/repositories/warehouse.repository";
+import { binQuantity, bumpBin } from "@/repositories/warehouse.repository";
+import { INSUFFICIENT_STOCK } from "@/repositories/stock-document.repository";
 
 const lineItem = {
   stockItem: { select: { id: true, name: true, unit: true } },
@@ -348,6 +349,13 @@ export const submitDeliveryNote = (
 
       // A delivery issues stock; a sales return brings it back.
       const delta = note.isReturn ? qty : -qty;
+
+      if (!note.isReturn && note.warehouseId) {
+        const available = await binQuantity(tx, item.stockItemId, note.warehouseId);
+        if (available < qty) {
+          throw new Error(INSUFFICIENT_STOCK);
+        }
+      }
 
       await applyMovementInTx(tx, {
         restaurantId: note.restaurantId,

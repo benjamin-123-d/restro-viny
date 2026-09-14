@@ -1,15 +1,15 @@
-import { MenuManager } from "@/components/menu/menu-manager"
-import { EmptyState } from "@/components/shared/empty-state"
-import { PageHeader } from "@/components/shared/page-header"
-import { getManagerContextOrNull } from "@/lib/manager-auth"
-import { findRestaurantById } from "@/repositories/restaurant.repository"
-import { getMenu } from "@/services/menu-item.service"
-import { listModifierGroups } from "@/services/modifier.service"
-import { listRecipes } from "@/services/recipe.service"
-import { listStock } from "@/services/stock.service"
+import { MenuManager } from "@/components/menu/menu-manager";
+import { EmptyState } from "@/components/shared/empty-state";
+import { PageHeader } from "@/components/shared/page-header";
+import { getManagerContextOrNull } from "@/lib/manager-auth";
+import { findRestaurantById } from "@/repositories/restaurant.repository";
+import { getMenu } from "@/services/menu-item.service";
+import { listModifierGroups } from "@/services/modifier.service";
+import { listRecipes } from "@/services/recipe.service";
+import { listStock } from "@/services/stock.service";
 
 export default async function MenuPage() {
-  const ctx = await getManagerContextOrNull()
+  const ctx = await getManagerContextOrNull();
   if (!ctx) {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
@@ -22,7 +22,7 @@ export default async function MenuPage() {
           description="Ask an admin to onboard your restaurant, then come back to build your menu."
         />
       </div>
-    )
+    );
   }
 
   const [menu, groups, restaurant, stockItems, recipes] = await Promise.all([
@@ -31,7 +31,7 @@ export default async function MenuPage() {
     findRestaurantById(ctx.restaurantId),
     listStock(ctx.restaurantId),
     listRecipes(ctx.restaurantId),
-  ])
+  ]);
 
   return (
     <MenuManager
@@ -41,5 +41,5 @@ export default async function MenuPage() {
       stockItems={stockItems.filter((s) => s.isActive)}
       recipes={recipes}
     />
-  )
+  );
 }

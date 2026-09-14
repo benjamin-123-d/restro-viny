@@ -88,24 +88,21 @@ export type UpdateCustomerInput = z.infer<typeof updateCustomerSchema>;
 // ---------------------------------------------------------------- lines ---
 
 /**
- * A sales line prices either a menu item or a stock item; the name is always
- * captured so the document still reads correctly if the catalogue changes.
+ * A sales line may point at a menu or stock item, or be a plain described
+ * service — "Buffet, 60 guests" is exactly what a caterer bills, and it is not
+ * in any catalogue. The name is always required so the document reads
+ * correctly on its own, whatever the catalogue later becomes.
  */
-const salesLineSchema = z
-  .object({
-    menuItemId: idSchema.optional(),
-    stockItemId: idSchema.optional(),
-    itemName: z.string().trim().min(1, "Item name is required").max(160),
-    description: optionalText(200),
-    quantity: positiveQty,
-    rate: money,
-    discountPercent: percent.optional(),
-    taxRate: percent.default(0),
-  })
-  .refine((v) => v.menuItemId !== undefined || v.stockItemId !== undefined, {
-    message: "Link the line to a menu item or a stock item",
-    path: ["itemName"],
-  });
+const salesLineSchema = z.object({
+  menuItemId: idSchema.optional(),
+  stockItemId: idSchema.optional(),
+  itemName: z.string().trim().min(1, "Décrivez l'article ou la prestation").max(160),
+  description: optionalText(200),
+  quantity: positiveQty,
+  rate: money,
+  discountPercent: percent.optional(),
+  taxRate: percent.default(0),
+});
 
 // ------------------------------------------------------------ quotation ---
 

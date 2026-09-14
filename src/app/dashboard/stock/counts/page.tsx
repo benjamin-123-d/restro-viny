@@ -43,21 +43,31 @@ export default async function StockCountsPage() {
             { label: "Posted" },
             { label: "Status" },
             { label: "Items", align: "right" },
-            { label: "Difference", align: "right" }
+            { label: "Difference", align: "right" },
           ]}
         >
           {rows.map((row) => (
             <tr key={row.id} className="border-b last:border-0">
-              <td className="px-3 py-2"><DocNumber number={row.number} /></td>
-              <td className="px-3 py-2"><DocDate iso={row.postingDate} /></td>
-              <td className="px-3 py-2"><StatusBadge status={row.status} /></td>
-              <td className="px-3 py-2 text-right tabular-nums">{row.itemCount}</td>
+              <td className="px-3 py-2">
+                <DocNumber number={row.number} />
+              </td>
+              <td className="px-3 py-2">
+                <DocDate iso={row.postingDate} />
+              </td>
+              <td className="px-3 py-2">
+                <StatusBadge status={row.status} />
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums">
+                {row.itemCount}
+              </td>
               <td className="px-3 py-2 text-right">
-                <Money value={row.differenceValue} tone={row.differenceValue < 0 ? "danger" : undefined} />
+                <Money
+                  value={row.differenceValue}
+                  tone={row.differenceValue < 0 ? "danger" : undefined}
+                />
               </td>
             </tr>
           ))}
-
         </DocTable>
       )}
     </div>

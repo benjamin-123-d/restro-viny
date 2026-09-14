@@ -1,12 +1,11 @@
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
-import {
-  DocTable,
-  Money,
-} from "@/components/purchasing/purchasing-ui";
+import { DocTable, Money } from "@/components/purchasing/purchasing-ui";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listCustomers } from "@/services/customer.service";
 
+import { HelpBox } from "@/components/forms/help-box";
+import { DocActions, NewButton } from "@/components/forms/doc-actions";
 export default async function CustomersPage() {
   const ctx = await getManagerContextOrNull();
   if (!ctx) {
@@ -28,6 +27,23 @@ export default async function CustomersPage() {
         title="Customers"
         description="Account customers, what they owe, and how much credit they have left."
       />
+      <div className="-mt-2 flex justify-end">
+        <NewButton
+          href="/dashboard/selling/customers/new"
+          label="Nouveau client"
+        />
+      </div>
+      <HelpBox
+        defaultOpen={false}
+        title="Aide — Clients"
+        intro=""
+        steps={[
+          "« + Nouveau client » pour créer un client en compte.",
+          "« Credit left » = ce qu'il peut encore vous devoir avant d'être bloqué.",
+          "Un badge « over limit » rouge signale un client qui a dépassé sa limite.",
+        ]}
+        tips={[]}
+      />
       {rows.length === 0 ? (
         <EmptyState
           title="No customers yet"
@@ -43,12 +59,14 @@ export default async function CustomersPage() {
             { label: "Open SOs", align: "right" },
             { label: "Outstanding", align: "right" },
             { label: "Credit left", align: "right" },
-            { label: "Overdue", align: "right" }
+            { label: "Overdue", align: "right" },
           ]}
         >
           {rows.map((row) => (
             <tr key={row.id} className="border-b last:border-0">
-              <td className="px-3 py-2 font-mono text-xs text-zinc-500">{row.code}</td>
+              <td className="px-3 py-2 font-mono text-xs text-zinc-500">
+                {row.code}
+              </td>
               <td className="px-3 py-2">
                 <span className="font-medium text-zinc-900">{row.name}</span>
                 {row.overCreditLimit && (
@@ -62,25 +80,37 @@ export default async function CustomersPage() {
                   </span>
                 )}
               </td>
-              <td className="px-3 py-2 text-zinc-600">{row.customerGroupName ?? "—"}</td>
+              <td className="px-3 py-2 text-zinc-600">
+                {row.customerGroupName ?? "—"}
+              </td>
               <td className="px-3 py-2 text-zinc-600">{row.phone ?? "—"}</td>
-              <td className="px-3 py-2 text-right tabular-nums">{row.openOrderCount}</td>
+              <td className="px-3 py-2 text-right tabular-nums">
+                {row.openOrderCount}
+              </td>
               <td className="px-3 py-2 text-right">
-                <Money value={row.outstandingAmount} tone={row.outstandingAmount === 0 ? "muted" : undefined} />
+                <Money
+                  value={row.outstandingAmount}
+                  tone={row.outstandingAmount === 0 ? "muted" : undefined}
+                />
               </td>
               <td className="px-3 py-2 text-right">
                 {row.creditAvailable === null ? (
                   <span className="text-zinc-400">no limit</span>
                 ) : (
-                  <Money value={row.creditAvailable} tone={row.creditAvailable < 0 ? "danger" : undefined} />
+                  <Money
+                    value={row.creditAvailable}
+                    tone={row.creditAvailable < 0 ? "danger" : undefined}
+                  />
                 )}
               </td>
               <td className="px-3 py-2 text-right">
-                <Money value={row.overdueAmount} tone={row.overdueAmount > 0 ? "danger" : "muted"} />
+                <Money
+                  value={row.overdueAmount}
+                  tone={row.overdueAmount > 0 ? "danger" : "muted"}
+                />
               </td>
             </tr>
           ))}
-
         </DocTable>
       )}
     </div>

@@ -1,9 +1,15 @@
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
-import { DocDate, DocTable, Money } from "@/components/purchasing/purchasing-ui";
+import {
+  DocDate,
+  DocTable,
+  Money,
+} from "@/components/purchasing/purchasing-ui";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listSupplierGroups, listSuppliers } from "@/services/supplier.service";
 
+import { HelpBox } from "@/components/forms/help-box";
+import { DocActions, NewButton } from "@/components/forms/doc-actions";
 export default async function SuppliersPage() {
   const ctx = await getManagerContextOrNull();
   if (!ctx) {
@@ -27,6 +33,23 @@ export default async function SuppliersPage() {
       <PageHeader
         title="Suppliers"
         description="Who you buy from, what you owe them, and how much is late."
+      />
+      <div className="-mt-2 flex justify-end">
+        <NewButton
+          href="/dashboard/purchasing/suppliers/new"
+          label="Nouveau fournisseur"
+        />
+      </div>
+      <HelpBox
+        defaultOpen={false}
+        title="Aide — Fournisseurs"
+        intro="La liste de ceux à qui vous achetez, avec ce que vous leur devez."
+        steps={[
+          "« + Nouveau fournisseur » en haut à droite pour en ajouter un.",
+          "« Outstanding » = ce que vous leur devez encore ; « Overdue » en rouge = déjà en retard.",
+          "« Open POs » = commandes passées pas encore terminées.",
+        ]}
+        tips={[]}
       />
 
       {groups.length > 0 && (
