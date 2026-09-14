@@ -288,7 +288,11 @@ export const getSalesDashboard = async (
     vat: vatReport(tickets),
     findings: findings({ tickets, previous: before, from: period.from, to: lastDay }),
     tickets: [...tickets]
-      .sort((a, b) => b.settledAt.getTime() - a.settledAt.getTime())
+      .sort(
+        (a, b) =>
+          (b.invoiceNumber ?? 0) - (a.invoiceNumber ?? 0) ||
+          b.settledAt.getTime() - a.settledAt.getTime(),
+      )
       .map((t) => ({
         id: t.id,
         number: t.invoiceNumber != null ? `F-${String(t.invoiceNumber).padStart(5, "0")}` : `#${t.orderNumber}`,

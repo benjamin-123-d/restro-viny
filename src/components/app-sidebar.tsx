@@ -28,30 +28,34 @@ import {
   ShieldCheckIcon,
   BookOpenCheckIcon,
   ChartColumnIcon,
+  ChartNoAxesCombinedIcon,
   UsersIcon,
   Settings2Icon,
   CircleHelpIcon,
 } from "lucide-react"
 
 const navMain = [
-  { title: "Dashboard", url: "/dashboard", icon: <LayoutDashboardIcon /> },
-  { title: "POS", url: "/dashboard/pos", icon: <CalculatorIcon /> },
-  { title: "Orders", url: "/dashboard/orders", icon: <ReceiptTextIcon /> },
-  { title: "Menu", url: "/dashboard/menu", icon: <BookOpenIcon /> },
+  { title: "Tableau de bord", url: "/dashboard", icon: <LayoutDashboardIcon /> },
+  { title: "Caisse", url: "/dashboard/pos", icon: <CalculatorIcon /> },
+  { title: "Commandes", url: "/dashboard/orders", icon: <ReceiptTextIcon /> },
+  { title: "Ventes", url: "/dashboard/sales", icon: <ChartNoAxesCombinedIcon /> },
+  { title: "Carte", url: "/dashboard/menu", icon: <BookOpenIcon /> },
   { title: "Tables", url: "/dashboard/tables", icon: <ArmchairIcon /> },
-  { title: "Inventory", url: "/dashboard/inventory", icon: <BoxesIcon /> },
-  { title: "Purchasing", url: "/dashboard/purchasing", icon: <TruckIcon /> },
-  { title: "Selling", url: "/dashboard/selling", icon: <HandshakeIcon /> },
+  { title: "Inventaire", url: "/dashboard/inventory", icon: <BoxesIcon /> },
+  { title: "Achats", url: "/dashboard/purchasing", icon: <TruckIcon /> },
   { title: "Stock", url: "/dashboard/stock", icon: <WarehouseIcon /> },
-  { title: "Accounting", url: "/dashboard/accounting", icon: <BookOpenCheckIcon /> },
-  { title: "Statistics", url: "/dashboard/statistics", icon: <ChartColumnIcon /> },
-  { title: "Staff", url: "/dashboard/staff", icon: <UsersIcon /> },
+  { title: "Comptabilité", url: "/dashboard/accounting", icon: <BookOpenCheckIcon /> },
+  { title: "Statistiques", url: "/dashboard/statistics", icon: <ChartColumnIcon /> },
+  { title: "Personnel", url: "/dashboard/staff", icon: <UsersIcon /> },
 ]
 
+// Customer quotations, sales orders and delivery notes stay reachable for
+// catering and business clients, out of the way of the everyday till sales.
 const navSecondary = [
-  { title: "Roles & access", url: "/dashboard/settings/roles", icon: <ShieldCheckIcon /> },
-  { title: "Settings", url: "/dashboard/settings", icon: <Settings2Icon /> },
-  { title: "Get Help", url: "#", icon: <CircleHelpIcon /> },
+  { title: "Ventes aux entreprises", url: "/dashboard/selling", icon: <HandshakeIcon /> },
+  { title: "Rôles et accès", url: "/dashboard/settings/roles", icon: <ShieldCheckIcon /> },
+  { title: "Réglages", url: "/dashboard/settings", icon: <Settings2Icon /> },
+  { title: "Aide", url: "#", icon: <CircleHelpIcon /> },
 ]
 export function AppSidebar({
   user,

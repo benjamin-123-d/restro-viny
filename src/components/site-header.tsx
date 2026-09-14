@@ -17,12 +17,13 @@ export function SiteHeader({
           orientation="vertical"
           className="mx-2 h-4 data-vertical:self-auto"
         />
-        <h1 className="text-base font-medium">Dashboard</h1>
+        <p className="text-base font-medium">Espace gérant</p>
         {staffLoginUsername ? (
           <Button
             variant="outline"
             size="sm"
             className="ml-auto"
+            nativeButton={false}
             render={
               <a
                 href={`/u/${staffLoginUsername}/login`}
@@ -32,7 +33,7 @@ export function SiteHeader({
             }
           >
             <ExternalLinkIcon className="size-4" />
-            Staff login
+            Connexion du personnel
           </Button>
         ) : null}
       </div>

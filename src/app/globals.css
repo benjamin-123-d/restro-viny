@@ -23,6 +23,19 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  /* Ventes dashboard: identity hues (colour follows the entity) and a
+     one-hue magnitude ramp, checked with the dataviz palette validator. */
+  --color-sales-dine-in: var(--sales-dine-in);
+  --color-sales-takeaway: var(--sales-takeaway);
+  --color-sales-delivery: var(--sales-delivery);
+  --color-sales-food: var(--sales-food);
+  --color-sales-drink: var(--sales-drink);
+  --color-heat-0: var(--heat-0);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
+  --color-heat-4: var(--heat-4);
+  --color-heat-5: var(--heat-5);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -81,6 +94,17 @@
   --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
   --sidebar-border: oklch(0.923 0.003 48.717);
   --sidebar-ring: oklch(0.709 0.01 56.259);
+  --sales-dine-in: #2a78d6;
+  --sales-takeaway: #eb6834;
+  --sales-delivery: #1baf7a;
+  --sales-food: #4a3aa7;
+  --sales-drink: #e87ba4;
+  --heat-0: #f0efec;
+  --heat-1: #b7d3f6;
+  --heat-2: #86b6ef;
+  --heat-3: #3987e5;
+  --heat-4: #1c5cab;
+  --heat-5: #0d366b;
 }
 
 .dark {
@@ -115,6 +139,18 @@
   --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.553 0.013 58.071);
+  --sales-dine-in: #3987e5;
+  --sales-takeaway: #d95926;
+  --sales-delivery: #199e70;
+  --sales-food: #9085e9;
+  --sales-drink: #d55181;
+  /* On a dark ground more is lighter: the ramp is re-stepped, not flipped. */
+  --heat-0: #2c2c2a;
+  --heat-1: #104281;
+  --heat-2: #1c5cab;
+  --heat-3: #3987e5;
+  --heat-4: #86b6ef;
+  --heat-5: #cde2fb;
 }
 
 @layer base {
