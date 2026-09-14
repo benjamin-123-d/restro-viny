@@ -20,6 +20,7 @@ import { newIds, orderReadyPhrase } from "@/lib/announce";
 import { deriveKitchenStatus } from "@/lib/kitchen";
 import type { OrderDTO } from "@/types/order";
 
+import { formatCurrency } from "@/lib/format";
 const minutesAgo = (iso: string): string => {
   const mins = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
   return `${mins} min`;
@@ -157,7 +158,7 @@ export function WaiterHome({
                     </span>
                   </span>
                   <span className="text-muted-foreground text-sm tabular-nums">
-                    ₹{orderRunningTotal(order).toFixed(0)}
+                    {formatCurrency(orderRunningTotal(order))}
                   </span>
                 </Link>
                 {isReady(order) ? (

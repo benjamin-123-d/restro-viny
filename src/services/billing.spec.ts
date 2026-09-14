@@ -80,14 +80,22 @@ describe("computeBill", () => {
     );
     expect(bill.discountTotal).toBe(50);
     expect(bill.subtotal).toBe(200);
-    // 150 net taxable + 7.5 tax = 157.5 → rounds to 158
-    expect(bill.grandTotal).toBe(158);
-    expect(bill.roundOff).toBeCloseTo(0.5, 2);
+    // 150 net taxable + 7.5 tax = 157.5, kept to the cent
+    expect(bill.grandTotal).toBe(157.5);
+    expect(bill.roundOff).toBe(0);
   });
 
-  it("rounds the grand total to the nearest rupee", () => {
+  it("keeps the grand total exact to the cent by default, as in euros", () => {
     const bill = computeBill([line({ unitPrice: 99.4, taxRate: 5 })]);
-    // 99.4 + 4.97 = 104.37 → 104
+    // 99.4 + 4.97 = 104.37 — a French receipt never rounds this away
+    expect(bill.grandTotal).toBe(104.37);
+    expect(bill.roundOff).toBe(0);
+  });
+
+  it("still rounds to a whole unit when cash rounding is asked for", () => {
+    const bill = computeBill([line({ unitPrice: 99.4, taxRate: 5 })], undefined, {
+      cashRounding: true,
+    });
     expect(bill.grandTotal).toBe(104);
     expect(bill.roundOff).toBeCloseTo(-0.37, 2);
   });

@@ -99,7 +99,7 @@ export const Money = ({
 export const DocDate = ({ iso }: { iso: string | null }) => (
   <span className="whitespace-nowrap text-zinc-600">
     {iso
-      ? new Date(iso).toLocaleDateString("en-GB", {
+      ? new Date(iso).toLocaleDateString("fr-FR", {
           day: "2-digit",
           month: "short",
           year: "numeric",

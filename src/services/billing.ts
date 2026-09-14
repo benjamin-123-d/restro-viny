@@ -1,7 +1,10 @@
 /**
  * Pure bill math for POS orders. No IO — deterministic so it can run client-side
- * (offline-ready) and is exhaustively unit-tested. Money in rupees, 2 decimals;
- * grand total rounds to the nearest ₹1.
+ * (offline-ready) and is exhaustively unit-tested. Money to 2 decimals.
+ *
+ * The grand total is exact to the cent, as a French receipt requires. Cash
+ * rounding to a whole unit (the original rupee behaviour) is still available,
+ * but only when a caller asks for it.
  */
 
 export interface BillLineInput {
@@ -44,9 +47,15 @@ const round2 = (n: number): number => Math.round((n + Number.EPSILON) * 100) / 1
 
 const NO_DISCOUNT: DiscountInput = { type: "NONE", value: 0 };
 
+export interface BillOptions {
+  /** Round the grand total to a whole unit of currency. Off for euros. */
+  readonly cashRounding?: boolean;
+}
+
 export const computeBill = (
   lines: readonly BillLineInput[],
   discount: DiscountInput = NO_DISCOUNT,
+  options: BillOptions = {},
 ): BillResult => {
   // 1. Pre-tax base per line (back out tax for inclusive pricing).
   const bases = lines.map((l) => {
@@ -92,7 +101,7 @@ export const computeBill = (
   const discountTotal = round2(subtotal - netTaxable);
   const taxTotal = round2(resultLines.reduce((s, l) => s + l.tax, 0));
   const preRound = round2(netTaxable + taxTotal);
-  const grandTotal = Math.round(preRound);
+  const grandTotal = options.cashRounding ? Math.round(preRound) : preRound;
   const roundOff = round2(grandTotal - preRound);
 
   return {

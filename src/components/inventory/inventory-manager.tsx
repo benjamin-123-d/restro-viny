@@ -27,6 +27,7 @@ import { BulkReceiveDialog } from "./bulk-receive-dialog";
 import { CountDialog } from "./count-dialog";
 import { StockItemDialog } from "./stock-item-dialog";
 
+import { formatCurrency } from "@/lib/format";
 const groupByCategory = (
   items: readonly StockItemDTO[],
 ): [string, StockItemDTO[]][] => {
@@ -143,7 +144,7 @@ export function InventoryManager({
                         ? `Reorder at ${item.reorderLevel}`
                         : "No reorder level"}
                       {item.parLevel != null ? ` · Par ${item.parLevel}` : ""}
-                      {item.costPerUnit != null ? ` · ₹${item.costPerUnit}/${UNIT_LABELS[item.unit]}` : ""}
+                      {item.costPerUnit != null ? ` · ${formatCurrency(item.costPerUnit)}/${UNIT_LABELS[item.unit]}` : ""}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">

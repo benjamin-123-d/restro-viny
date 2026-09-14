@@ -29,6 +29,7 @@ const makeCategory = (
   overrides: Partial<MenuCategory> = {},
 ): MenuCategory => ({
   id: "cat_1",
+  vatCategory: "FOOD",
   restaurantId: "res_1",
   name: "Starters",
   description: null,

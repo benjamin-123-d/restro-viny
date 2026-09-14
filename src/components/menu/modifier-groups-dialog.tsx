@@ -234,7 +234,7 @@ function GroupForm({
               onChange={(e) => setMod(i, "name", e.target.value)}
             />
             <Input
-              placeholder="+₹"
+              placeholder="+€"
               inputMode="decimal"
               value={m.priceDelta}
               onChange={(e) => setMod(i, "priceDelta", e.target.value)}

@@ -44,7 +44,7 @@ describe("settle", () => {
     vi.mocked(settleOrder).mockResolvedValue(asOrder({ id: "o1" }));
   });
 
-  it("settles when the tender covers the ₹105 bill", async () => {
+  it("settles when the tender covers the 105 € bill", async () => {
     await settle(ctx, {
       orderId: "o1",
       discountType: "NONE",
@@ -114,7 +114,7 @@ describe("settleTable", () => {
     vi.mocked(loadOwnedOrder).mockImplementation((_r: string, id: string) =>
       Promise.resolve(asOrder({ id, status: "OPEN" })),
     );
-    vi.mocked(orderToBillLines).mockReturnValue(billLines); // ₹105 each
+    vi.mocked(orderToBillLines).mockReturnValue(billLines); // 105 € each
     vi.mocked(settleManyOrders).mockResolvedValue([
       asOrder({ id: "o1" }),
       asOrder({ id: "o2" }),

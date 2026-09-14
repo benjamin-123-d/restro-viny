@@ -266,3 +266,66 @@ describe("addItems / voidLine ownership", () => {
     expect(setLineState).not.toHaveBeenCalled();
   });
 });
+
+describe("createOrder — French VAT per service type", () => {
+  /** A menu whose only item is a soft drink under French VAT. */
+  const frenchMenu = (): MenuDTO => {
+    const base = makeMenu();
+    return {
+      ...base,
+      items: base.items.map((item) => ({
+        ...item,
+        name: "Limonade",
+        tax: {
+          kind: "VAT",
+          rate: 10,
+          code: null,
+          separatelyCharged: true,
+          inclusive: true,
+          vatCategory: "SOFT_DRINK",
+          ratesByService: { DINE_IN: 10, TAKEAWAY: 5.5, DELIVERY: 5.5 },
+        },
+      })),
+    };
+  };
+
+  const placedLine = () =>
+    vi.mocked(createOrderRepo).mock.calls[0][0].items[0];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getMenu).mockResolvedValue(frenchMenu());
+    vi.mocked(findOrderByIdempotencyKey).mockResolvedValue(null);
+    vi.mocked(maxOrderNumber).mockResolvedValue(0);
+    vi.mocked(createOrderRepo).mockResolvedValue(makeOrder());
+  });
+
+  it("stores a soft drink served at the table at 10 %", async () => {
+    await createOrder(ctx, {
+      orderType: "DINE_IN",
+      idempotencyKey: "fr-dine-in",
+      items: [{ menuItemId: "i1", quantity: 1, isComp: false, modifierIds: [] }],
+    });
+    expect(placedLine().taxRate).toBe(10);
+    expect(placedLine().taxInclusive).toBe(true);
+  });
+
+  it("stores the same soft drink taken away at 5,5 %", async () => {
+    await createOrder(ctx, {
+      orderType: "TAKEAWAY",
+      idempotencyKey: "fr-takeaway",
+      items: [{ menuItemId: "i1", quantity: 1, isComp: false, modifierIds: [] }],
+    });
+    expect(placedLine().taxRate).toBe(5.5);
+  });
+
+  it("keeps the GST rate when the menu carries no per-service rates", async () => {
+    vi.mocked(getMenu).mockResolvedValue(makeMenu());
+    await createOrder(ctx, {
+      orderType: "TAKEAWAY",
+      idempotencyKey: "gst-order",
+      items: [{ menuItemId: "i1", quantity: 1, isComp: false, modifierIds: [] }],
+    });
+    expect(placedLine().taxRate).toBe(5);
+  });
+});

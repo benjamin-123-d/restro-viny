@@ -76,7 +76,8 @@ describe("toMobileOrderDto", () => {
     expect(dto.orderNumber).toBe("T-5421");
     expect(dto.status).toBe("new");
     expect(dto.tableLabel).toBe("Table 12");
-    expect(dto.totalAmount).toBe("\u20B91,000");
+    // French formatting: space for thousands, decimal comma, euro sign last.
+    expect(dto.totalAmount?.replace(/[\u00A0\u202F]/g, " ")).toBe("1 000,00 \u20AC");
     expect(dto.note).toBe("allergic to peanuts");
     expect(dto.items).toHaveLength(1);
     expect(dto.items[0]).toEqual({

@@ -168,7 +168,7 @@ export function ItemDialog({
               </Select>
             </Field>
             <Field>
-              <FieldLabel htmlFor="item-price">Price (₹)</FieldLabel>
+              <FieldLabel htmlFor="item-price">Prix TTC (€)</FieldLabel>
               <Input
                 id="item-price"
                 inputMode="decimal"

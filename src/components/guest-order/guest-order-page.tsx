@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sheet";
 import { useServerAction } from "@/hooks/use-server-action";
 import { computeBill } from "@/services/billing";
-import { formatTime, maskPhone } from "@/lib/format";
+import { formatCurrency, formatTime, maskPhone } from "@/lib/format";
 import {
   clearGuestSession,
   guestSessionKey,
@@ -382,7 +382,7 @@ export function GuestOrderPage({
               {itemCount} item{itemCount === 1 ? "" : "s"}
             </span>
             <span className="text-muted-foreground text-xs">
-              ₹{bill.grandTotal.toFixed(0)} · Review
+              {formatCurrency(bill.grandTotal)} · Review
             </span>
           </button>
           <Button
@@ -468,7 +468,7 @@ export function GuestOrderPage({
                       </div>
                     </div>
                     <span className="shrink-0 text-sm tabular-nums">
-                      ₹{linePrice(l).toFixed(0)}
+                      {formatCurrency(linePrice(l))}
                     </span>
                   </li>
                 ))}
@@ -477,7 +477,7 @@ export function GuestOrderPage({
             <div className="flex items-center justify-between border-t pt-3">
               <span className="text-sm font-medium">Total</span>
               <span className="text-base font-semibold tabular-nums">
-                ₹{bill.grandTotal.toFixed(2)}
+                {formatCurrency(bill.grandTotal)}
               </span>
             </div>
             <DialogFooter>
@@ -592,7 +592,7 @@ export function GuestOrderPage({
                         {o.itemCount} item{o.itemCount === 1 ? "" : "s"}
                       </span>
                       <span className="font-semibold tabular-nums">
-                        ₹{o.total.toFixed(2)}
+                        {formatCurrency(o.total)}
                       </span>
                     </div>
                   </li>

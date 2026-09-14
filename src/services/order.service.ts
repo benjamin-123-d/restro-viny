@@ -1,4 +1,8 @@
-import type { OrderStatus, PaymentMode } from "@/generated/prisma/client";
+import type {
+  OrderStatus,
+  OrderType,
+  PaymentMode,
+} from "@/generated/prisma/client";
 import type {
   AddItemsInput,
   CreateOrderInput,
@@ -133,6 +137,8 @@ const snapshotLines = (
   startSort: number,
   state: LineState,
   source: "STAFF" | "SELF_ORDER" = "STAFF",
+  /** How the order is served — decides the French VAT rate of each line. */
+  service: OrderType = "DINE_IN",
 ): OrderLineWriteData[] => {
   const itemsById = new Map(menu.items.map((i) => [i.id, i]));
   return lines.map((line, idx) => {
@@ -167,7 +173,7 @@ const snapshotLines = (
       unitPrice: variant ? variant.price : item.price,
       quantity: line.quantity,
       lineNote: line.lineNote ?? null,
-      taxRate: item.tax.rate,
+      taxRate: item.tax.ratesByService?.[service] ?? item.tax.rate,
       taxKind: item.tax.kind,
       taxInclusive: item.tax.inclusive,
       isComp: line.isComp,
@@ -207,7 +213,14 @@ export const createOrder = async (
     return mapOrder(existing);
   }
   const menu = await getMenu(ctx.restaurantId);
-  const items = snapshotLines(menu, input.items, 0, "FIRED", ctx.source ?? "STAFF");
+  const items = snapshotLines(
+    menu,
+    input.items,
+    0,
+    "FIRED",
+    ctx.source ?? "STAFF",
+    input.orderType,
+  );
   const orderNumber = (await maxOrderNumber(ctx.restaurantId)) + 1;
 
   let tableId: string | null = null;
@@ -256,6 +269,8 @@ export const addItems = async (
     order.items.length,
     "UNSENT",
     ctx.source ?? "STAFF",
+    // Items added later inherit the order's own service type.
+    order.orderType,
   );
   const updated = await addOrderItems(input.orderId, items);
   await depleteForLines(

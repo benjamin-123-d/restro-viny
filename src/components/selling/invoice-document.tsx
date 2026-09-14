@@ -22,7 +22,7 @@ export const isInvoiceCopy = (value: string | undefined): value is InvoiceCopy =
   INVOICE_COPIES.some((c) => c.key === value);
 
 const formatDate = (iso: string): string =>
-  new Date(iso).toLocaleDateString("en-GB", {
+  new Date(iso).toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "short",
     year: "numeric",

@@ -73,6 +73,8 @@ enum PaymentMode {
   BANK_TRANSFER
   CHEQUE
   MOBILE_MONEY
+  /// Titre-restaurant (ticket restaurant, carte Swile/Edenred...).
+  MEAL_VOUCHER
 }
 
 enum DiscountType {
@@ -139,7 +141,7 @@ model Restaurant {
   email    String?
   phone    String?
   city     String?
-  country  String  @default("IN")
+  country  String  @default("FR")
   timezone String?
 
   // GST / tax profile (opt-in; drives the correct default tax at billing time)
@@ -180,6 +182,20 @@ model Restaurant {
 
   // Public guest self-ordering (`/order/[username]`); off until the owner opts in.
   selfOrderEnabled Boolean @default(false)
+
+  /// Which tax rules apply to sales. FR_VAT resolves the rate per line from
+  /// what is sold and how (sur place / a emporter); IN_GST keeps the original
+  /// outlet-level GST behaviour.
+  taxSystem     TaxSystem @default(FR_VAT)
+  // French legal mentions, required on invoices and receipts.
+  siret         String?
+  vatNumber     String?
+  nafCode       String?
+  rcs           String?
+  legalForm     String?
+  shareCapital  String?
+  /// Licence de debit de boissons (licence III, IV, restaurant...).
+  drinksLicense String?
 
   // Custom note printed at the foot of the invoice/bill (owner-editable).
   invoiceFooterNote String?
@@ -288,14 +304,16 @@ model OtpChallenge {
 
 /// A menu section (Starters, Mains, Beverages…). Owned by a Restaurant.
 model MenuCategory {
-  id           String    @id @default(cuid())
+  id           String      @id @default(cuid())
   restaurantId String
   name         String
   description  String?
-  sortOrder    Int       @default(0)
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  sortOrder    Int         @default(0)
+  isActive     Boolean     @default(true)
+  /// Default French VAT category for every item in this section.
+  vatCategory  VatCategory @default(FOOD)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
   deletedAt    DateTime?
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
@@ -321,6 +339,8 @@ model MenuItem {
   priceTaxInclusive Boolean?
   goodsGstRate      Decimal?     @db.Decimal(5, 2)
   hsnSacCode        String?
+  /// Overrides the category default, e.g. a wine inside "Boissons".
+  vatCategory       VatCategory?
   sortOrder         Int          @default(0)
   isActive          Boolean      @default(true)
   createdAt         DateTime     @default(now())
@@ -2309,4 +2329,24 @@ model GLEntry {
   @@index([restaurantId, postingDate])
   @@index([accountId, postingDate])
   @@index([journalEntryId])
+}
+
+// ===========================================================================
+//  FRENCH RESTAURANT TAXATION
+// ===========================================================================
+
+enum TaxSystem {
+  FR_VAT
+  IN_GST
+}
+
+/// The three VAT situations a French restaurant sells under. The rate for a
+/// line comes from this category crossed with how the order is served.
+enum VatCategory {
+  /// Repas, plats, desserts, accompagnements.
+  FOOD
+  /// Boissons sans alcool.
+  SOFT_DRINK
+  /// Boissons alcoolisees.
+  ALCOHOL
 }

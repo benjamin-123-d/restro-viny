@@ -43,7 +43,7 @@ const num = (v: unknown): number => Number(v ?? 0);
 const round2 = (n: number): number => Math.round(n * 100) / 100;
 
 const MONTH_LABEL = (d: Date): string =>
-  d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
+  d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
 
 const LIVE_PO = [
   "TO_RECEIVE_AND_BILL",

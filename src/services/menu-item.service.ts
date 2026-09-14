@@ -1,7 +1,13 @@
 import type {
   GstRegistrationType,
   MenuItemType as PrismaMenuItemType,
+  TaxSystem,
 } from "@/generated/prisma/client";
+import {
+  effectiveVatCategory,
+  FRENCH_VAT_RATES,
+  type VatCategory,
+} from "@/lib/french-vat";
 import type {
   CreateMenuItemInput,
   UpdateMenuItemInput,
@@ -36,6 +42,10 @@ interface TaxableItem {
   readonly goodsGstRate: number | null;
   readonly hsnSacCode: string | null;
   readonly priceTaxInclusive: boolean | null;
+  /** French VAT: the item's own category, if it overrides its section. */
+  readonly vatCategory?: VatCategory | null;
+  /** French VAT: the menu section's default category. */
+  readonly sectionVatCategory?: VatCategory;
 }
 
 interface TaxProfile {
@@ -43,6 +53,8 @@ interface TaxProfile {
   readonly serviceGstRate: number | null;
   readonly pricesTaxInclusive: boolean;
   readonly sacCode: string | null;
+  /** Absent on profiles predating French VAT, which keep the GST behaviour. */
+  readonly taxSystem?: TaxSystem;
 }
 
 /**
@@ -54,6 +66,26 @@ export const resolveItemTax = (
   item: TaxableItem,
   restaurant: TaxProfile,
 ): MenuTaxDTO => {
+  // French VAT: the rate depends on what is sold and how it is served, and
+  // menu prices are always TTC — a French customer is never shown a price
+  // without tax.
+  if (restaurant.taxSystem === "FR_VAT") {
+    const vatCategory = effectiveVatCategory(
+      item.vatCategory,
+      item.sectionVatCategory ?? "FOOD",
+    );
+    const ratesByService = FRENCH_VAT_RATES[vatCategory];
+    return {
+      kind: "VAT",
+      rate: ratesByService.DINE_IN,
+      code: null,
+      separatelyCharged: true,
+      inclusive: true,
+      ratesByService,
+      vatCategory,
+    };
+  }
+
   const inclusiveDefault = item.priceTaxInclusive ?? restaurant.pricesTaxInclusive;
 
   if (restaurant.gstRegistrationType === "UNREGISTERED") {
@@ -145,6 +177,8 @@ const mapItem = (
         goodsGstRate: item.goodsGstRate != null ? num(item.goodsGstRate) : null,
         hsnSacCode: item.hsnSacCode,
         priceTaxInclusive: item.priceTaxInclusive,
+        vatCategory: item.vatCategory,
+        sectionVatCategory: item.category.vatCategory,
       },
       restaurant,
     ),

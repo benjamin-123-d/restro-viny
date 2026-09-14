@@ -44,9 +44,9 @@ import { ModifierGroupsDialog } from "./modifier-groups-dialog"
 import { RecipeDialog } from "./recipe-dialog"
 
 const money = (n: number) =>
-  new Intl.NumberFormat("en-IN", {
+  new Intl.NumberFormat("fr-FR", {
     style: "currency",
-    currency: "INR",
+    currency: "EUR",
     maximumFractionDigits: 2,
   }).format(n)
 

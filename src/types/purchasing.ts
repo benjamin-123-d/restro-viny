@@ -49,7 +49,8 @@ export type SupplierPaymentMode =
   | "OTHER"
   | "BANK_TRANSFER"
   | "CHEQUE"
-  | "MOBILE_MONEY";
+  | "MOBILE_MONEY"
+  | "MEAL_VOUCHER";
 
 export type ScorecardStanding =
   | "EXCELLENT"

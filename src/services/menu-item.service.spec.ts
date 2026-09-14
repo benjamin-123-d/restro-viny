@@ -152,6 +152,7 @@ describe("isItemAvailable", () => {
 
 const makeCategory = (overrides: Partial<MenuCategory> = {}): MenuCategory => ({
   id: "cat_1",
+  vatCategory: "FOOD",
   restaurantId: "res_1",
   name: "Starters",
   description: null,
@@ -203,5 +204,50 @@ describe("createItem", () => {
     await expect(createItem("res_1", input)).rejects.toThrow(
       MENU_CATEGORY_NOT_FOUND,
     );
+  });
+});
+
+describe("resolveItemTax — French VAT", () => {
+  const profile = {
+    gstRegistrationType: "UNREGISTERED" as const,
+    serviceGstRate: null,
+    pricesTaxInclusive: false,
+    sacCode: null,
+    taxSystem: "FR_VAT" as const,
+  };
+  const item = {
+    itemType: "SERVED" as const,
+    goodsGstRate: null,
+    hsnSacCode: null,
+    priceTaxInclusive: null,
+  };
+
+  it("always prices French menus tax-inclusive, even if the profile says otherwise", () => {
+    const tax = resolveItemTax({ ...item, sectionVatCategory: "FOOD" }, profile);
+    expect(tax.kind).toBe("VAT");
+    expect(tax.inclusive).toBe(true);
+    expect(tax.rate).toBe(10);
+  });
+
+  it("gives an item the rate of its menu section", () => {
+    const tax = resolveItemTax(
+      { ...item, sectionVatCategory: "SOFT_DRINK" },
+      profile,
+    );
+    expect(tax.ratesByService).toEqual({ DINE_IN: 10, TAKEAWAY: 5.5, DELIVERY: 5.5 });
+  });
+
+  it("lets a wine inside « Boissons » override its section to 20 %", () => {
+    const tax = resolveItemTax(
+      { ...item, vatCategory: "ALCOHOL", sectionVatCategory: "SOFT_DRINK" },
+      profile,
+    );
+    expect(tax.vatCategory).toBe("ALCOHOL");
+    expect(tax.ratesByService?.TAKEAWAY).toBe(20);
+  });
+
+  it("ignores GST registration entirely under French VAT", () => {
+    const tax = resolveItemTax({ ...item, sectionVatCategory: "FOOD" }, profile);
+    expect(tax.separatelyCharged).toBe(true);
   });
 });

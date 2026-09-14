@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { MenuDTO, MenuItemDTO } from "@/types/menu";
 
+import { formatCurrency } from "@/lib/format";
 const DIET_DOT: Record<string, string> = {
   VEG: "bg-emerald-600",
   NON_VEG: "bg-red-600",
@@ -132,7 +133,7 @@ export function MenuBrowser({
                       </span>
                     ) : null}
                     <span className="block text-sm font-medium tabular-nums">
-                      ₹{item.price.toFixed(0)}
+                      {formatCurrency(item.price)}
                     </span>
                   </span>
                 </button>

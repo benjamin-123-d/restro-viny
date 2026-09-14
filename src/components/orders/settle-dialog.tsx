@@ -26,7 +26,7 @@ import type { OrderDTO } from "@/types/order";
 const DISCOUNTS: readonly { value: DiscountKind; label: string }[] = [
   { value: "NONE", label: "None" },
   { value: "PERCENT", label: "%" },
-  { value: "FLAT", label: "₹ off" },
+  { value: "FLAT", label: "€ de remise" },
 ];
 
 export function SettleDialog({

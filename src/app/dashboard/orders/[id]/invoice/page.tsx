@@ -25,19 +25,19 @@ const lineAmount = (line: OrderLineDTO): number =>
   line.isComp ? 0 : unitPrice(line) * line.quantity;
 
 const dateIST = (iso: string): string =>
-  new Date(iso).toLocaleDateString("en-GB", {
+  new Date(iso).toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "2-digit",
     year: "2-digit",
-    timeZone: "Asia/Kolkata",
+    timeZone: "Europe/Paris",
   });
 
 const timeIST = (iso: string): string =>
-  new Date(iso).toLocaleTimeString("en-GB", {
+  new Date(iso).toLocaleTimeString("fr-FR", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "Asia/Kolkata",
+    timeZone: "Europe/Paris",
   });
 
 function Hr() {

@@ -19,6 +19,8 @@ import {
     type OrderWithRelations,
 } from "@/repositories/order.repository";
 
+import { formatCurrency } from "@/lib/format";
+
 import { sendToRoles } from "./push-dispatch.service";
 
 // ---------------------------------------------------------------------------
@@ -165,8 +167,6 @@ const derivePriority = (
   return "normal";
 };
 
-const formatRupees = (n: number): string =>
-  "\u20B9" + n.toLocaleString("en-IN");
 
 const decimalToNumber = (v: unknown): number => {
   if (typeof v === "number") return v;
@@ -212,7 +212,7 @@ export const toMobileOrderDto = (order: OrderWithRelations): MobileOrderDto => {
     items: order.items.filter((i) => i.state !== "VOID").map(mapItem),
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt.toISOString(),
-    totalAmount: amount > 0 ? formatRupees(amount) : null,
+    totalAmount: amount > 0 ? formatCurrency(amount) : null,
     note: order.note,
     estimatedReadyAt: null,
     driverArrived: null,

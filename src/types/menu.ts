@@ -1,11 +1,21 @@
-export type MenuTaxKind = "NONE" | "SERVICE" | "GOODS";
+import type { ServiceType, VatCategory } from "@/lib/french-vat";
+
+export type MenuTaxKind = "NONE" | "SERVICE" | "GOODS" | "VAT";
 
 export interface MenuTaxDTO {
   readonly kind: MenuTaxKind;
+  /** Rate for dine-in; the rate to show on the menu. */
   readonly rate: number;
   readonly code: string | null;
   readonly separatelyCharged: boolean;
   readonly inclusive: boolean;
+  /**
+   * French VAT only: the rate for each way of serving. An order picks its line
+   * rate from here, because a soft drink is taxed differently on the premises
+   * and taken away.
+   */
+  readonly ratesByService?: Readonly<Record<ServiceType, number>>;
+  readonly vatCategory?: VatCategory;
 }
 
 export interface MenuVariantDTO {

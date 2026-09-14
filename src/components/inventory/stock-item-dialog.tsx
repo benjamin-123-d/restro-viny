@@ -175,7 +175,7 @@ export function StockItemDialog({
                 inputMode="decimal"
                 value={costPerUnit}
                 onChange={(e) => setCostPerUnit(e.target.value)}
-                placeholder="₹"
+                placeholder="€"
               />
             </Field>
           </div>

@@ -46,6 +46,14 @@ import {
 
 const makeRestaurant = (overrides: Partial<Restaurant> = {}): Restaurant => ({
   id: "res_1",
+  taxSystem: "FR_VAT",
+  siret: null,
+  vatNumber: null,
+  nafCode: null,
+  rcs: null,
+  legalForm: null,
+  shareCapital: null,
+  drinksLicense: null,
   name: "Spice Route",
   slug: "spice-route",
   username: null,

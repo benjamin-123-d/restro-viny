@@ -35,6 +35,7 @@ import type { OrderDTO, OrderType } from "@/types/order";
 import type { ServiceOptions } from "@/types/settings";
 import type { TableDTO } from "@/types/table";
 
+import { formatCurrency } from "@/lib/format";
 const AUTH_ERRORS: Record<string, string> = {
   STAFF_FORBIDDEN: "You don't have permission to do that.",
   NO_STAFF_SESSION: "Session expired. Please sign in again.",
@@ -264,7 +265,7 @@ export function OrderBuilder({
                   ) : null}
                 </span>
                 <span className="shrink-0 text-sm tabular-nums">
-                  {l.isComp ? "—" : `₹${lineAmount(l).toFixed(0)}`}
+                  {l.isComp ? "—" : formatCurrency(lineAmount(l))}
                 </span>
               </li>
             ))}
@@ -272,7 +273,7 @@ export function OrderBuilder({
           <div className="flex items-center justify-between border-t px-3 py-2">
             <span className="text-sm font-medium">Order total</span>
             <span className="text-sm font-semibold tabular-nums">
-              ₹{existingTotal.toFixed(2)}
+              {formatCurrency(existingTotal)}
             </span>
           </div>
           {isReadyForPickup ? (
@@ -306,7 +307,7 @@ export function OrderBuilder({
               {itemCount} item{itemCount === 1 ? "" : "s"}
             </span>
             <span className="text-muted-foreground text-xs">
-              ₹{bill.grandTotal.toFixed(0)} · Review
+              {formatCurrency(bill.grandTotal)} · Review
             </span>
           </button>
           <Button
@@ -459,7 +460,7 @@ export function OrderBuilder({
             <div className="flex items-center justify-between border-t pt-3 text-sm">
               <span className="text-muted-foreground">Total</span>
               <span className="font-semibold tabular-nums">
-                ₹{bill.grandTotal.toFixed(2)}
+                {formatCurrency(bill.grandTotal)}
               </span>
             </div>
 
