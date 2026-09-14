@@ -49,3 +49,6 @@ next-env.d.ts
 
 # local dev logs
 restro-dev.log
+
+# local data backups (business data, never committed)
+backups/

@@ -10,6 +10,9 @@ import {
 } from "@/services/order.service";
 import type { OrderDTO } from "@/types/order";
 
+
+/** Largest shortfall treated as rounding rather than an unpaid amount. */
+const PAYMENT_TOLERANCE = 0.005;
 export const PAYMENT_SHORT = "PAYMENT_SHORT";
 
 /** Compute the bill (with discount/comp), verify tender covers it, then settle. */
@@ -28,7 +31,10 @@ export const settle = async (
   });
 
   const paid = input.payments.reduce((sum, p) => sum + p.amount, 0);
-  if (paid + 0.5 < bill.grandTotal) {
+  // Totals are exact to the cent, so only sub-cent dust is forgiven — a
+  // tolerance of 0.5 made sense for whole-rupee rounding, but in euros it let
+  // a bill be settled 49 centimes short.
+  if (paid + PAYMENT_TOLERANCE < bill.grandTotal) {
     throw new Error(PAYMENT_SHORT);
   }
 
@@ -57,7 +63,7 @@ const round2 = (n: number): number =>
   Math.round((n + Number.EPSILON) * 100) / 100;
 
 interface PaymentPart {
-  readonly mode: "CASH" | "UPI" | "CARD" | "OTHER";
+  readonly mode: "CASH" | "UPI" | "CARD" | "OTHER" | "MEAL_VOUCHER";
   readonly amount: number;
   readonly reference: string | null;
 }
@@ -114,7 +120,7 @@ export const settleTable = async (
   }));
   const combined = round2(bills.reduce((s, b) => s + b.bill.grandTotal, 0));
   const paid = round2(input.payments.reduce((s, p) => s + p.amount, 0));
-  if (paid + 0.5 < combined) {
+  if (paid + PAYMENT_TOLERANCE < combined) {
     throw new Error(PAYMENT_SHORT);
   }
 

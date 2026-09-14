@@ -1,3 +1,4 @@
+import type { VatCategory } from "@/lib/french-vat";
 import type { Order, OrderStatus, Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
@@ -31,6 +32,7 @@ export interface OrderLineWriteData {
   taxRate: number;
   taxKind: string;
   taxInclusive: boolean;
+  vatCategory: VatCategory | null;
   isComp: boolean;
   compReason: string | null;
   state: LineState;
@@ -68,6 +70,7 @@ const lineCreate = (items: OrderLineWriteData[]) => {
     taxRate: it.taxRate,
     taxKind: it.taxKind,
     taxInclusive: it.taxInclusive,
+    vatCategory: it.vatCategory,
     isComp: it.isComp,
     compReason: it.compReason,
     state: it.state,
@@ -236,7 +239,7 @@ export interface SettleData {
   roundOff: number;
   grandTotal: number;
   payments: {
-    mode: "CASH" | "UPI" | "CARD" | "OTHER";
+    mode: "CASH" | "UPI" | "CARD" | "OTHER" | "MEAL_VOUCHER";
     amount: number;
     tendered: number | null;
     reference: string | null;

@@ -44,6 +44,7 @@ const baseOrder = (
       id: "it_1",
       orderId: "ord_1",
       menuItemId: null,
+      vatCategory: null,
       variantId: null,
       name: "Paneer tikka",
       variantName: null,

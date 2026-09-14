@@ -7,7 +7,7 @@ export type OrderLineState =
   | "PREPARED"
   | "SERVED"
   | "VOID";
-export type PaymentMode = "CASH" | "UPI" | "CARD" | "OTHER";
+export type PaymentMode = "CASH" | "UPI" | "CARD" | "OTHER" | "MEAL_VOUCHER";
 export type OrderSource = "STAFF" | "SELF_ORDER";
 
 export interface OrderLineModifierDTO {

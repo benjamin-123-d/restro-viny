@@ -186,7 +186,9 @@ model Restaurant {
   /// Which tax rules apply to sales. FR_VAT resolves the rate per line from
   /// what is sold and how (sur place / a emporter); IN_GST keeps the original
   /// outlet-level GST behaviour.
-  taxSystem     TaxSystem @default(FR_VAT)
+  taxSystem     TaxSystem    @default(FR_VAT)
+  /// Where the restaurant trades: VAT rates differ across French territories.
+  vatTerritory  VatTerritory @default(METROPOLE)
   // French legal mentions, required on invoices and receipts.
   siret         String?
   vatNumber     String?
@@ -542,6 +544,9 @@ model OrderItem {
   taxRate      Decimal        @default(0) @db.Decimal(5, 2)
   taxKind      String         @default("NONE")
   taxInclusive Boolean        @default(false)
+  /// VAT category at the moment of sale, so reclassifying a dish later never
+  /// rewrites past sales reports.
+  vatCategory  VatCategory?
   state        OrderLineState @default(UNSENT)
   source       OrderSource    @default(STAFF)
   isComp       Boolean        @default(false)
@@ -2349,4 +2354,15 @@ enum VatCategory {
   SOFT_DRINK
   /// Boissons alcoolisees.
   ALCOHOL
+}
+
+/// French territories with their own VAT regime (CGI art. 294, 296, 297).
+enum VatTerritory {
+  METROPOLE
+  CORSE
+  GUADELOUPE
+  MARTINIQUE
+  REUNION
+  GUYANE
+  MAYOTTE
 }

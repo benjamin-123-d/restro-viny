@@ -50,6 +50,7 @@ const makeUser = (overrides: Partial<User> = {}): User => ({
 const makeRestaurant = (overrides: Partial<Restaurant> = {}): Restaurant => ({
   id: "res_1",
   taxSystem: "FR_VAT",
+  vatTerritory: "METROPOLE",
   siret: null,
   vatNumber: null,
   nafCode: null,

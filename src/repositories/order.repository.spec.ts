@@ -56,6 +56,7 @@ import {
 const line = (overrides: Partial<OrderLineWriteData> = {}): OrderLineWriteData => ({
   menuItemId: "i1",
   variantId: null,
+  vatCategory: null,
   name: "Masala Tea",
   variantName: null,
   unitPrice: 50,

@@ -3,7 +3,14 @@ import { z } from "zod";
 import { idSchema } from "@/lib/validators/shared";
 
 export const orderTypeSchema = z.enum(["DINE_IN", "TAKEAWAY", "DELIVERY"]);
-export const paymentModeSchema = z.enum(["CASH", "UPI", "CARD", "OTHER"]);
+/** Titre-restaurant (MEAL_VOUCHER) is how a large share of French lunches is paid. */
+export const paymentModeSchema = z.enum([
+  "CASH",
+  "UPI",
+  "CARD",
+  "OTHER",
+  "MEAL_VOUCHER",
+]);
 export const discountTypeSchema = z.enum(["NONE", "PERCENT", "FLAT"]);
 
 const shortNote = z.string().trim().max(200).optional();

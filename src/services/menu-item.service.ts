@@ -5,8 +5,9 @@ import type {
 } from "@/generated/prisma/client";
 import {
   effectiveVatCategory,
-  FRENCH_VAT_RATES,
+  vatRatesFor,
   type VatCategory,
+  type VatTerritory,
 } from "@/lib/french-vat";
 import type {
   CreateMenuItemInput,
@@ -55,6 +56,8 @@ interface TaxProfile {
   readonly sacCode: string | null;
   /** Absent on profiles predating French VAT, which keep the GST behaviour. */
   readonly taxSystem?: TaxSystem;
+  /** French VAT: which territory's rates apply. Continental France if absent. */
+  readonly vatTerritory?: VatTerritory;
 }
 
 /**
@@ -74,7 +77,7 @@ export const resolveItemTax = (
       item.vatCategory,
       item.sectionVatCategory ?? "FOOD",
     );
-    const ratesByService = FRENCH_VAT_RATES[vatCategory];
+    const ratesByService = vatRatesFor(restaurant.vatTerritory)[vatCategory];
     return {
       kind: "VAT",
       rate: ratesByService.DINE_IN,

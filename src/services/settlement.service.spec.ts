@@ -70,6 +70,31 @@ describe("settle", () => {
     expect(settleOrder).not.toHaveBeenCalled();
   });
 
+  it("refuses a bill paid 49 centimes short — euros are exact to the cent", async () => {
+    await expect(
+      settle(ctx, {
+        orderId: "o1",
+        discountType: "NONE",
+        discountValue: 0,
+        payments: [{ mode: "CARD", amount: 104.51 }],
+      }),
+    ).rejects.toThrow(PAYMENT_SHORT);
+    expect(settleOrder).not.toHaveBeenCalled();
+  });
+
+  it("accepts a titre-restaurant as payment", async () => {
+    await settle(ctx, {
+      orderId: "o1",
+      discountType: "NONE",
+      discountValue: 0,
+      payments: [
+        { mode: "MEAL_VOUCHER", amount: 25 },
+        { mode: "CARD", amount: 80 },
+      ],
+    });
+    expect(settleOrder).toHaveBeenCalled();
+  });
+
   it("rejects a non-open order", async () => {
     vi.mocked(loadOwnedOrder).mockResolvedValue(
       asOrder({ status: "COMPLETED" }),

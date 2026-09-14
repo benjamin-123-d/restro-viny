@@ -58,7 +58,13 @@ export interface OrderContext {
  * payments. The POS never writes those, so sales DTOs keep the narrower union
  * and anything outside it degrades to OTHER rather than widening the till.
  */
-const SALES_PAYMENT_MODES = ["CASH", "UPI", "CARD", "OTHER"] as const;
+const SALES_PAYMENT_MODES = [
+  "CASH",
+  "UPI",
+  "CARD",
+  "OTHER",
+  "MEAL_VOUCHER",
+] as const;
 
 const toSalesPaymentMode = (mode: PaymentMode): SalesPaymentMode =>
   (SALES_PAYMENT_MODES as readonly string[]).includes(mode)
@@ -176,6 +182,7 @@ const snapshotLines = (
       taxRate: item.tax.ratesByService?.[service] ?? item.tax.rate,
       taxKind: item.tax.kind,
       taxInclusive: item.tax.inclusive,
+      vatCategory: item.tax.vatCategory ?? null,
       isComp: line.isComp,
       compReason: line.compReason ?? null,
       state,

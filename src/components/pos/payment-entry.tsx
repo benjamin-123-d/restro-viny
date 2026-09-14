@@ -19,10 +19,10 @@ const round2 = (n: number): number =>
   Math.round((n + Number.EPSILON) * 100) / 100;
 
 const MODES: readonly { value: PaymentMode; label: string }[] = [
-  { value: "CASH", label: "Cash" },
-  { value: "UPI", label: "UPI" },
-  { value: "CARD", label: "Card" },
-  { value: "OTHER", label: "Other" },
+  { value: "CASH", label: "Espèces" },
+  { value: "CARD", label: "Carte bancaire" },
+  { value: "MEAL_VOUCHER", label: "Titre-restaurant" },
+  { value: "OTHER", label: "Autre" },
 ];
 
 interface PaymentRow {
@@ -75,7 +75,7 @@ export function usePaymentEntry(grandTotal: number): PaymentEntry {
 
   const updateRow = (key: string, patch: Partial<PaymentRow>): void =>
     setRows((prev) => prev.map((r) => (r.key === key ? { ...r, ...patch } : r)));
-  const addRow = (): void => setRows((prev) => [...prev, newRow("UPI")]);
+  const addRow = (): void => setRows((prev) => [...prev, newRow("CARD")]);
   const removeRow = (key: string): void =>
     setRows((prev) =>
       prev.length > 1 ? prev.filter((r) => r.key !== key) : prev,
