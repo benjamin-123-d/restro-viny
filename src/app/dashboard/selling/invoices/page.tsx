@@ -23,8 +23,8 @@ export default async function SalesInvoicesPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -35,8 +35,8 @@ export default async function SalesInvoicesPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Sales invoices"
-        description="What customers owe you, and when it falls due."
+        title="Factures clients"
+        description="Ce que vos clients vous doivent, et quand."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -58,19 +58,19 @@ export default async function SalesInvoicesPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No sales invoices yet"
-          description="Bill a delivery note or a sales order to open a receivable."
+          title="Aucune facture client"
+          description="Facturez un bon de livraison ou une commande pour créer une créance."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Customer" },
-            { label: "Posted" },
-            { label: "Due" },
-            { label: "Status" },
+            { label: "Numéro" },
+            { label: "Client" },
+            { label: "Date" },
+            { label: "Échéance" },
+            { label: "Statut" },
             { label: "Total", align: "right" },
-            { label: "Outstanding", align: "right" },
+            { label: "Reste dû", align: "right" },
             { label: "", align: "right" },
           ]}
         >

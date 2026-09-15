@@ -40,12 +40,12 @@ const SupplierRow = ({ supplier }: { supplier: SupplierSummaryDTO }) => (
       <span className="font-medium text-zinc-900">{supplier.name}</span>
       {supplier.isBlocked && (
         <span className="ml-2 rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">
-          On hold
+          En attente
         </span>
       )}
       {supplier.disabled && (
         <span className="ml-2 rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-600">
-          Disabled
+          Désactivé
         </span>
       )}
     </td>
@@ -77,12 +77,12 @@ export default async function PurchasingPage() {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
-          title="Purchasing"
-          description="Suppliers, orders, receipts and supplier bills."
+          title="Achats"
+          description="Fournisseurs, commandes, réceptions et factures fournisseurs."
         />
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant, then come back to set up purchasing."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant pour configurer les achats."
         />
       </div>
     );
@@ -112,31 +112,31 @@ export default async function PurchasingPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Purchasing"
-        description="Suppliers, purchase orders, goods receipts and supplier bills."
+        title="Achats"
+        description="Fournisseurs, commandes d'achat, réceptions de marchandises et factures fournisseurs."
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Suppliers" value={String(suppliers.length)} />
-        <Stat label="Open orders" value={String(openOrders)} />
-        <Stat label="Receipts to bill" value={String(toBill)} />
+        <Stat label="Fournisseurs" value={String(suppliers.length)} />
+        <Stat label="Commandes en cours" value={String(openOrders)} />
+        <Stat label="Réceptions à facturer" value={String(toBill)} />
         <Stat
-          label="Overdue payable"
+          label="Dettes en retard"
           value={formatCurrency(overdue)}
           tone={overdue > 0 ? "danger" : undefined}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <Stat label="Supplier groups" value={String(groups.length)} />
-        <Stat label="Open supplier bills" value={String(openInvoices)} />
-        <Stat label="Total payable" value={formatCurrency(outstanding)} />
+        <Stat label="Groupes de fournisseurs" value={String(groups.length)} />
+        <Stat label="Factures fournisseurs ouvertes" value={String(openInvoices)} />
+        <Stat label="Total à payer" value={formatCurrency(outstanding)} />
       </div>
 
       {suppliers.length === 0 ? (
         <EmptyState
-          title="No suppliers yet"
-          description="Add the vendors you buy from to start raising purchase orders."
+          title="Aucun fournisseur"
+          description="Ajoutez les fournisseurs chez qui vous achetez pour passer des commandes."
         />
       ) : (
         <div className="overflow-x-auto rounded-lg border bg-white">
@@ -144,14 +144,14 @@ export default async function PurchasingPage() {
             <thead className="border-b bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
               <tr>
                 <th className="px-3 py-2 font-medium">Code</th>
-                <th className="px-3 py-2 font-medium">Supplier</th>
-                <th className="px-3 py-2 font-medium">Group</th>
-                <th className="px-3 py-2 font-medium">Phone</th>
-                <th className="px-3 py-2 text-right font-medium">Open POs</th>
+                <th className="px-3 py-2 font-medium">Fournisseur</th>
+                <th className="px-3 py-2 font-medium">Groupe</th>
+                <th className="px-3 py-2 font-medium">Téléphone</th>
+                <th className="px-3 py-2 text-right font-medium">Commandes ouvertes</th>
                 <th className="px-3 py-2 text-right font-medium">
-                  Outstanding
+                  Reste dû
                 </th>
-                <th className="px-3 py-2 text-right font-medium">Overdue</th>
+                <th className="px-3 py-2 text-right font-medium">En retard</th>
               </tr>
             </thead>
             <tbody>
@@ -162,7 +162,7 @@ export default async function PurchasingPage() {
             <tfoot className="border-t bg-zinc-50 font-medium">
               <tr>
                 <td className="px-3 py-2" colSpan={5}>
-                  Total payable
+                  Total à payer
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums">
                   {formatCurrency(outstanding)}

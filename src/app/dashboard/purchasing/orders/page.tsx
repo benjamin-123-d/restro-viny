@@ -24,8 +24,8 @@ export default async function PurchaseOrdersPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -36,8 +36,8 @@ export default async function PurchaseOrdersPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Purchase orders"
-        description="What you have committed to buy, and how much of it has arrived and been billed."
+        title="Commandes d'achat"
+        description="Ce que vous vous êtes engagé à acheter, ce qui est arrivé et ce qui est facturé."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -59,19 +59,19 @@ export default async function PurchaseOrdersPage() {
       />
       {orders.length === 0 ? (
         <EmptyState
-          title="No purchase orders yet"
-          description="Raise an order against a supplier to start tracking deliveries."
+          title="Aucune commande d'achat"
+          description="Passez une commande à un fournisseur pour suivre les livraisons."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Supplier" },
+            { label: "Numéro" },
+            { label: "Fournisseur" },
             { label: "Date" },
-            { label: "Expected" },
-            { label: "Status" },
-            { label: "Received" },
-            { label: "Billed" },
+            { label: "Attendue le" },
+            { label: "Statut" },
+            { label: "Reçu" },
+            { label: "Facturé" },
             { label: "Total", align: "right" },
             { label: "", align: "right" },
           ]}

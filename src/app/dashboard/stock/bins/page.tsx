@@ -12,8 +12,8 @@ export default async function BinsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -24,8 +24,8 @@ export default async function BinsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Stock by warehouse"
-        description="What each item holds in each warehouse. Projected is actual plus ordered, less reserved."
+        title="Stock par entrepôt"
+        description="Le stock de chaque article dans chaque entrepôt. Prévisionnel = réel + commandé − réservé."
       />
       <HelpBox
         defaultOpen={false}
@@ -40,20 +40,20 @@ export default async function BinsPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="Nothing in stock yet"
-          description="Receive goods or post a stock entry to fill a warehouse."
+          title="Rien en stock pour l'instant"
+          description="Réceptionnez des marchandises ou validez un mouvement pour remplir un entrepôt."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Warehouse" },
-            { label: "Item" },
-            { label: "Actual", align: "right" },
-            { label: "Reserved", align: "right" },
-            { label: "Ordered", align: "right" },
-            { label: "Projected", align: "right" },
-            { label: "Rate", align: "right" },
-            { label: "Value", align: "right" },
+            { label: "Entrepôt" },
+            { label: "Article" },
+            { label: "Réel", align: "right" },
+            { label: "Réservé", align: "right" },
+            { label: "Commandé", align: "right" },
+            { label: "Prévisionnel", align: "right" },
+            { label: "Prix", align: "right" },
+            { label: "Valeur", align: "right" },
           ]}
         >
           {rows.map((row) => (

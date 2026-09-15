@@ -17,8 +17,8 @@ export default async function CustomerPaymentsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -29,8 +29,8 @@ export default async function CustomerPaymentsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Customer receipts"
-        description="Money received, and which invoices each receipt settled."
+        title="Encaissements clients"
+        description="L'argent reçu, et les factures réglées par chaque encaissement."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -50,20 +50,20 @@ export default async function CustomerPaymentsPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No receipts yet"
-          description="Record a customer payment against an open invoice."
+          title="Aucun encaissement"
+          description="Enregistrez le paiement d'un client sur une facture ouverte."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Customer" },
+            { label: "Numéro" },
+            { label: "Client" },
             { label: "Date" },
             { label: "Mode" },
-            { label: "Reference" },
-            { label: "Settles" },
-            { label: "On account", align: "right" },
-            { label: "Amount", align: "right" },
+            { label: "Référence" },
+            { label: "Règle" },
+            { label: "Acompte non affecté", align: "right" },
+            { label: "Montant", align: "right" },
           ]}
         >
           {rows.map((row) => (

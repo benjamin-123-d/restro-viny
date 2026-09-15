@@ -15,8 +15,8 @@ export default async function MaterialRequestsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -27,23 +27,23 @@ export default async function MaterialRequestsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Material requests"
-        description="Internal asks for goods — to buy, to transfer, or to issue from store."
+        title="Demandes d'articles"
+        description="Les demandes internes : à acheter, à transférer ou à sortir de la réserve."
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No material requests yet"
-          description="Raise a request when the kitchen or bar needs stock."
+          title="Aucune demande d'articles"
+          description="Faites une demande quand la cuisine ou le bar a besoin de stock."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
+            { label: "Numéro" },
             { label: "Type" },
-            { label: "Raised" },
-            { label: "Needed by" },
-            { label: "Status" },
-            { label: "Items", align: "right" },
+            { label: "Créée le" },
+            { label: "Pour le" },
+            { label: "Statut" },
+            { label: "Articles", align: "right" },
           ]}
         >
           {rows.map((row) => (

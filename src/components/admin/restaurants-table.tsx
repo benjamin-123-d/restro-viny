@@ -13,8 +13,8 @@ export function RestaurantsTable({
   if (data.items.length === 0) {
     return (
       <EmptyState
-        title="No restaurants yet"
-        description="Onboard your first restaurant to get started."
+        title="Aucun restaurant"
+        description="Créez votre premier restaurant pour commencer."
       />
     );
   }
@@ -24,10 +24,10 @@ export function RestaurantsTable({
       <table className="w-full text-sm">
         <thead className="bg-muted/50 text-muted-foreground">
           <tr>
-            <th className="px-4 py-2.5 text-left font-medium">Name</th>
-            <th className="px-4 py-2.5 text-left font-medium">Owner</th>
-            <th className="px-4 py-2.5 text-left font-medium">Location</th>
-            <th className="px-4 py-2.5 text-left font-medium">Status</th>
+            <th className="px-4 py-2.5 text-left font-medium">Nom</th>
+            <th className="px-4 py-2.5 text-left font-medium">Gérant</th>
+            <th className="px-4 py-2.5 text-left font-medium">Emplacement</th>
+            <th className="px-4 py-2.5 text-left font-medium">Statut</th>
           </tr>
         </thead>
         <tbody className="divide-y">
@@ -59,7 +59,7 @@ export function RestaurantsTable({
                       : "bg-muted text-muted-foreground",
                   )}
                 >
-                  {restaurant.isActive ? "Active" : "Inactive"}
+                  {restaurant.isActive ? "Actif" : "Inactif"}
                 </span>
               </td>
             </tr>

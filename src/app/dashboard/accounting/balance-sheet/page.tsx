@@ -10,8 +10,8 @@ export default async function BalanceSheetPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -58,13 +58,13 @@ export default async function BalanceSheetPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Balance sheet"
-        description="What the business owns against what it owes. Profit for the period sits outside equity until a year-end entry moves it."
+        title="Bilan"
+        description="Ce que l'entreprise possède face à ce qu'elle doit. Le résultat de la période reste hors capitaux propres jusqu'à l'écriture de clôture."
       />
       {empty ? (
         <EmptyState
-          title="Nothing posted yet"
-          description="The balance sheet fills in once journals are posted."
+          title="Rien de comptabilisé"
+          description="Le bilan se remplit dès que des écritures sont comptabilisées."
         />
       ) : (
         <>
@@ -76,22 +76,22 @@ export default async function BalanceSheetPage() {
             }`}
           >
             {sheet.isBalanced
-              ? "Assets equal liabilities plus equity plus the period profit."
-              : "The sheet does not balance."}
+              ? "L'actif est égal au passif, plus les capitaux propres et le résultat de la période."
+              : "Le bilan n'est pas équilibré."}
           </p>
           <DocTable
             headers={[
               { label: "Code" },
-              { label: "Account" },
-              { label: "Balance", align: "right" },
+              { label: "Compte" },
+              { label: "Solde", align: "right" },
             ]}
           >
-            {section("Assets", sheet.assets, sheet.totalAssets)}
-            {section("Liabilities", sheet.liabilities, sheet.totalLiabilities)}
-            {section("Equity", sheet.equity, sheet.totalEquity)}
+            {section("Actif", sheet.assets, sheet.totalAssets)}
+            {section("Passif", sheet.liabilities, sheet.totalLiabilities)}
+            {section("Capitaux propres", sheet.equity, sheet.totalEquity)}
             <tr className="border-b">
               <td className="px-3 py-2 text-zinc-800" colSpan={2}>
-                Profit for the period
+                Résultat de la période
               </td>
               <td className="px-3 py-2 text-right">
                 <Money
@@ -102,7 +102,7 @@ export default async function BalanceSheetPage() {
             </tr>
             <tr className="bg-zinc-50 font-semibold">
               <td className="px-3 py-2" colSpan={2}>
-                Liabilities + equity + profit
+                Passif + capitaux propres + résultat
               </td>
               <td className="px-3 py-2 text-right">
                 <Money

@@ -22,8 +22,8 @@ export default async function SalesQuotationsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -34,8 +34,8 @@ export default async function SalesQuotationsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Quotations"
-        description="Prices offered to customers, and whether they turned into orders."
+        title="Devis"
+        description="Les prix proposés aux clients, et ceux qui sont devenus des commandes."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -56,17 +56,17 @@ export default async function SalesQuotationsPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No quotations yet"
-          description="Quote a customer to start the sales chain."
+          title="Aucun devis"
+          description="Établissez un devis pour démarrer le cycle de vente."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Customer" },
+            { label: "Numéro" },
+            { label: "Client" },
             { label: "Date" },
-            { label: "Valid until" },
-            { label: "Status" },
+            { label: "Valable jusqu'au" },
+            { label: "Statut" },
             { label: "Total", align: "right" },
             { label: "", align: "right" },
           ]}

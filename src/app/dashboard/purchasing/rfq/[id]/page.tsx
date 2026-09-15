@@ -33,7 +33,7 @@ export default async function RfqDetailPage({
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
         title={rfq.number}
-        description="Quotation comparison — the best price on each line is highlighted."
+        description="Comparaison des devis : le meilleur prix de chaque ligne est mis en évidence."
       />
 
       <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -53,14 +53,14 @@ export default async function RfqDetailPage({
 
       {comparison.suppliers.length === 0 ? (
         <div className="rounded-lg border border-dashed bg-white p-8 text-center text-sm text-zinc-500">
-          No quotations have come back yet. Once suppliers reply, their prices
-          appear here side by side.
+          Aucun devis reçu pour l'instant. Dès que les fournisseurs répondent, leurs prix
+          s'affichent ici côte à côte.
         </div>
       ) : (
         <DocTable
           headers={[
-            { label: "Item" },
-            { label: "Qty", align: "right" },
+            { label: "Article" },
+            { label: "Qté", align: "right" },
             ...comparison.suppliers.map((s) => ({
               label: s.supplierName,
               align: "right" as const,
@@ -109,7 +109,7 @@ export default async function RfqDetailPage({
           ))}
           <tr className="bg-zinc-50 font-medium">
             <td className="px-3 py-2" colSpan={2}>
-              Quotation total
+              Total du devis
             </td>
             {comparison.suppliers.map((supplier) => (
               <td key={supplier.supplierId} className="px-3 py-2 text-right">

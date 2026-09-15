@@ -10,8 +10,8 @@ export default async function ProfitAndLossPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -23,19 +23,19 @@ export default async function ProfitAndLossPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Profit & loss"
-        description="What came in, what went out, and what is left."
+        title="Compte de résultat"
+        description="Ce qui est entré, ce qui est sorti, et ce qui reste."
       />
       {empty ? (
         <EmptyState
-          title="Nothing posted yet"
-          description="Income and expenses appear here once journals are posted."
+          title="Rien de comptabilisé"
+          description="Produits et charges apparaissent ici dès que des écritures sont comptabilisées."
         />
       ) : (
         <>
           <div className="rounded-lg border bg-white p-4">
             <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-              Net profit
+              Résultat net
             </p>
             <p
               className={`mt-1 text-3xl font-semibold ${
@@ -48,8 +48,8 @@ export default async function ProfitAndLossPage() {
           <DocTable
             headers={[
               { label: "Code" },
-              { label: "Account" },
-              { label: "Amount", align: "right" },
+              { label: "Compte" },
+              { label: "Montant", align: "right" },
             ]}
           >
             <tr className="bg-zinc-50">
@@ -57,7 +57,7 @@ export default async function ProfitAndLossPage() {
                 className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500"
                 colSpan={3}
               >
-                Income
+                Produits
               </td>
             </tr>
             {pl.income.map((row) => (
@@ -73,7 +73,7 @@ export default async function ProfitAndLossPage() {
             ))}
             <tr className="border-b font-medium">
               <td className="px-3 py-2" colSpan={2}>
-                Total income
+                Total des produits
               </td>
               <td className="px-3 py-2 text-right">
                 <Money value={pl.totalIncome} />
@@ -84,7 +84,7 @@ export default async function ProfitAndLossPage() {
                 className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500"
                 colSpan={3}
               >
-                Expenses
+                Charges
               </td>
             </tr>
             {pl.expense.map((row) => (
@@ -100,7 +100,7 @@ export default async function ProfitAndLossPage() {
             ))}
             <tr className="border-b font-medium">
               <td className="px-3 py-2" colSpan={2}>
-                Total expenses
+                Total des charges
               </td>
               <td className="px-3 py-2 text-right">
                 <Money value={pl.totalExpense} />
@@ -108,7 +108,7 @@ export default async function ProfitAndLossPage() {
             </tr>
             <tr className="bg-zinc-50 font-semibold">
               <td className="px-3 py-2" colSpan={2}>
-                Net profit
+                Résultat net
               </td>
               <td className="px-3 py-2 text-right">
                 <Money

@@ -42,8 +42,8 @@ export default async function AccountingPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -62,40 +62,40 @@ export default async function AccountingPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Accounting"
-        description="Double-entry books: chart of accounts, journals, and the three reports that come out of them."
+        title="Comptabilité"
+        description="La comptabilité en partie double : plan comptable, écritures et les trois états qui en découlent."
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Income" value={formatCurrency(pl.totalIncome)} />
-        <Stat label="Expenses" value={formatCurrency(pl.totalExpense)} />
+        <Stat label="Produits" value={formatCurrency(pl.totalIncome)} />
+        <Stat label="Charges" value={formatCurrency(pl.totalExpense)} />
         <Stat
-          label="Net profit"
+          label="Résultat net"
           value={formatCurrency(pl.netProfit)}
           tone={pl.netProfit >= 0 ? "good" : "danger"}
         />
-        <Stat label="Total assets" value={formatCurrency(sheet.totalAssets)} />
+        <Stat label="Total de l'actif" value={formatCurrency(sheet.totalAssets)} />
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Posted journals" value={String(posted)} />
-        <Stat label="Draft journals" value={String(drafts)} />
+        <Stat label="Écritures comptabilisées" value={String(posted)} />
+        <Stat label="Écritures en brouillon" value={String(drafts)} />
         <Stat
-          label="Ledger balanced"
-          value={tb.isBalanced ? "Yes" : "No"}
+          label="Grand livre équilibré"
+          value={tb.isBalanced ? "Oui" : "Non"}
           tone={tb.isBalanced ? "good" : "danger"}
         />
         <Stat
-          label="Sheet balanced"
-          value={sheet.isBalanced ? "Yes" : "No"}
+          label="Bilan équilibré"
+          value={sheet.isBalanced ? "Oui" : "Non"}
           tone={sheet.isBalanced ? "good" : "danger"}
         />
       </div>
 
       {journals.length === 0 && (
         <EmptyState
-          title="No journals yet"
-          description="The starter chart of accounts is ready. Post your first journal to open the books."
+          title="Aucune écriture"
+          description="Le plan comptable de départ est prêt. Comptabilisez votre première écriture pour ouvrir les comptes."
         />
       )}
     </div>

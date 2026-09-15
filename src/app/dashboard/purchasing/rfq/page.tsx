@@ -15,8 +15,8 @@ export default async function RfqPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -27,24 +27,24 @@ export default async function RfqPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Requests for quotation"
-        description="Ask several suppliers to price the same basket, then compare their answers line by line."
+        title="Demandes de devis"
+        description="Demandez à plusieurs fournisseurs de chiffrer le même panier, puis comparez leurs réponses ligne à ligne."
       />
       {rfqs.length === 0 ? (
         <EmptyState
-          title="No requests yet"
-          description="Send the same list to two or three suppliers to see who is cheapest."
+          title="Aucune demande"
+          description="Envoyez la même liste à deux ou trois fournisseurs pour trouver le moins cher."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Raised" },
-            { label: "Needed by" },
-            { label: "Status" },
-            { label: "Items", align: "right" },
-            { label: "Suppliers", align: "right" },
-            { label: "Quotes in", align: "right" },
+            { label: "Numéro" },
+            { label: "Créée le" },
+            { label: "Pour le" },
+            { label: "Statut" },
+            { label: "Articles", align: "right" },
+            { label: "Fournisseurs", align: "right" },
+            { label: "Devis reçus", align: "right" },
           ]}
         >
           {rfqs.map((rfq) => (

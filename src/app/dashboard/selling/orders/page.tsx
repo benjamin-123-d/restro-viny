@@ -24,8 +24,8 @@ export default async function SalesOrdersPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -36,8 +36,8 @@ export default async function SalesOrdersPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Sales orders"
-        description="What customers have committed to buy, and how much has shipped and been billed."
+        title="Commandes clients"
+        description="Ce que vos clients se sont engagés à acheter, ce qui est livré et ce qui est facturé."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -58,19 +58,19 @@ export default async function SalesOrdersPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No sales orders yet"
-          description="Confirm a quotation or raise an order directly."
+          title="Aucune commande client"
+          description="Confirmez un devis ou saisissez directement une commande."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Customer" },
+            { label: "Numéro" },
+            { label: "Client" },
             { label: "Date" },
-            { label: "Deliver by" },
-            { label: "Status" },
-            { label: "Delivered" },
-            { label: "Billed" },
+            { label: "À livrer le" },
+            { label: "Statut" },
+            { label: "Livré" },
+            { label: "Facturé" },
             { label: "Total", align: "right" },
             { label: "", align: "right" },
           ]}

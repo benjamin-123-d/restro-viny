@@ -23,8 +23,8 @@ export default async function StockEntriesPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -35,8 +35,8 @@ export default async function StockEntriesPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Stock entries"
-        description="Receipts, issues and transfers between warehouses."
+        title="Mouvements de stock"
+        description="Entrées, sorties et transferts entre entrepôts."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -57,18 +57,18 @@ export default async function StockEntriesPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No stock entries yet"
-          description="Post an entry to receive, issue or move stock between warehouses."
+          title="Aucun mouvement de stock"
+          description="Validez un mouvement pour entrer, sortir ou transférer du stock."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Purpose" },
-            { label: "Posted" },
-            { label: "Status" },
-            { label: "Items", align: "right" },
-            { label: "Value", align: "right" },
+            { label: "Numéro" },
+            { label: "Objet" },
+            { label: "Date" },
+            { label: "Statut" },
+            { label: "Articles", align: "right" },
+            { label: "Valeur", align: "right" },
             { label: "", align: "right" },
           ]}
         >

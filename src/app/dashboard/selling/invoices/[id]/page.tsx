@@ -43,7 +43,7 @@ export default async function SalesInvoicePage({
     customer?.addressLine2,
     customer?.city,
     customer?.phone,
-    customer?.taxId ? `Tax ID ${customer.taxId}` : null,
+    customer?.taxId ? `N° TVA ${customer.taxId}` : null,
   ].filter((line): line is string => Boolean(line));
 
   return (
@@ -57,7 +57,7 @@ export default async function SalesInvoicePage({
           ← All invoices
         </Link>
         <span className="ml-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
-          Copy
+          Exemplaire
         </span>
         {INVOICE_COPIES.map((option) => (
           <Link
@@ -73,7 +73,7 @@ export default async function SalesInvoicePage({
           </Link>
         ))}
         <span className="text-xs text-zinc-500">
-          Print from your browser (Ctrl+P) — the copy label prints with it.
+          Imprimez depuis le navigateur (Ctrl+P) : la mention de l'exemplaire est imprimée avec.
         </span>
       </div>
 

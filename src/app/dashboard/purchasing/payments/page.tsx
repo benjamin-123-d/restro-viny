@@ -12,13 +12,14 @@ import { listSupplierPayments } from "@/services/supplier-payment.service";
 import { HelpBox } from "@/components/forms/help-box";
 import { DocActions, NewButton } from "@/components/forms/doc-actions";
 const MODE_LABEL: Readonly<Record<string, string>> = {
-  CASH: "Cash",
-  UPI: "UPI",
-  CARD: "Card",
-  OTHER: "Other",
-  BANK_TRANSFER: "Bank transfer",
-  CHEQUE: "Cheque",
+  CASH: "Espèces",
+  UPI: "Virement instantané",
+  CARD: "Carte bancaire",
+  OTHER: "Autre",
+  BANK_TRANSFER: "Virement",
+  CHEQUE: "Chèque",
   MOBILE_MONEY: "Mobile money",
+  MEAL_VOUCHER: "Titre-restaurant",
 };
 
 export default async function SupplierPaymentsPage() {
@@ -27,8 +28,8 @@ export default async function SupplierPaymentsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -40,8 +41,8 @@ export default async function SupplierPaymentsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Supplier payments"
-        description="Money paid out, and which bills each payment settled."
+        title="Paiements fournisseurs"
+        description="L'argent versé, et les factures réglées par chaque paiement."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -62,20 +63,20 @@ export default async function SupplierPaymentsPage() {
       />
       {payments.length === 0 ? (
         <EmptyState
-          title="No payments yet"
-          description="Pay an open supplier bill to record it here."
+          title="Aucun paiement"
+          description="Réglez une facture fournisseur ouverte pour l'enregistrer ici."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Supplier" },
+            { label: "Numéro" },
+            { label: "Fournisseur" },
             { label: "Date" },
             { label: "Mode" },
-            { label: "Reference" },
-            { label: "Settles" },
-            { label: "Unallocated", align: "right" },
-            { label: "Amount", align: "right" },
+            { label: "Référence" },
+            { label: "Règle" },
+            { label: "Non affecté", align: "right" },
+            { label: "Montant", align: "right" },
           ]}
         >
           {payments.map((payment) => (
@@ -97,7 +98,7 @@ export default async function SupplierPaymentsPage() {
               </td>
               <td className="px-3 py-2 text-zinc-600">
                 {payment.allocations.length === 0
-                  ? "On account"
+                  ? "Acompte non affecté"
                   : payment.allocations.map((a) => a.invoiceNumber).join(", ")}
               </td>
               <td className="px-3 py-2 text-right">
@@ -113,7 +114,7 @@ export default async function SupplierPaymentsPage() {
           ))}
           <tr className="bg-zinc-50 font-medium">
             <td className="px-3 py-2" colSpan={7}>
-              Total paid
+              Total payé
             </td>
             <td className="px-3 py-2 text-right">
               <Money value={total} />

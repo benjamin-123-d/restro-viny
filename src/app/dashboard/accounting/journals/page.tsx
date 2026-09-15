@@ -23,8 +23,8 @@ export default async function JournalsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -35,8 +35,8 @@ export default async function JournalsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Journals"
-        description="Manual double-entry documents. Posting one writes it into the ledger; cancelling writes the mirror image rather than erasing it."
+        title="Écritures"
+        description="Les écritures manuelles. Comptabiliser les inscrit au grand livre ; annuler passe l'écriture inverse au lieu d'effacer."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -57,19 +57,19 @@ export default async function JournalsPage() {
       />
       {journals.length === 0 ? (
         <EmptyState
-          title="No journals yet"
-          description="Post a journal to open the books."
+          title="Aucune écriture"
+          description="Comptabilisez une écriture pour ouvrir les comptes."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
+            { label: "Numéro" },
             { label: "Date" },
-            { label: "Status" },
-            { label: "Reference" },
-            { label: "Narration" },
-            { label: "Lines", align: "right" },
-            { label: "Amount", align: "right" },
+            { label: "Statut" },
+            { label: "Référence" },
+            { label: "Libellé" },
+            { label: "Lignes", align: "right" },
+            { label: "Montant", align: "right" },
             { label: "", align: "right" },
           ]}
         >

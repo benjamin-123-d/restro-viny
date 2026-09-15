@@ -51,11 +51,11 @@ export default async function StockPage() {
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
           title="Stock"
-          description="Warehouses, batches, requests, entries and counts."
+          description="Entrepôts, lots, demandes, mouvements et comptages."
         />
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant, then come back to set up stock."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant pour configurer le stock."
         />
       </div>
     );
@@ -80,19 +80,19 @@ export default async function StockPage() {
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
         title="Stock"
-        description="Warehouses and bins, batches and expiry, material requests, entries and physical counts."
+        description="Entrepôts et emplacements, lots et dates limites, demandes d'articles, mouvements et comptages."
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Warehouses" value={String(warehouses.length)} />
-        <Stat label="Stock value" value={formatCurrency(stockValue)} />
+        <Stat label="Entrepôts" value={String(warehouses.length)} />
+        <Stat label="Valeur du stock" value={formatCurrency(stockValue)} />
         <Stat
-          label="Low on stock"
+          label="Stock bas"
           value={String(lowStock)}
           tone={lowStock > 0 ? "warn" : undefined}
         />
         <Stat
-          label="Expired batches"
+          label="Lots périmés"
           value={String(expired)}
           tone={expired > 0 ? "danger" : undefined}
         />
@@ -100,18 +100,18 @@ export default async function StockPage() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <Stat
-          label="Expiring in 14 days"
+          label="Expirent sous 14 jours"
           value={String(batches.length - expired)}
           tone={batches.length - expired > 0 ? "warn" : undefined}
         />
-        <Stat label="Open requests" value={String(openRequests)} />
-        <Stat label="Draft entries" value={String(draftEntries)} />
+        <Stat label="Demandes en cours" value={String(openRequests)} />
+        <Stat label="Mouvements en brouillon" value={String(draftEntries)} />
       </div>
 
       {warehouses.length === 0 && (
         <EmptyState
-          title="No warehouses yet"
-          description="Create a warehouse to start tracking stock by location."
+          title="Aucun entrepôt"
+          description="Créez un entrepôt pour suivre le stock par emplacement."
         />
       )}
     </div>

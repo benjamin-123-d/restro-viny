@@ -14,11 +14,11 @@ export default async function AdminOverviewPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Overview" description="Platform activity at a glance." />
+      <PageHeader title="Vue d'ensemble" description="L'activité de la plateforme en un coup d'œil." />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           icon={<UsersIcon className="size-5" />}
-          label="Users"
+          label="Utilisateurs"
           value={users.total}
         />
         <StatCard

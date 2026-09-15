@@ -115,7 +115,7 @@ export default async function NewCustomerPage() {
                 type: "tel",
                 placeholder: "+229 96 00 00 00",
               },
-              { name: "email", label: "Email", type: "email" },
+              { name: "email", label: "E-mail", type: "email" },
               {
                 name: "addressLine1",
                 label: "Adresse",

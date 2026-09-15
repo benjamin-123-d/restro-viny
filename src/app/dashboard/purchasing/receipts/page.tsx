@@ -17,8 +17,8 @@ export default async function PurchaseReceiptsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -29,22 +29,22 @@ export default async function PurchaseReceiptsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Goods receipts"
-        description="Deliveries booked in. Submitting a receipt is what moves stock — it writes straight to the inventory ledger."
+        title="Réceptions de marchandises"
+        description="Les livraisons reçues. C'est la validation d'une réception qui fait entrer la marchandise en stock."
       />
       {receipts.length === 0 ? (
         <EmptyState
-          title="Nothing received yet"
-          description="Book in a delivery against a purchase order to add it to stock."
+          title="Rien de reçu pour l'instant"
+          description="Enregistrez la livraison d'une commande d'achat pour l'entrer en stock."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Supplier" },
-            { label: "Posted" },
-            { label: "Status" },
-            { label: "Billed" },
+            { label: "Numéro" },
+            { label: "Fournisseur" },
+            { label: "Date" },
+            { label: "Statut" },
+            { label: "Facturé" },
             { label: "Total", align: "right" },
           ]}
         >

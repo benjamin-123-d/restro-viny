@@ -42,12 +42,12 @@ export default async function SellingPage() {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
-          title="Selling"
-          description="Customers, quotations, sales orders, deliveries and invoices."
+          title="Ventes aux entreprises"
+          description="Clients, devis, commandes, livraisons et factures."
         />
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant, then come back to set up selling."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant pour configurer les ventes."
         />
       </div>
     );
@@ -81,27 +81,27 @@ export default async function SellingPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Selling"
-        description="Customers, quotations, sales orders, deliveries, invoices and receipts."
+        title="Ventes aux entreprises"
+        description="Clients, devis, commandes, livraisons, factures et encaissements."
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Customers" value={String(customers.length)} />
-        <Stat label="Open quotations" value={String(openQuotes)} />
-        <Stat label="Open sales orders" value={String(openOrders)} />
+        <Stat label="Clients" value={String(customers.length)} />
+        <Stat label="Devis en cours" value={String(openQuotes)} />
+        <Stat label="Commandes clients en cours" value={String(openOrders)} />
         <Stat
-          label="Overdue receivable"
+          label="Créances en retard"
           value={formatCurrency(overdue)}
           tone={overdue > 0 ? "danger" : undefined}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Deliveries to bill" value={String(toBill)} />
-        <Stat label="Open invoices" value={String(openInvoices)} />
-        <Stat label="Total receivable" value={formatCurrency(receivable)} />
+        <Stat label="Livraisons à facturer" value={String(toBill)} />
+        <Stat label="Factures ouvertes" value={String(openInvoices)} />
+        <Stat label="Total à encaisser" value={formatCurrency(receivable)} />
         <Stat
-          label="Over credit limit"
+          label="Au-delà du plafond de crédit"
           value={String(overLimit)}
           tone={overLimit > 0 ? "danger" : undefined}
         />
@@ -109,8 +109,8 @@ export default async function SellingPage() {
 
       {customers.length === 0 && (
         <EmptyState
-          title="No customers yet"
-          description="Add the accounts you invoice to start the sales chain."
+          title="Aucun client"
+          description="Ajoutez les clients que vous facturez pour démarrer le cycle de vente."
         />
       )}
     </div>

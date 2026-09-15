@@ -37,7 +37,7 @@ export function OnboardRestaurantForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <Field>
-        <FieldLabel htmlFor="name">Restaurant name</FieldLabel>
+        <FieldLabel htmlFor="name">Nom du restaurant</FieldLabel>
         <Input
           id="name"
           value={name}
@@ -47,18 +47,18 @@ export function OnboardRestaurantForm() {
         />
       </Field>
       <Field>
-        <FieldLabel htmlFor="ownerPhone">Owner phone</FieldLabel>
+        <FieldLabel htmlFor="ownerPhone">Téléphone du gérant</FieldLabel>
         <PhoneInput
           id="ownerPhone"
           onChange={setOwnerPhone}
           invalid={Boolean(error)}
         />
         <FieldDescription>
-          Used to sign in. An existing manager with this phone is reused.
+          Sert à se connecter. Un gérant existant avec ce numéro est réutilisé.
         </FieldDescription>
       </Field>
       <Field>
-        <FieldLabel htmlFor="ownerName">Owner name (optional)</FieldLabel>
+        <FieldLabel htmlFor="ownerName">Nom du gérant (facultatif)</FieldLabel>
         <Input
           id="ownerName"
           value={ownerName}
@@ -66,7 +66,7 @@ export function OnboardRestaurantForm() {
         />
       </Field>
       <Field>
-        <FieldLabel htmlFor="city">City (optional)</FieldLabel>
+        <FieldLabel htmlFor="city">Ville (facultatif)</FieldLabel>
         <Input
           id="city"
           value={city}

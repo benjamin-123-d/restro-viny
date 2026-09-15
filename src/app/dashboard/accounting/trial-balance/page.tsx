@@ -11,8 +11,8 @@ export default async function TrialBalancePage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -23,13 +23,13 @@ export default async function TrialBalancePage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Trial balance"
-        description="Every account that moved, and proof the two columns agree."
+        title="Solde"
+        description="Chaque compte mouvementé, et la preuve que débit et crédit concordent."
       />
       {tb.rows.length === 0 ? (
         <EmptyState
-          title="Nothing posted yet"
-          description="The trial balance fills in as soon as a journal is posted."
+          title="Rien de comptabilisé"
+          description="La balance se remplit dès qu'une écriture est comptabilisée."
         />
       ) : (
         <>
@@ -41,16 +41,16 @@ export default async function TrialBalancePage() {
             }`}
           >
             {tb.isBalanced
-              ? "Debits and credits agree."
-              : "Out of balance \u2014 the ledger does not tie."}
+              ? "Les débits et les crédits concordent."
+              : "Déséquilibre \u2014 le grand livre ne tombe pas juste."}
           </p>
           <DocTable
             headers={[
               { label: "Code" },
-              { label: "Account" },
+              { label: "Compte" },
               { label: "Type" },
-              { label: "Debit", align: "right" },
-              { label: "Credit", align: "right" },
+              { label: "Débit", align: "right" },
+              { label: "Crédit", align: "right" },
             ]}
           >
             {tb.rows.map((row) => (

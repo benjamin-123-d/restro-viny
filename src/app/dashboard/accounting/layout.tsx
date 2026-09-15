@@ -1,13 +1,13 @@
 import { TabBar } from "@/components/purchasing/purchasing-ui";
 
 const TABS = [
-  { href: "/dashboard/accounting", label: "Overview" },
-  { href: "/dashboard/accounting/accounts", label: "Chart of accounts" },
-  { href: "/dashboard/accounting/journals", label: "Journals" },
-  { href: "/dashboard/accounting/trial-balance", label: "Trial balance" },
-  { href: "/dashboard/accounting/profit-and-loss", label: "Profit & loss" },
-  { href: "/dashboard/accounting/balance-sheet", label: "Balance sheet" },
-  { href: "/dashboard/accounting/ledger", label: "General ledger" },
+  { href: "/dashboard/accounting", label: "Vue d'ensemble" },
+  { href: "/dashboard/accounting/accounts", label: "Plan comptable" },
+  { href: "/dashboard/accounting/journals", label: "Écritures" },
+  { href: "/dashboard/accounting/trial-balance", label: "Solde" },
+  { href: "/dashboard/accounting/profit-and-loss", label: "Compte de résultat" },
+  { href: "/dashboard/accounting/balance-sheet", label: "Bilan" },
+  { href: "/dashboard/accounting/ledger", label: "Grand livre" },
 ] as const;
 
 export default function AccountingLayout({

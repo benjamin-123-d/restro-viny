@@ -16,8 +16,8 @@ export default async function StockCountsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -28,22 +28,22 @@ export default async function StockCountsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Stock counts"
-        description="Physical counts and the value of what they corrected."
+        title="Comptages de stock"
+        description="Les comptages physiques et la valeur de ce qu'ils ont corrigé."
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No counts yet"
-          description="Run a count to bring the system back in line with the shelf."
+          title="Aucun comptage"
+          description="Faites un comptage pour aligner le système sur les étagères."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Posted" },
-            { label: "Status" },
-            { label: "Items", align: "right" },
-            { label: "Difference", align: "right" },
+            { label: "Numéro" },
+            { label: "Date" },
+            { label: "Statut" },
+            { label: "Articles", align: "right" },
+            { label: "Écart", align: "right" },
           ]}
         >
           {rows.map((row) => (

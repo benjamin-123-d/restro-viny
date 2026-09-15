@@ -15,8 +15,8 @@ export default async function LedgerPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -27,23 +27,23 @@ export default async function LedgerPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="General ledger"
-        description="Every posting, newest first. The ledger is append-only \u2014 a cancellation adds a reversing line rather than removing one."
+        title="Grand livre"
+        description="Toutes les écritures, les plus récentes d'abord. Le grand livre ne s'efface jamais \u2014 une annulation ajoute une ligne inverse."
       />
       {entries.length === 0 ? (
         <EmptyState
-          title="Nothing posted yet"
-          description="Postings appear here the moment a journal is posted."
+          title="Rien de comptabilisé"
+          description="Les écritures apparaissent ici dès leur comptabilisation."
         />
       ) : (
         <DocTable
           headers={[
             { label: "Date" },
-            { label: "Voucher" },
-            { label: "Account" },
+            { label: "Pièce" },
+            { label: "Compte" },
             { label: "Description" },
-            { label: "Debit", align: "right" },
-            { label: "Credit", align: "right" },
+            { label: "Débit", align: "right" },
+            { label: "Crédit", align: "right" },
           ]}
         >
           {entries.map((entry) => (

@@ -12,8 +12,8 @@ export default async function WarehousesPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -24,8 +24,8 @@ export default async function WarehousesPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Warehouses"
-        description="Where stock physically sits — main store, cold room, bar, a second outlet."
+        title="Entrepôts"
+        description="Où se trouve physiquement le stock : réserve, chambre froide, bar, second établissement."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -46,18 +46,18 @@ export default async function WarehousesPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No warehouses yet"
-          description="Create a warehouse to start tracking stock by location."
+          title="Aucun entrepôt"
+          description="Créez un entrepôt pour suivre le stock par emplacement."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Name" },
+            { label: "Nom" },
             { label: "Code" },
             { label: "Parent" },
-            { label: "City" },
-            { label: "Items", align: "right" },
-            { label: "Stock value", align: "right" },
+            { label: "Ville" },
+            { label: "Articles", align: "right" },
+            { label: "Valeur du stock", align: "right" },
           ]}
         >
           {rows.map((row) => (

@@ -2,6 +2,23 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { DocTable, Money } from "@/components/purchasing/purchasing-ui";
 import { ROOT_TYPE_LABEL } from "@/lib/accounting";
+
+const ACCOUNT_TYPE_LABEL: Readonly<Record<string, string>> = {
+  BANK: "banque",
+  CASH: "caisse",
+  RECEIVABLE: "créances clients",
+  PAYABLE: "dettes fournisseurs",
+  STOCK: "stock",
+  FIXED_ASSET: "immobilisation",
+  TAX: "taxes",
+  COST_OF_GOODS_SOLD: "achats consommés",
+  DEPRECIATION: "amortissement",
+  EQUITY: "capitaux propres",
+  INCOME_ACCOUNT: "produit",
+  EXPENSE_ACCOUNT: "charge",
+  ROUND_OFF: "arrondi",
+  OTHER: "autre",
+};
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listAccounts } from "@/services/accounting.service";
 
@@ -13,8 +30,8 @@ export default async function ChartOfAccountsPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -25,8 +42,8 @@ export default async function ChartOfAccountsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Chart of accounts"
-        description="Every account the books can post to. Group accounts total their children and take no postings of their own."
+        title="Plan comptable"
+        description="Tous les comptes mouvementables. Les comptes de regroupement totalisent leurs sous-comptes sans écriture propre."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -48,12 +65,12 @@ export default async function ChartOfAccountsPage() {
       <DocTable
         headers={[
           { label: "Code" },
-          { label: "Account" },
+          { label: "Compte" },
           { label: "Type" },
-          { label: "Kind" },
-          { label: "Debit", align: "right" },
-          { label: "Credit", align: "right" },
-          { label: "Balance", align: "right" },
+          { label: "Nature" },
+          { label: "Débit", align: "right" },
+          { label: "Crédit", align: "right" },
+          { label: "Solde", align: "right" },
         ]}
       >
         {accounts.map((account) => (
@@ -82,8 +99,8 @@ export default async function ChartOfAccountsPage() {
             </td>
             <td className="px-3 py-2 text-xs text-zinc-500">
               {account.isGroup
-                ? "Group"
-                : account.accountType.replace(/_/g, " ").toLowerCase()}
+                ? "Regroupement"
+                : (ACCOUNT_TYPE_LABEL[account.accountType] ?? account.accountType)}
             </td>
             <td className="px-3 py-2 text-right">
               <Money
@@ -108,8 +125,8 @@ export default async function ChartOfAccountsPage() {
       </DocTable>
       {accounts.length === 0 && (
         <EmptyState
-          title="No accounts"
-          description="The starter chart could not be created."
+          title="Aucun compte"
+          description="Le plan comptable de départ n'a pas pu être créé."
         />
       )}
     </div>

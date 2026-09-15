@@ -17,8 +17,8 @@ export default async function DeliveryNotesPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -29,22 +29,22 @@ export default async function DeliveryNotesPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Delivery notes"
-        description="Goods handed to customers. Submitting a note issues the stock from its warehouse."
+        title="Bons de livraison"
+        description="Les marchandises remises aux clients. Valider un bon fait sortir le stock de son entrepôt."
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="Nothing delivered yet"
-          description="Ship against a sales order to record it here."
+          title="Rien de livré pour l'instant"
+          description="Livrez une commande client pour l'enregistrer ici."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Customer" },
-            { label: "Posted" },
-            { label: "Status" },
-            { label: "Billed" },
+            { label: "Numéro" },
+            { label: "Client" },
+            { label: "Date" },
+            { label: "Statut" },
+            { label: "Facturé" },
             { label: "Total", align: "right" },
           ]}
         >

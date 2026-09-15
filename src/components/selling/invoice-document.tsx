@@ -12,8 +12,8 @@ import type { SalesInvoiceDTO } from "@/types/selling";
  */
 export const INVOICE_COPIES = [
   { key: "original", label: "Original", forWhom: "Customer" },
-  { key: "duplicate", label: "Duplicate", forWhom: "Accounts copy" },
-  { key: "triplicate", label: "Triplicate", forWhom: "Tax copy" },
+  { key: "duplicate", label: "Duplicata", forWhom: "Accounts copy" },
+  { key: "triplicate", label: "Triplicata", forWhom: "Tax copy" },
 ] as const;
 
 export type InvoiceCopy = (typeof INVOICE_COPIES)[number]["key"];
@@ -72,7 +72,7 @@ export const InvoiceDocument = ({
 
         <div className="text-right">
           <p className="text-lg font-semibold uppercase tracking-wide">
-            {invoice.isReturn ? "Credit note" : "Invoice"}
+            {invoice.isReturn ? "Avoir" : "Facture"}
           </p>
           <p className="mt-1 font-mono text-sm font-medium">{invoice.number}</p>
           <span
@@ -92,7 +92,7 @@ export const InvoiceDocument = ({
       <section className="mt-5 flex justify-between gap-8">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
-            Billed to
+            Facturé à
           </p>
           <p className="mt-1 font-medium">{invoice.customerName}</p>
           <div className="mt-0.5 space-y-0.5 text-xs text-zinc-600">
@@ -105,20 +105,20 @@ export const InvoiceDocument = ({
         <table className="text-xs">
           <tbody>
             <tr>
-              <td className="pr-4 text-zinc-500">Invoice date</td>
+              <td className="pr-4 text-zinc-500">Date de facture</td>
               <td className="text-right font-medium">
                 {formatDate(invoice.postingDate)}
               </td>
             </tr>
             <tr>
-              <td className="pr-4 text-zinc-500">Due date</td>
+              <td className="pr-4 text-zinc-500">Échéance</td>
               <td className="text-right font-medium">
                 {formatDate(invoice.dueDate)}
               </td>
             </tr>
             {invoice.salesOrderNumber && (
               <tr>
-                <td className="pr-4 text-zinc-500">Order</td>
+                <td className="pr-4 text-zinc-500">Commande</td>
                 <td className="text-right font-mono">
                   {invoice.salesOrderNumber}
                 </td>
@@ -126,7 +126,7 @@ export const InvoiceDocument = ({
             )}
             {invoice.deliveryNoteNumber && (
               <tr>
-                <td className="pr-4 text-zinc-500">Delivery</td>
+                <td className="pr-4 text-zinc-500">Livraison</td>
                 <td className="text-right font-mono">
                   {invoice.deliveryNoteNumber}
                 </td>
@@ -141,10 +141,10 @@ export const InvoiceDocument = ({
         <thead>
           <tr className="border-y bg-zinc-50 text-left text-[11px] uppercase tracking-wide text-zinc-500">
             <th className="py-2 pl-2 font-medium">Description</th>
-            <th className="py-2 text-right font-medium">Qty</th>
-            <th className="py-2 text-right font-medium">Rate</th>
-            <th className="py-2 text-right font-medium">Tax</th>
-            <th className="py-2 pr-2 text-right font-medium">Amount</th>
+            <th className="py-2 text-right font-medium">Qté</th>
+            <th className="py-2 text-right font-medium">Prix</th>
+            <th className="py-2 text-right font-medium">TVA</th>
+            <th className="py-2 pr-2 text-right font-medium">Montant</th>
           </tr>
         </thead>
         <tbody>
@@ -178,28 +178,28 @@ export const InvoiceDocument = ({
         <table className="w-72 text-sm">
           <tbody>
             <tr>
-              <td className="py-1 text-zinc-600">Subtotal</td>
+              <td className="py-1 text-zinc-600">Sous-total</td>
               <td className="py-1 text-right tabular-nums">
                 {formatCurrency(invoice.subtotal)}
               </td>
             </tr>
             {invoice.discountAmount > 0 && (
               <tr>
-                <td className="py-1 text-zinc-600">Discount</td>
+                <td className="py-1 text-zinc-600">Remise</td>
                 <td className="py-1 text-right tabular-nums">
                   −{formatCurrency(invoice.discountAmount)}
                 </td>
               </tr>
             )}
             <tr>
-              <td className="py-1 text-zinc-600">Tax</td>
+              <td className="py-1 text-zinc-600">TVA</td>
               <td className="py-1 text-right tabular-nums">
                 {formatCurrency(invoice.taxTotal)}
               </td>
             </tr>
             {invoice.roundOff !== 0 && (
               <tr>
-                <td className="py-1 text-zinc-600">Rounding</td>
+                <td className="py-1 text-zinc-600">Arrondi</td>
                 <td className="py-1 text-right tabular-nums">
                   {formatCurrency(invoice.roundOff)}
                 </td>
@@ -213,14 +213,14 @@ export const InvoiceDocument = ({
             </tr>
             {invoice.paidAmount > 0 && (
               <tr>
-                <td className="py-1 text-zinc-600">Paid</td>
+                <td className="py-1 text-zinc-600">Payé</td>
                 <td className="py-1 text-right tabular-nums">
                   −{formatCurrency(invoice.paidAmount)}
                 </td>
               </tr>
             )}
             <tr className="border-t">
-              <td className="py-2 font-semibold">Amount due</td>
+              <td className="py-2 font-semibold">Reste à payer</td>
               <td
                 className={`py-2 text-right text-base font-semibold tabular-nums ${
                   invoice.outstandingAmount > 0 ? "text-red-600" : ""
@@ -237,7 +237,7 @@ export const InvoiceDocument = ({
       {invoice.schedule.length > 0 && (
         <section className="mt-6">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
-            Payment schedule
+            Échéancier
           </p>
           <table className="mt-1 w-full text-xs">
             <tbody>

@@ -12,8 +12,8 @@ export default async function CustomersPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -24,8 +24,8 @@ export default async function CustomersPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Customers"
-        description="Account customers, what they owe, and how much credit they have left."
+        title="Clients"
+        description="Vos clients en compte, ce qu'ils doivent et le crédit qu'il leur reste."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -46,20 +46,20 @@ export default async function CustomersPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No customers yet"
-          description="Add the accounts you invoice to start raising sales orders."
+          title="Aucun client"
+          description="Ajoutez les clients que vous facturez pour saisir des commandes."
         />
       ) : (
         <DocTable
           headers={[
             { label: "Code" },
-            { label: "Customer" },
-            { label: "Group" },
-            { label: "Phone" },
-            { label: "Open SOs", align: "right" },
-            { label: "Outstanding", align: "right" },
-            { label: "Credit left", align: "right" },
-            { label: "Overdue", align: "right" },
+            { label: "Client" },
+            { label: "Groupe" },
+            { label: "Téléphone" },
+            { label: "Commandes ouvertes", align: "right" },
+            { label: "Reste dû", align: "right" },
+            { label: "Crédit restant", align: "right" },
+            { label: "En retard", align: "right" },
           ]}
         >
           {rows.map((row) => (

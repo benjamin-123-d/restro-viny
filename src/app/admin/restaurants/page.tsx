@@ -25,11 +25,11 @@ export default async function AdminRestaurantsPage({ searchParams }: PageProps) 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <PageHeader
           title="Restaurants"
-          description="Onboard and manage restaurants."
+          description="Créer et gérer les restaurants."
         />
         <Link href="/admin/restaurants/new" className={cn(buttonVariants())}>
           <PlusIcon className="size-4" />
-          Onboard restaurant
+          Créer un restaurant
         </Link>
       </div>
       <RestaurantsTable data={serializeForClient(result)} />

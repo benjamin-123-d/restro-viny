@@ -16,8 +16,8 @@ export default async function SuppliersPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -31,8 +31,8 @@ export default async function SuppliersPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Suppliers"
-        description="Who you buy from, what you owe them, and how much is late."
+        title="Fournisseurs"
+        description="Chez qui vous achetez, ce que vous leur devez et ce qui est en retard."
       />
       <div className="-mt-2 flex justify-end">
         <NewButton
@@ -75,21 +75,21 @@ export default async function SuppliersPage() {
 
       {suppliers.length === 0 ? (
         <EmptyState
-          title="No suppliers yet"
-          description="Add the vendors you buy from to start raising purchase orders."
+          title="Aucun fournisseur"
+          description="Ajoutez les fournisseurs chez qui vous achetez pour passer des commandes."
         />
       ) : (
         <DocTable
           headers={[
             { label: "Code" },
-            { label: "Supplier" },
-            { label: "Group" },
-            { label: "Phone" },
-            { label: "Terms" },
-            { label: "Last order" },
-            { label: "Open POs", align: "right" },
-            { label: "Outstanding", align: "right" },
-            { label: "Overdue", align: "right" },
+            { label: "Fournisseur" },
+            { label: "Groupe" },
+            { label: "Téléphone" },
+            { label: "Délai" },
+            { label: "Dernière commande" },
+            { label: "Commandes ouvertes", align: "right" },
+            { label: "Reste dû", align: "right" },
+            { label: "En retard", align: "right" },
           ]}
         >
           {suppliers.map((supplier) => (

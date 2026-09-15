@@ -12,8 +12,8 @@ export default async function BatchesPage() {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -24,8 +24,8 @@ export default async function BatchesPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Batches & expiry"
-        description="Tracked lots and what is about to go out of date."
+        title="Lots et dates limites"
+        description="Les lots suivis et ceux qui arrivent à date limite."
       />
       <HelpBox
         defaultOpen={false}
@@ -40,19 +40,19 @@ export default async function BatchesPage() {
       />
       {rows.length === 0 ? (
         <EmptyState
-          title="No batches tracked"
-          description="Record a batch when you receive perishable stock."
+          title="Aucun lot suivi"
+          description="Enregistrez un lot à la réception de produits périssables."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Batch" },
-            { label: "Item" },
-            { label: "Warehouse" },
-            { label: "Made" },
-            { label: "Expires" },
-            { label: "Days left", align: "right" },
-            { label: "Quantity", align: "right" },
+            { label: "Lot" },
+            { label: "Article" },
+            { label: "Entrepôt" },
+            { label: "Fabriqué le" },
+            { label: "Expire le" },
+            { label: "Jours restants", align: "right" },
+            { label: "Quantité", align: "right" },
           ]}
         >
           {rows.map((row) => (

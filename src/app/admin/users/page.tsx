@@ -20,8 +20,8 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Users"
-        description="Every manager and admin on the platform."
+        title="Utilisateurs"
+        description="Tous les gérants et administrateurs de la plateforme."
       />
       <UsersTable data={serializeForClient(result)} />
     </div>

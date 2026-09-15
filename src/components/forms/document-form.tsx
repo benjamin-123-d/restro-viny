@@ -441,7 +441,7 @@ export const DocumentForm = ({
         </legend>
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-800">
-            Notes
+            Remarques
           </label>
           <textarea
             rows={4}

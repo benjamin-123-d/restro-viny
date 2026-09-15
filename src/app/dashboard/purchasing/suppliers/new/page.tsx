@@ -103,7 +103,7 @@ export default async function NewSupplierPage() {
               },
               {
                 name: "email",
-                label: "Email",
+                label: "E-mail",
                 type: "email",
                 placeholder: "contact@fournisseur.bj",
               },
