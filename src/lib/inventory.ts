@@ -36,4 +36,5 @@ export const MOVEMENT_LABELS: Record<StockMovementType, string> = {
   WASTE: "Perte",
   CORRECTION: "Inventaire / correction",
   SALE_DEPLETION: "Vente",
+  PRODUCTION: "Production",
 };

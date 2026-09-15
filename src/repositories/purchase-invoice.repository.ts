@@ -13,7 +13,7 @@ import {
   bumpReceiptLineBilled,
   recalcReceiptBilled,
 } from "@/repositories/purchase-receipt.repository";
-import { applyMovementInTx } from "@/repositories/stock.repository";
+import { applyMovementInTx, refreshPurchasePriceInTx } from "@/repositories/stock.repository";
 
 export interface PurchaseInvoiceLineWriteData {
   stockItemId: string;
@@ -215,6 +215,10 @@ export const submitPurchaseInvoice = (
 
       // No receipt in the chain: the bill itself is what brings stock in.
       if (invoice.updateStock && qty > 0) {
+        const unitCost =
+          !invoice.isReturn && Number(item.rate) > 0
+            ? await refreshPurchasePriceInTx(tx, item.stockItemId, Number(item.rate))
+            : null;
         await applyMovementInTx(tx, {
           restaurantId: invoice.restaurantId,
           stockItemId: item.stockItemId,
@@ -224,14 +228,9 @@ export const submitPurchaseInvoice = (
           note: invoice.number,
           orderId: null,
           purchaseReceiptItemId: null,
+          unitCost,
           createdById,
         });
-        if (!invoice.isReturn && Number(item.rate) > 0) {
-          await tx.stockItem.update({
-            where: { id: item.stockItemId },
-            data: { costPerUnit: item.rate },
-          });
-        }
       }
     }
 

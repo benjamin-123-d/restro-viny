@@ -9,7 +9,7 @@ import {
   bumpOrderLineReceived,
   recalcPurchaseOrderProgress,
 } from "@/repositories/purchase-order.repository";
-import { applyMovementInTx } from "@/repositories/stock.repository";
+import { applyMovementInTx, refreshPurchasePriceInTx } from "@/repositories/stock.repository";
 
 export interface PurchaseReceiptLineWriteData {
   stockItemId: string;
@@ -145,6 +145,12 @@ export const submitPurchaseReceipt = (
 
       // A return sends goods back out; a normal receipt brings them in.
       const delta = receipt.isReturn ? -accepted : accepted;
+      // The price paid refreshes the item's cost before the stock comes in, so
+      // the movement carries the cost it arrived at.
+      const unitCost =
+        !receipt.isReturn && Number(item.rate) > 0
+          ? await refreshPurchasePriceInTx(tx, item.stockItemId, Number(item.rate))
+          : null;
 
       await applyMovementInTx(tx, {
         restaurantId: receipt.restaurantId,
@@ -155,15 +161,9 @@ export const submitPurchaseReceipt = (
         note: receipt.number,
         orderId: null,
         purchaseReceiptItemId: item.id,
+        unitCost,
         createdById,
       });
-
-      if (!receipt.isReturn && Number(item.rate) > 0) {
-        await tx.stockItem.update({
-          where: { id: item.stockItemId },
-          data: { costPerUnit: item.rate },
-        });
-      }
 
       if (item.purchaseOrderItemId) {
         await bumpOrderLineReceived(tx, item.purchaseOrderItemId, delta);

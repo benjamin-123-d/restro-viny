@@ -24,6 +24,7 @@ import {
   type OrderWithRelations,
 } from "@/repositories/order.repository";
 import type { BillLineInput } from "@/services/billing";
+import { getPortionCosts } from "@/services/food-cost-pricing.service";
 import { getMenu } from "@/services/menu-item.service";
 import {
   depleteForLines,
@@ -145,6 +146,8 @@ const snapshotLines = (
   source: "STAFF" | "SELF_ORDER" = "STAFF",
   /** How the order is served — decides the French VAT rate of each line. */
   service: OrderType = "DINE_IN",
+  /** Material cost of one portion of each dish, frozen on the line. */
+  portionCosts: ReadonlyMap<string, number | null> = new Map(),
 ): OrderLineWriteData[] => {
   const itemsById = new Map(menu.items.map((i) => [i.id, i]));
   return lines.map((line, idx) => {
@@ -183,6 +186,7 @@ const snapshotLines = (
       taxKind: item.tax.kind,
       taxInclusive: item.tax.inclusive,
       vatCategory: item.tax.vatCategory ?? null,
+      foodCost: portionCosts.get(item.id) ?? null,
       isComp: line.isComp,
       compReason: line.compReason ?? null,
       state,
@@ -219,7 +223,10 @@ export const createOrder = async (
   if (existing) {
     return mapOrder(existing);
   }
-  const menu = await getMenu(ctx.restaurantId);
+  const [menu, portionCosts] = await Promise.all([
+    getMenu(ctx.restaurantId),
+    getPortionCosts(ctx.restaurantId, input.items.map((l) => l.menuItemId)),
+  ]);
   const items = snapshotLines(
     menu,
     input.items,
@@ -227,6 +234,7 @@ export const createOrder = async (
     "FIRED",
     ctx.source ?? "STAFF",
     input.orderType,
+    portionCosts,
   );
   const orderNumber = (await maxOrderNumber(ctx.restaurantId)) + 1;
 
@@ -269,7 +277,10 @@ export const addItems = async (
   if (order.status !== "OPEN") {
     throw new Error(ORDER_NOT_OPEN);
   }
-  const menu = await getMenu(ctx.restaurantId);
+  const [menu, portionCosts] = await Promise.all([
+    getMenu(ctx.restaurantId),
+    getPortionCosts(ctx.restaurantId, input.items.map((l) => l.menuItemId)),
+  ]);
   const items = snapshotLines(
     menu,
     input.items,
@@ -278,6 +289,7 @@ export const addItems = async (
     ctx.source ?? "STAFF",
     // Items added later inherit the order's own service type.
     order.orderType,
+    portionCosts,
   );
   const updated = await addOrderItems(input.orderId, items);
   await depleteForLines(

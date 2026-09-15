@@ -57,6 +57,7 @@ const line = (overrides: Partial<OrderLineWriteData> = {}): OrderLineWriteData =
   menuItemId: "i1",
   variantId: null,
   vatCategory: null,
+  foodCost: null,
   name: "Masala Tea",
   variantName: null,
   unitPrice: 50,

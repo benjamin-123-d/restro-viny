@@ -4,6 +4,9 @@ import type { OrderWithRelations } from "@/repositories/order.repository";
 import type { MenuDTO } from "@/types/menu";
 
 vi.mock("@/services/menu-item.service", () => ({ getMenu: vi.fn() }));
+vi.mock("@/services/food-cost-pricing.service", () => ({
+  getPortionCosts: vi.fn(() => Promise.resolve(new Map())),
+}));
 vi.mock("@/services/table.service", () => ({ resolveTableForOrder: vi.fn() }));
 vi.mock("@/services/stock-depletion.service", () => ({
   depleteForLines: vi.fn(() => Promise.resolve()),
@@ -21,6 +24,7 @@ vi.mock("@/repositories/order.repository", () => ({
   voidOrder: vi.fn(),
 }));
 
+import { getPortionCosts } from "@/services/food-cost-pricing.service";
 import { getMenu } from "@/services/menu-item.service";
 import { resolveTableForOrder } from "@/services/table.service";
 import {
@@ -317,6 +321,26 @@ describe("createOrder — French VAT per service type", () => {
       items: [{ menuItemId: "i1", quantity: 1, isComp: false, modifierIds: [] }],
     });
     expect(placedLine().taxRate).toBe(5.5);
+  });
+
+  it("freezes the dish's material cost on the line when it is sold", async () => {
+    vi.mocked(getPortionCosts).mockResolvedValueOnce(new Map([["i1", 0.4125]]));
+    await createOrder(ctx, {
+      orderType: "DINE_IN",
+      idempotencyKey: "food-cost",
+      items: [{ menuItemId: "i1", quantity: 2, isComp: false, modifierIds: [] }],
+    });
+    expect(getPortionCosts).toHaveBeenCalledWith("res_1", ["i1"]);
+    expect(placedLine().foodCost).toBe(0.4125);
+  });
+
+  it("leaves the cost empty for a dish without a complete card", async () => {
+    await createOrder(ctx, {
+      orderType: "DINE_IN",
+      idempotencyKey: "no-card",
+      items: [{ menuItemId: "i1", quantity: 1, isComp: false, modifierIds: [] }],
+    });
+    expect(placedLine().foodCost).toBeNull();
   });
 
   it("keeps the GST rate when the menu carries no per-service rates", async () => {

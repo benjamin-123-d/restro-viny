@@ -55,6 +55,15 @@ const MESSAGES: Readonly<Record<string, string>> = {
   ORDER_NOT_FOUND: "Commande introuvable.",
   ORDER_NOT_SETTLED: "Cette commande n'est pas encore encaissée.",
   EMAIL_NOT_CONFIGURED: "Aucun service d'envoi d'e-mails n'est configuré.",
+
+  FOOD_INGREDIENT_NOT_FOUND: "Ingrédient introuvable.",
+  FOOD_INGREDIENT_NAME_TAKEN: "Un ingrédient porte déjà ce nom.",
+  FOOD_DISH_NOT_FOUND: "Plat introuvable.",
+  FOOD_NO_CATALOGUE_MATCH: "Aucune fiche type ne correspond à ce plat : composez-la ingrédient par ingrédient.",
+  FOOD_INVENTORY_NOT_FOUND: "Inventaire introuvable.",
+  FOOD_INVENTORY_NOT_DRAFT: "Cet inventaire est déjà validé : il ne peut plus être modifié.",
+  FOOD_PREPARATION_INVALID: "Une base se prépare avec des ingrédients bruts, pas avec une autre base.",
+  FOOD_NO_COST: "Tous les ingrédients de cette base doivent avoir un prix avant de la produire.",
 };
 
 export const humanError = (code: string | undefined): string =>

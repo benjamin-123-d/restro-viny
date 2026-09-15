@@ -33,6 +33,8 @@ export interface OrderLineWriteData {
   taxKind: string;
   taxInclusive: boolean;
   vatCategory: VatCategory | null;
+  /** Material cost of one unit, frozen at sale; null without a complete card. */
+  foodCost: number | null;
   isComp: boolean;
   compReason: string | null;
   state: LineState;
@@ -71,6 +73,7 @@ const lineCreate = (items: OrderLineWriteData[]) => {
     taxKind: it.taxKind,
     taxInclusive: it.taxInclusive,
     vatCategory: it.vatCategory,
+    foodCost: it.foodCost,
     isComp: it.isComp,
     compReason: it.compReason,
     state: it.state,

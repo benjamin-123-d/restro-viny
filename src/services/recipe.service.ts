@@ -99,7 +99,7 @@ export interface RecipeLine {
   readonly quantity: number;
 }
 
-/** menuItemId → its recipe lines, for depletion. */
+/** menuItemId → what one portion takes from stock (card lines ÷ portions), for depletion. */
 export const getRecipesMap = async (
   menuItemIds: string[],
 ): Promise<Map<string, RecipeLine[]>> => {
@@ -107,7 +107,8 @@ export const getRecipesMap = async (
   const map = new Map<string, RecipeLine[]>();
   for (const row of rows) {
     const lines = map.get(row.menuItemId) ?? [];
-    lines.push({ stockItemId: row.stockItemId, quantity: Number(row.quantity) });
+    const portions = Math.max(1, row.menuItem?.recipeCard?.portions ?? 1);
+    lines.push({ stockItemId: row.stockItemId, quantity: Number(row.quantity) / portions });
     map.set(row.menuItemId, lines);
   }
   return map;

@@ -325,6 +325,7 @@ const buildLine = (
   variantId: null,
   // Mobile lines carry no menu link yet, so no VAT category to snapshot.
   vatCategory: null,
+  foodCost: null,
   name: input.name,
   variantName: null,
   unitPrice: input.priceRupees ?? 0,

@@ -103,6 +103,8 @@ export interface MovementInput {
   deliveryNoteItemId?: string | null;
   stockEntryItemId?: string | null;
   stockReconciliationItemId?: string | null;
+  /// Net cost of one unit at the time of the movement (food cost valuation).
+  unitCost?: number | null;
   createdById: string | null;
 }
 
@@ -126,6 +128,7 @@ const writeMovement = (
       deliveryNoteItemId: input.deliveryNoteItemId ?? null,
       stockEntryItemId: input.stockEntryItemId ?? null,
       stockReconciliationItemId: input.stockReconciliationItemId ?? null,
+      unitCost: input.unitCost ?? null,
       createdById: input.createdById,
     },
   });
@@ -145,6 +148,30 @@ export const applyMovementInTx = async (
     select: { onHand: true },
   });
   return writeMovement(tx, input, item.onHand);
+};
+
+/**
+ * Record the price just paid for one usage unit of an item: its gross unit
+ * cost, and the purchase-unit price the food cost screens show. Returns the
+ * net unit cost (after yield) to stamp on the incoming movement.
+ */
+export const refreshPurchasePriceInTx = async (
+  tx: Prisma.TransactionClient,
+  stockItemId: string,
+  grossUnitRate: number,
+): Promise<number> => {
+  const item = await tx.stockItem.update({
+    where: { id: stockItemId },
+    data: { costPerUnit: grossUnitRate },
+    select: { purchaseFactor: true, yieldPercent: true },
+  });
+  const factor = Number(item.purchaseFactor) || 1;
+  await tx.stockItem.update({
+    where: { id: stockItemId },
+    data: { lastPurchasePrice: Math.round(grossUnitRate * factor * 100) / 100 },
+  });
+  const yieldShare = Number(item.yieldPercent) / 100;
+  return yieldShare > 0 ? grossUnitRate / yieldShare : grossUnitRate;
 };
 
 /** Atomically increment on-hand by a signed delta + record the movement. */

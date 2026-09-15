@@ -58,6 +58,7 @@ const makeRestaurant = (overrides: Partial<Restaurant> = {}): Restaurant => ({
   legalForm: null,
   shareCapital: null,
   drinksLicense: null,
+  foodCostSubRecipes: false,
   name: "Spice Route",
   slug: "spice-route",
   username: null,

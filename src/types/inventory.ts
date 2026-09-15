@@ -12,7 +12,8 @@ export type StockMovementType =
   | "RECEIVE"
   | "WASTE"
   | "CORRECTION"
-  | "SALE_DEPLETION";
+  | "SALE_DEPLETION"
+  | "PRODUCTION";
 
 export interface StockItemDTO {
   readonly id: string;

@@ -23,7 +23,12 @@ export const findRecipeByMenuItem = (
 export const findRecipesForMenuItems = (menuItemIds: string[]) =>
   prisma.recipeComponent.findMany({
     where: { menuItemId: { in: menuItemIds } },
-    select: { menuItemId: true, stockItemId: true, quantity: true },
+    select: {
+      menuItemId: true,
+      stockItemId: true,
+      quantity: true,
+      menuItem: { select: { recipeCard: { select: { portions: true } } } },
+    },
   });
 
 export const findRecipesByRestaurant = (
