@@ -38,7 +38,7 @@ export function AdjustDialog({
 
   const save = useServerAction(adjustStockAction, {
     onSuccess: () => {
-      toast.success(isWaste ? "Waste logged" : "Stock received");
+      toast.success(isWaste ? "Perte enregistrée" : "Entrée en stock enregistrée");
       onOpenChange(false);
       onDone();
     },
@@ -64,7 +64,7 @@ export function AdjustDialog({
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>
-            {isWaste ? "Log waste" : "Receive"} · {item.name}
+            {isWaste ? "Déclarer une perte" : "Entrée en stock"} · {item.name}
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
@@ -83,7 +83,7 @@ export function AdjustDialog({
           </Field>
           {isWaste ? (
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium">Reason</span>
+              <span className="text-sm font-medium">Motif</span>
               <div className="flex flex-wrap gap-1.5">
                 {WASTE_REASONS.map((r) => (
                   <button
@@ -119,7 +119,7 @@ export function AdjustDialog({
             disabled={save.isPending || !(qty > 0)}
             onClick={submit}
           >
-            {save.isPending ? "Saving…" : isWaste ? "Log waste" : "Receive"}
+            {save.isPending ? "Enregistrement…" : isWaste ? "Déclarer la perte" : "Entrer en stock"}
           </Button>
         </DialogFooter>
       </DialogContent>

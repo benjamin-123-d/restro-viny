@@ -35,7 +35,7 @@ export function TableDialog({
 
   const save = useServerAction(table ? updateTableAction : createTableAction, {
     onSuccess: () => {
-      toast.success(table ? "Table updated" : "Table added");
+      toast.success(table ? "Table modifiée" : "Table ajoutée");
       onOpenChange(false);
       onSaved();
     },
@@ -57,7 +57,7 @@ export function TableDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>{table ? "Edit table" : "New table"}</DialogTitle>
+          <DialogTitle>{table ? "Modifier la table" : "Nouvelle table"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
@@ -72,7 +72,7 @@ export function TableDialog({
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="t-seats">Seats</FieldLabel>
+              <FieldLabel htmlFor="t-seats">Couverts</FieldLabel>
               <Input
                 id="t-seats"
                 inputMode="numeric"
@@ -83,7 +83,7 @@ export function TableDialog({
             </Field>
           </div>
           <Field>
-            <FieldLabel htmlFor="t-section">Section</FieldLabel>
+            <FieldLabel htmlFor="t-section">Salle / zone</FieldLabel>
             <Input
               id="t-section"
               value={section}
@@ -94,12 +94,12 @@ export function TableDialog({
           <div className="flex items-center gap-2">
             <Switch id="t-active" checked={isActive} onCheckedChange={setIsActive} />
             <label htmlFor="t-active" className="text-sm">
-              Available for seating
+              Disponible pour placer des clients
             </label>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={save.isPending || !label.trim()}>
-              {save.isPending ? "Saving…" : "Save"}
+              {save.isPending ? "Enregistrement…" : "Enregistrer"}
             </Button>
           </DialogFooter>
         </form>

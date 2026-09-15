@@ -67,7 +67,7 @@ export function CountDialog({
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search items…"
+          placeholder="Rechercher un article…"
         />
         <div className="min-h-0 flex-1 divide-y overflow-y-auto rounded-md border">
           {visible.map((item) => (
@@ -89,7 +89,7 @@ export function CountDialog({
             </div>
           ))}
           {visible.length === 0 ? (
-            <p className="text-muted-foreground p-3 text-sm">No items.</p>
+            <p className="text-muted-foreground p-3 text-sm">Aucun article.</p>
           ) : null}
         </div>
         <DialogFooter>
@@ -97,7 +97,7 @@ export function CountDialog({
             disabled={rows.length === 0 || save.isPending}
             onClick={() => save.execute({ rows })}
           >
-            {save.isPending ? "Saving…" : `Save ${rows.length} change(s)`}
+            {save.isPending ? "Enregistrement…" : `Enregistrer ${rows.length} correction(s)`}
           </Button>
         </DialogFooter>
       </DialogContent>

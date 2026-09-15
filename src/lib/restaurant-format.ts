@@ -1,15 +1,15 @@
 import type { RestaurantFormat } from "@/types/settings";
 
 export const FORMAT_LABELS: Record<RestaurantFormat, string> = {
-  FINE_DINING: "Fine dining",
-  CASUAL_DINING: "Casual dining",
-  QSR: "Quick service (QSR)",
+  FINE_DINING: "Gastronomique",
+  CASUAL_DINING: "Restaurant traditionnel",
+  QSR: "Restauration rapide",
   CAFE: "Café",
-  CLOUD_KITCHEN: "Cloud kitchen",
-  BAR: "Bar / Pub",
-  BAKERY: "Bakery",
+  CLOUD_KITCHEN: "Cuisine en livraison seule",
+  BAR: "Bar / brasserie",
+  BAKERY: "Boulangerie / pâtisserie",
   FOOD_TRUCK: "Food truck",
-  OTHER: "Other",
+  OTHER: "Autre",
 };
 
 export const FORMAT_OPTIONS = (

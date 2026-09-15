@@ -21,9 +21,9 @@ import { phoneSchema } from "@/lib/validators/shared"
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   OTP_USER_NOT_FOUND:
-    "This phone number isn't registered. Ask your administrator to add you.",
-  PIN_INVALID: "Incorrect PIN.",
-  PIN_LOCKED: "Too many attempts. Use a one-time code to sign in.",
+    "Ce numéro n'est pas enregistré. Demandez à votre administrateur de vous ajouter.",
+  PIN_INVALID: "Code PIN incorrect.",
+  PIN_LOCKED: "Trop d'essais. Connectez-vous avec un code reçu par SMS.",
 }
 
 const toAuthMessage = (raw: string) => AUTH_ERROR_MESSAGES[raw] ?? raw
@@ -76,7 +76,7 @@ export function LoginForm({
     event.preventDefault()
     const parsed = phoneSchema.safeParse(phone)
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Enter a valid phone number")
+      setError(parsed.error.issues[0]?.message ?? "Saisissez un numéro de téléphone valide")
       return
     }
     setError(null)
@@ -86,7 +86,7 @@ export function LoginForm({
   const handlePinSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!/^\d{4,6}$/.test(pin)) {
-      setError("Enter your 4–6 digit PIN")
+      setError("Saisissez votre code PIN (4 à 6 chiffres)")
       return
     }
     setError(null)
@@ -96,7 +96,7 @@ export function LoginForm({
   const handleCodeSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!/^\d{6}$/.test(code)) {
-      setError("Enter the 6-digit code")
+      setError("Saisissez le code à 6 chiffres")
       return
     }
     setError(null)
@@ -116,7 +116,7 @@ export function LoginForm({
         <span className="flex size-10 items-center justify-center rounded-md bg-primary/10 text-primary">
           <UtensilsCrossedIcon className="size-6" />
         </span>
-        <h1 className="text-xl font-bold">Sign in to ElitaleRestro</h1>
+        <h1 className="text-xl font-bold">Connexion à ElitaleRestro</h1>
         <FieldDescription>
           Run your restaurant&apos;s orders, inventory, and billing in one place.
         </FieldDescription>
@@ -126,7 +126,7 @@ export function LoginForm({
         <form onSubmit={handlePhoneSubmit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="phone">Phone number</FieldLabel>
+              <FieldLabel htmlFor="phone">Numéro de téléphone</FieldLabel>
               <PhoneInput
                 id="phone"
                 onChange={(value) => {
@@ -149,7 +149,7 @@ export function LoginForm({
             </Field>
             <Field>
               <Button type="submit" disabled={start.isPending}>
-                {start.isPending ? "Please wait…" : "Continue"}
+                {start.isPending ? "Patientez…" : "Continuer"}
               </Button>
             </Field>
           </FieldGroup>
@@ -160,7 +160,7 @@ export function LoginForm({
         <form onSubmit={handlePinSubmit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="pin">PIN</FieldLabel>
+              <FieldLabel htmlFor="pin">Code PIN</FieldLabel>
               <Input
                 id="pin"
                 type="password"
@@ -185,7 +185,7 @@ export function LoginForm({
                   className="underline"
                   onClick={changeNumber}
                 >
-                  Change number
+                  Changer de numéro
                 </button>
               </FieldDescription>
               {error ? (
@@ -196,7 +196,7 @@ export function LoginForm({
             </Field>
             <Field>
               <Button type="submit" disabled={verifyPin.isPending}>
-                {verifyPin.isPending ? "Verifying…" : "Sign in"}
+                {verifyPin.isPending ? "Vérification…" : "Se connecter"}
               </Button>
               <FieldDescription className="text-center">
                 Forgot your PIN?{" "}
@@ -206,7 +206,7 @@ export function LoginForm({
                   disabled={sendCode.isPending}
                   onClick={() => sendCode.execute({ phone })}
                 >
-                  Sign in with a code instead
+                  Recevoir plutôt un code par SMS
                 </button>
               </FieldDescription>
             </Field>
@@ -218,7 +218,7 @@ export function LoginForm({
         <form onSubmit={handleCodeSubmit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="code">Verification code</FieldLabel>
+              <FieldLabel htmlFor="code">Code de vérification</FieldLabel>
               <Input
                 id="code"
                 inputMode="numeric"
@@ -242,7 +242,7 @@ export function LoginForm({
                   className="underline"
                   onClick={changeNumber}
                 >
-                  Change number
+                  Changer de numéro
                 </button>
               </FieldDescription>
               {error ? (
@@ -253,7 +253,7 @@ export function LoginForm({
             </Field>
             <Field>
               <Button type="submit" disabled={verify.isPending}>
-                {verify.isPending ? "Verifying…" : "Verify & continue"}
+                {verify.isPending ? "Vérification…" : "Vérifier et continuer"}
               </Button>
               <FieldDescription className="text-center">
                 Didn&apos;t get it?{" "}
@@ -263,7 +263,7 @@ export function LoginForm({
                   disabled={sendCode.isPending}
                   onClick={() => sendCode.execute({ phone })}
                 >
-                  Resend code
+                  Renvoyer le code
                 </button>
               </FieldDescription>
             </Field>
@@ -272,8 +272,8 @@ export function LoginForm({
       ) : null}
 
       <FieldDescription className="px-6 text-center">
-        By continuing, you agree to our <a href="#">Terms of Service</a> and{" "}
-        <a href="#">Privacy Policy</a>.
+        En continuant, vous acceptez nos <a href="#">conditions d'utilisation</a> et notre{" "}
+        <a href="#">politique de confidentialité</a>.
       </FieldDescription>
     </div>
   )

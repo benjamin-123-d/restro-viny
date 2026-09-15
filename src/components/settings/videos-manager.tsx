@@ -31,12 +31,12 @@ export function VideosManager({
   const [caption, setCaption] = useState("");
   const { inputRef, uploading, onFile, open } = useImageUpload(
     uploadVideoAction,
-    "Video uploaded",
+    "Vidéo envoyée",
   );
 
   const addLink = useServerAction(addVideoLinkAction, {
     onSuccess: () => {
-      toast.success("Video added");
+      toast.success("Vidéo ajoutée");
       setUrl("");
       setCaption("");
       router.refresh();
@@ -45,7 +45,7 @@ export function VideosManager({
   });
   const remove = useServerAction(removeVideoAction, {
     onSuccess: () => {
-      toast.success("Video removed");
+      toast.success("Vidéo retirée");
       router.refresh();
     },
     onError: (message) => toast.error(message),
@@ -71,7 +71,7 @@ export function VideosManager({
                   ) : embed ? (
                     <iframe
                       src={embed}
-                      title={video.caption ?? "Video"}
+                      title={video.caption ?? "Vidéo"}
                       className="aspect-video w-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
@@ -90,7 +90,7 @@ export function VideosManager({
                     type="button"
                     onClick={() => remove.execute({ id: video.id })}
                     className="bg-destructive absolute top-1.5 right-1.5 rounded-full p-1 text-white"
-                    aria-label="Remove video"
+                    aria-label="Retirer la vidéo"
                   >
                     <Trash2Icon className="size-3" />
                   </button>
@@ -114,12 +114,12 @@ export function VideosManager({
             <Input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="Paste a YouTube / Instagram / Vimeo link"
+              placeholder="Collez un lien YouTube, Instagram ou Vimeo"
             />
             <Input
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              placeholder="Caption (optional)"
+              placeholder="Légende (facultatif)"
               className="sm:w-48"
             />
             <Button
@@ -144,7 +144,7 @@ export function VideosManager({
               disabled={uploading}
             >
               <UploadIcon className="size-4" />
-              {uploading ? "Uploading…" : "Upload video file"}
+              {uploading ? "Envoi…" : "Envoyer un fichier vidéo"}
             </Button>
             <input
               ref={inputRef}
@@ -154,7 +154,7 @@ export function VideosManager({
               onChange={onFile}
             />
             <p className="text-muted-foreground mt-1 text-xs">
-              MP4 / WebM / MOV, up to 25 MB.
+              MP4, WebM ou MOV, 25 Mo maximum.
             </p>
           </div>
         </div>

@@ -42,7 +42,7 @@ export function ModifierGroupsDialog({
 
   const del = useServerAction(deleteGroupAction, {
     onSuccess: () => {
-      toast.success("Group deleted")
+      toast.success("Groupe supprimé")
       onSaved()
     },
     onError: (message) => toast.error(message),
@@ -55,9 +55,9 @@ export function ModifierGroupsDialog({
           <DialogTitle>
             {editing
               ? editing === "new"
-                ? "New add-on group"
-                : "Edit add-on group"
-              : "Add-on groups"}
+                ? "Nouveau groupe d'options"
+                : "Modifier le groupe d'options"
+              : "Groupes d'options"}
           </DialogTitle>
         </DialogHeader>
 
@@ -97,7 +97,7 @@ export function ModifierGroupsDialog({
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => setEditing(g)}
-                        aria-label="Edit group"
+                        aria-label="Modifier le groupe"
                       >
                         <PencilIcon className="size-4" />
                       </Button>
@@ -105,11 +105,11 @@ export function ModifierGroupsDialog({
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => {
-                          if (confirm(`Delete "${g.name}"?`)) {
+                          if (confirm(`Supprimer « ${g.name} » ?`)) {
                             del.execute({ id: g.id })
                           }
                         }}
-                        aria-label="Delete group"
+                        aria-label="Supprimer le groupe"
                       >
                         <Trash2Icon className="size-4" />
                       </Button>
@@ -156,7 +156,7 @@ function GroupForm({
 
   const save = useServerAction(group ? updateGroupAction : createGroupAction, {
     onSuccess: () => {
-      toast.success(group ? "Group updated" : "Group created")
+      toast.success(group ? "Groupe modifié" : "Groupe créé")
       onSaved()
     },
     onError: (message) => toast.error(message),
@@ -185,7 +185,7 @@ function GroupForm({
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <Field>
-        <FieldLabel htmlFor="grp-name">Name</FieldLabel>
+        <FieldLabel htmlFor="grp-name">Nom</FieldLabel>
         <Input
           id="grp-name"
           value={name}
@@ -196,7 +196,7 @@ function GroupForm({
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field>
-          <FieldLabel htmlFor="grp-min">Min select</FieldLabel>
+          <FieldLabel htmlFor="grp-min">Choix minimum</FieldLabel>
           <Input
             id="grp-min"
             inputMode="numeric"
@@ -205,7 +205,7 @@ function GroupForm({
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="grp-max">Max select</FieldLabel>
+          <FieldLabel htmlFor="grp-max">Choix maximum</FieldLabel>
           <Input
             id="grp-max"
             inputMode="numeric"
@@ -221,7 +221,7 @@ function GroupForm({
           onCheckedChange={setRequired}
         />
         <label htmlFor="grp-req" className="text-sm">
-          Required
+          Obligatoire
         </label>
       </div>
       <div className="flex flex-col gap-2">
@@ -245,7 +245,7 @@ function GroupForm({
               variant="ghost"
               size="icon"
               onClick={() => setMods((prev) => prev.filter((_, j) => j !== i))}
-              aria-label="Remove option"
+              aria-label="Retirer l'option"
             >
               <Trash2Icon className="size-4" />
             </Button>
@@ -265,10 +265,10 @@ function GroupForm({
       </div>
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" disabled={save.isPending || !name.trim()}>
-          {save.isPending ? "Saving…" : "Save group"}
+          {save.isPending ? "Enregistrement…" : "Enregistrer le groupe"}
         </Button>
       </div>
     </form>

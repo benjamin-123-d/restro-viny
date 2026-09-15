@@ -19,9 +19,9 @@ import {
 import type { MemberDTO, RoleDTO } from "@/services/access.service";
 
 const LEVELS: readonly { value: PermissionLevel; label: string }[] = [
-  { value: "NONE", label: "No access" },
-  { value: "READ", label: "Read" },
-  { value: "EDIT", label: "Edit" },
+  { value: "NONE", label: "Aucun accès" },
+  { value: "READ", label: "Lecture" },
+  { value: "EDIT", label: "Édition" },
 ];
 
 const LEVEL_CLASS: Readonly<Record<PermissionLevel, string>> = {
@@ -72,7 +72,7 @@ const RoleChips = ({ member }: { member: MemberDTO }) => (
   <div className="flex flex-wrap gap-1">
     {member.isOwner && (
       <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
-        Owner
+        Propriétaire
       </span>
     )}
     {member.roles.map((role) => (
@@ -131,7 +131,7 @@ export const RolesManager = ({
         : await createRoleAction(payload);
 
       if (!result.success || !result.data) {
-        setError(result.error ?? "Could not save the role");
+        setError(result.error ?? "Impossible d'enregistrer le rôle");
         return;
       }
       const saved = result.data;
@@ -149,7 +149,7 @@ export const RolesManager = ({
     startTransition(async () => {
       const result = await deleteRoleAction({ id });
       if (!result.success) {
-        setError(result.error ?? "Could not delete the role");
+        setError(result.error ?? "Impossible de supprimer le rôle");
         return;
       }
       setRoles((current) => current.filter((r) => r.id !== id));
@@ -163,10 +163,10 @@ export const RolesManager = ({
       if (!result.success || !result.data) {
         setError(
           result.error === "USER_NOT_FOUND"
-            ? "No account with that phone or email yet — they need to sign in once first."
+            ? "Aucun compte avec ce téléphone ou cet e-mail : la personne doit d'abord se connecter une fois."
             : result.error === "MEMBER_EXISTS"
-              ? "That person is already a member."
-              : (result.error ?? "Could not add the member"),
+              ? "Cette personne est déjà membre."
+              : (result.error ?? "Impossible d'ajouter le membre"),
         );
         return;
       }
@@ -188,7 +188,7 @@ export const RolesManager = ({
         roleIds,
       });
       if (!result.success || !result.data) {
-        setError(result.error ?? "Could not change the roles");
+        setError(result.error ?? "Impossible de modifier les rôles");
         return;
       }
       refreshMember(result.data);
@@ -200,7 +200,7 @@ export const RolesManager = ({
     startTransition(async () => {
       const result = await removeMemberAction({ id });
       if (!result.success) {
-        setError(result.error ?? "Could not remove the member");
+        setError(result.error ?? "Impossible de retirer le membre");
         return;
       }
       setMembers((current) => current.filter((m) => m.id !== id));
@@ -218,13 +218,13 @@ export const RolesManager = ({
       {/* ------------------------------------------------------- members --- */}
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Members</h2>
+          <h2 className="text-lg font-semibold">Membres</h2>
           {canEdit && (
             <div className="flex gap-2">
               <input
                 value={handle}
                 onChange={(e) => setHandle(e.target.value)}
-                placeholder="+22997000000 or name@email.com"
+                placeholder="+33612345678 ou nom@email.fr"
                 className="w-64 rounded-md border px-3 py-1.5 text-sm"
               />
               <button
@@ -233,7 +233,7 @@ export const RolesManager = ({
                 disabled={pending || handle.trim().length < 3}
                 className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
               >
-                Add member
+                Ajouter un membre
               </button>
             </div>
           )}
@@ -243,9 +243,9 @@ export const RolesManager = ({
           <table className="w-full min-w-[720px] text-sm">
             <thead className="border-b bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
               <tr>
-                <th className="px-3 py-2 font-medium">Person</th>
-                <th className="px-3 py-2 font-medium">Roles</th>
-                <th className="px-3 py-2 font-medium">Can edit</th>
+                <th className="px-3 py-2 font-medium">Personne</th>
+                <th className="px-3 py-2 font-medium">Rôles</th>
+                <th className="px-3 py-2 font-medium">Peut modifier</th>
                 {canEdit && <th className="px-3 py-2 font-medium" />}
               </tr>
             </thead>
@@ -300,9 +300,9 @@ export const RolesManager = ({
                     </td>
                     <td className="px-3 py-2 text-xs text-zinc-600">
                       {member.isOwner
-                        ? "Everything"
+                        ? "Tout"
                         : editable.length === 0
-                          ? "Nothing"
+                          ? "Rien"
                           : editable.map((m) => MODULE_LABEL[m]).join(", ")}
                     </td>
                     {canEdit && (
@@ -314,7 +314,7 @@ export const RolesManager = ({
                             disabled={pending}
                             className="text-xs font-medium text-red-600 hover:underline disabled:opacity-40"
                           >
-                            Remove
+                            Retirer
                           </button>
                         )}
                       </td>
@@ -330,14 +330,14 @@ export const RolesManager = ({
       {/* --------------------------------------------------------- roles --- */}
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Roles</h2>
+          <h2 className="text-lg font-semibold">Rôles</h2>
           {canEdit && !draft && (
             <button
               type="button"
               onClick={() => setDraft(newDraft())}
               className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white"
             >
-              New role
+              Nouveau rôle
             </button>
           )}
         </div>
@@ -346,7 +346,7 @@ export const RolesManager = ({
           <div className="flex flex-col gap-4 rounded-lg border bg-white p-4">
             <div className="flex flex-wrap items-end gap-3">
               <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
-                Name
+                Nom
                 <input
                   value={draft.name}
                   onChange={(e) =>
@@ -356,7 +356,7 @@ export const RolesManager = ({
                 />
               </label>
               <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
-                Colour
+                Couleur
                 <input
                   type="color"
                   value={draft.color}
@@ -367,7 +367,7 @@ export const RolesManager = ({
                 />
               </label>
               <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
-                Rank
+                Rang
                 <input
                   type="number"
                   value={draft.rank}
@@ -406,7 +406,7 @@ export const RolesManager = ({
               }
             >
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
-                Permissions
+                Droits
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {PERMISSION_MODULES.map((module) => (
@@ -453,14 +453,14 @@ export const RolesManager = ({
                 disabled={pending || draft.name.trim().length === 0}
                 className="rounded-md bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40"
               >
-                {pending ? "Saving…" : "Save role"}
+                {pending ? "Enregistrement…" : "Enregistrer le rôle"}
               </button>
               <button
                 type="button"
                 onClick={() => setDraft(null)}
                 className="rounded-md border px-4 py-1.5 text-sm font-medium text-zinc-700"
               >
-                Cancel
+                Annuler
               </button>
             </div>
           </div>
@@ -523,7 +523,7 @@ export const RolesManager = ({
                     onClick={() => setDraft(draftFrom(role))}
                     className="text-xs font-medium text-blue-700 hover:underline"
                   >
-                    Edit
+                    Modifier
                   </button>
                   {!role.isSystem && role.memberCount === 0 && (
                     <button
@@ -532,7 +532,7 @@ export const RolesManager = ({
                       disabled={pending}
                       className="text-xs font-medium text-red-600 hover:underline disabled:opacity-40"
                     >
-                      Delete
+                      Supprimer
                     </button>
                   )}
                 </div>

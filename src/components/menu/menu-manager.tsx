@@ -57,7 +57,7 @@ const DIET_DOT: Record<string, string> = {
 }
 
 const REASON_LABEL: Record<string, string> = {
-  OUT_OF_STOCK: "Out of stock",
+  OUT_OF_STOCK: "Rupture de stock",
   QUALITY: "Quality",
   PREP_TIME: "Prep time",
   OTHER: "Off",
@@ -96,21 +96,21 @@ export function MenuManager({
 
   const deleteCategory = useServerAction(deleteCategoryAction, {
     onSuccess: () => {
-      toast.success("Category deleted")
+      toast.success("Catégorie supprimée")
       refresh()
     },
     onError: (message) => toast.error(message),
   })
   const deleteItem = useServerAction(deleteItemAction, {
     onSuccess: () => {
-      toast.success("Item deleted")
+      toast.success("Article supprimé")
       refresh()
     },
     onError: (message) => toast.error(message),
   })
   const reenable = useServerAction(reenableItemAction, {
     onSuccess: () => {
-      toast.success("Item available again")
+      toast.success("Article de nouveau disponible")
       refresh()
     },
     onError: (message) => toast.error(message),
@@ -120,8 +120,8 @@ export function MenuManager({
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageHeader
-          title="Menu"
-          description="Categories, dishes, prices, add-ons and availability."
+          title="Carte"
+          description="Catégories, plats, prix, options et disponibilité."
         />
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => setGroupsOpen(true)}>
@@ -144,8 +144,8 @@ export function MenuManager({
 
       {menu.categories.length === 0 ? (
         <EmptyState
-          title="No categories yet"
-          description="Create a category (e.g. Starters) to start adding dishes."
+          title="Aucune catégorie"
+          description="Créez une catégorie (ex. Entrées) pour ajouter vos plats."
         />
       ) : (
         <div className="flex flex-col gap-8">
@@ -169,7 +169,7 @@ export function MenuManager({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label="Edit category"
+                      aria-label="Modifier la catégorie"
                       onClick={() =>
                         setCategoryDialog({ open: true, category })
                       }
@@ -179,9 +179,9 @@ export function MenuManager({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label="Delete category"
+                      aria-label="Supprimer la catégorie"
                       onClick={() => {
-                        if (window.confirm(`Delete category "${category.name}"?`)) {
+                        if (window.confirm(`Supprimer la catégorie « ${category.name} » ?`)) {
                           deleteCategory.execute({ id: category.id })
                         }
                       }}
@@ -193,7 +193,7 @@ export function MenuManager({
 
                 {items.length === 0 ? (
                   <p className="text-muted-foreground text-sm">
-                    No dishes in this category yet.
+                    Aucun plat dans cette catégorie.
                   </p>
                 ) : (
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -203,7 +203,7 @@ export function MenuManager({
                         item={item}
                         onEdit={() => setItemDialog({ open: true, item })}
                         onDelete={() => {
-                          if (window.confirm(`Delete "${item.name}"?`)) {
+                          if (window.confirm(`Supprimer « ${item.name} » ?`)) {
                             deleteItem.execute({ id: item.id })
                           }
                         }}
@@ -322,14 +322,14 @@ function ItemCard({
               </Badge>
             ) : (
               <Badge variant="destructive">
-                Unavailable
+                Indisponible
                 {item.disabledReason
                   ? ` · ${REASON_LABEL[item.disabledReason] ?? "Off"}`
                   : ""}
               </Badge>
             )}
             <Badge variant="secondary">
-              {item.tax.kind === "NONE" ? "No GST" : `GST ${item.tax.rate}%`}
+              {item.tax.kind === "NONE" ? "Sans TVA" : `TVA ${item.tax.rate.toLocaleString("fr-FR")} %`}
             </Badge>
             {item.variants.length ? (
               <Badge variant="outline">{item.variants.length} sizes</Badge>
@@ -340,20 +340,20 @@ function ItemCard({
       <div className="flex justify-end gap-1">
         {item.available ? (
           <Button variant="ghost" size="sm" onClick={on86}>
-            Mark unavailable
+            Marquer indisponible
           </Button>
         ) : (
           <Button variant="ghost" size="sm" onClick={onReenable}>
-            Available again
+            De nouveau disponible
           </Button>
         )}
         <Button variant="ghost" size="sm" onClick={onRecipe}>
-          Recipe
+          Recette
         </Button>
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="Edit item"
+          aria-label="Modifier l'article"
           onClick={onEdit}
         >
           <PencilIcon className="size-4" />
@@ -361,7 +361,7 @@ function ItemCard({
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="Delete item"
+          aria-label="Supprimer l'article"
           onClick={onDelete}
         >
           <Trash2Icon className="size-4" />

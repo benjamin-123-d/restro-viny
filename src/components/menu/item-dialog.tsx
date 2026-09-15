@@ -38,9 +38,9 @@ type VariantRow = { name: string; price: string }
 
 const DIETARY = [
   { value: "NONE", label: "Not set" },
-  { value: "VEG", label: "Veg" },
-  { value: "NON_VEG", label: "Non-veg" },
-  { value: "EGG", label: "Egg" },
+  { value: "VEG", label: "Végétarien" },
+  { value: "NON_VEG", label: "Viande / poisson" },
+  { value: "EGG", label: "Contient des œufs" },
 ]
 
 export function ItemDialog({
@@ -88,7 +88,7 @@ export function ItemDialog({
 
   const save = useServerAction(item ? updateItemAction : createItemAction, {
     onSuccess: () => {
-      toast.success(item ? "Item updated" : "Item created")
+      toast.success(item ? "Article modifié" : "Article créé")
       onOpenChange(false)
       onSaved()
     },
@@ -131,11 +131,11 @@ export function ItemDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{item ? "Edit item" : "New item"}</DialogTitle>
+          <DialogTitle>{item ? "Modifier l'article" : "Nouvel article"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4">
           <Field>
-            <FieldLabel htmlFor="item-name">Name</FieldLabel>
+            <FieldLabel htmlFor="item-name">Nom</FieldLabel>
             <Input
               id="item-name"
               value={name}
@@ -147,7 +147,7 @@ export function ItemDialog({
 
           <div className="grid grid-cols-2 gap-3">
             <Field>
-              <FieldLabel htmlFor="item-category">Category</FieldLabel>
+              <FieldLabel htmlFor="item-category">Catégorie</FieldLabel>
               <Select
                 value={categoryId}
                 onValueChange={(v) => v && setCategoryId(v)}
@@ -155,7 +155,7 @@ export function ItemDialog({
                 <SelectTrigger id="item-category">
                   <span>
                     {categories.find((c) => c.id === categoryId)?.name ??
-                      "Select"}
+                      "Choisir"}
                   </span>
                 </SelectTrigger>
                 <SelectContent>
@@ -202,11 +202,11 @@ export function ItemDialog({
               <Select value={itemType} onValueChange={(v) => v && setItemType(v)}>
                 <SelectTrigger id="item-type">
                   <span>
-                    {itemType === "PACKAGED_GOODS" ? "Packaged goods" : "Served"}
+                    {itemType === "PACKAGED_GOODS" ? "Produit emballé" : "Servi en salle"}
                   </span>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="SERVED">Served</SelectItem>
+                  <SelectItem value="SERVED">Servi en salle</SelectItem>
                   <SelectItem value="PACKAGED_GOODS">Packaged goods</SelectItem>
                 </SelectContent>
               </Select>
@@ -249,7 +249,7 @@ export function ItemDialog({
                   </Field>
                 ) : (
                   <p className="text-muted-foreground col-span-2 text-xs">
-                    Served items use the restaurant service GST rate.
+                    La TVA dépend de la catégorie (repas, boisson) et du mode de service.
                   </p>
                 )}
                 <Field>
@@ -269,7 +269,7 @@ export function ItemDialog({
                   onCheckedChange={setInclusive}
                 />
                 <label htmlFor="item-inclusive" className="text-sm">
-                  Price includes GST
+                  Prix TTC (TVA incluse)
                 </label>
               </div>
             </div>
@@ -285,7 +285,7 @@ export function ItemDialog({
                   onChange={(e) => setVariant(i, "name", e.target.value)}
                 />
                 <Input
-                  placeholder="Price"
+                  placeholder="Prix"
                   inputMode="decimal"
                   value={v.price}
                   onChange={(e) => setVariant(i, "price", e.target.value)}
@@ -298,7 +298,7 @@ export function ItemDialog({
                   onClick={() =>
                     setVariants((prev) => prev.filter((_, j) => j !== i))
                   }
-                  aria-label="Remove variant"
+                  aria-label="Retirer la variante"
                 >
                   <Trash2Icon className="size-4" />
                 </Button>
@@ -319,7 +319,7 @@ export function ItemDialog({
 
           {groups.length ? (
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium">Add-on groups</span>
+              <span className="text-sm font-medium">Groupes d'options</span>
               <div className="flex flex-col gap-1.5">
                 {groups.map((g) => (
                   <label
@@ -353,7 +353,7 @@ export function ItemDialog({
               onCheckedChange={setIsActive}
             />
             <label htmlFor="item-active" className="text-sm">
-              Available on the menu
+              Disponible à la carte
             </label>
           </div>
 
@@ -361,13 +361,13 @@ export function ItemDialog({
             <ImageManager itemId={item.id} images={item.images} />
           ) : (
             <p className="text-muted-foreground text-sm">
-              Save the item first to add photos.
+              Enregistrez d'abord l'article pour ajouter des photos.
             </p>
           )}
 
           <DialogFooter>
             <Button type="submit" disabled={save.isPending || !canSave}>
-              {save.isPending ? "Saving…" : "Save item"}
+              {save.isPending ? "Enregistrement…" : "Enregistrer l'article"}
             </Button>
           </DialogFooter>
         </form>

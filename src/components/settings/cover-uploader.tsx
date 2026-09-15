@@ -20,16 +20,16 @@ export function CoverUploader({
   const router = useRouter();
   const { inputRef, uploading, onFile, open } = useImageUpload(
     uploadCoverAction,
-    "Cover updated",
+    "Bannière mise à jour",
   );
 
   const remove = async () => {
     const result = await removeCoverAction();
     if (result.success) {
-      toast.success("Cover removed");
+      toast.success("Bannière retirée");
       router.refresh();
     } else {
-      toast.error(result.error ?? "Failed");
+      toast.error(result.error ?? "Échec");
     }
   };
 
@@ -54,7 +54,7 @@ export function CoverUploader({
           disabled={uploading}
         >
           <UploadIcon className="size-3.5" />
-          {coverUrl ? "Change" : "Add cover"}
+          {coverUrl ? "Changer" : "Ajouter une bannière"}
         </Button>
         {coverUrl ? (
           <Button
@@ -62,7 +62,7 @@ export function CoverUploader({
             size="icon-sm"
             variant="secondary"
             onClick={remove}
-            aria-label="Remove cover"
+            aria-label="Retirer la bannière"
           >
             <XIcon className="size-3.5" />
           </Button>

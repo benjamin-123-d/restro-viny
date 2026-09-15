@@ -44,7 +44,7 @@ export function BulkReceiveDialog({
 
   const save = useServerAction(bulkReceiveAction, {
     onSuccess: () => {
-      toast.success(`Received ${rows.length} item${rows.length === 1 ? "" : "s"}`);
+      toast.success(`${rows.length} article${rows.length === 1 ? "" : "s"} entré${rows.length === 1 ? "" : "s"} en stock`);
       onOpenChange(false);
       onDone();
     },
@@ -55,12 +55,12 @@ export function BulkReceiveDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="flex h-[85vh] max-h-[85vh] w-[95vw] flex-col sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Receive stock</DialogTitle>
+          <DialogTitle>Entrée en stock</DialogTitle>
         </DialogHeader>
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search items…"
+          placeholder="Rechercher un article…"
         />
         <div className="min-h-0 flex-1 divide-y overflow-y-auto rounded-md border">
           {visible.map((item) => (
@@ -83,7 +83,7 @@ export function BulkReceiveDialog({
             </div>
           ))}
           {visible.length === 0 ? (
-            <p className="text-muted-foreground p-3 text-sm">No items.</p>
+            <p className="text-muted-foreground p-3 text-sm">Aucun article.</p>
           ) : null}
         </div>
         <DialogFooter>
@@ -91,7 +91,7 @@ export function BulkReceiveDialog({
             disabled={rows.length === 0 || save.isPending}
             onClick={() => save.execute({ rows })}
           >
-            {save.isPending ? "Saving…" : `Receive ${rows.length} item(s)`}
+            {save.isPending ? "Enregistrement…" : `Entrer ${rows.length} article(s)`}
           </Button>
         </DialogFooter>
       </DialogContent>

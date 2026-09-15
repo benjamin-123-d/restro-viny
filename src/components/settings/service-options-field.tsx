@@ -11,14 +11,14 @@ const ROWS: readonly {
   label: string;
   hint: string;
 }[] = [
-  { key: "dineIn", type: "DINE_IN", label: "Dine-in", hint: "Seat guests at tables" },
+  { key: "dineIn", type: "DINE_IN", label: "Sur place", hint: "Clients servis à table" },
   {
     key: "takeaway",
     type: "TAKEAWAY",
-    label: "Takeaway",
-    hint: "Counter / pickup orders",
+    label: "À emporter",
+    hint: "Commandes au comptoir ou à retirer",
   },
-  { key: "delivery", type: "DELIVERY", label: "Delivery", hint: "Send orders out" },
+  { key: "delivery", type: "DELIVERY", label: "Livraison", hint: "Commandes livrées" },
 ];
 
 export function ServiceOptionsField({
@@ -62,7 +62,7 @@ export function ServiceOptionsField({
                     : "text-muted-foreground hover:border-primary",
                 )}
               >
-                {isDefault ? "Default" : "Set default"}
+                {isDefault ? "Par défaut" : "Mettre par défaut"}
               </button>
               <Switch
                 checked={enabled}
@@ -73,8 +73,8 @@ export function ServiceOptionsField({
         );
       })}
       <p className="text-muted-foreground text-xs">
-        These control which order types appear in the POS — the default is
-        pre-selected there.
+        Ces choix décident des modes proposés en caisse ; celui par défaut y est
+        présélectionné.
       </p>
     </div>
   );

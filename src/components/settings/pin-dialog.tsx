@@ -34,7 +34,7 @@ export function PinDialog({
 
   const save = useServerAction(setPinAction, {
     onSuccess: () => {
-      toast.success(mode === "set" ? "PIN enabled" : "PIN updated");
+      toast.success(mode === "set" ? "Code PIN activé" : "Code PIN modifié");
       onOpenChange(false);
       onSaved();
     },
@@ -44,7 +44,7 @@ export function PinDialog({
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
     if (pin !== confirm) {
-      setError("PINs don't match");
+      setError("Les deux codes ne correspondent pas");
       return;
     }
     setError(null);
@@ -57,11 +57,11 @@ export function PinDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>{mode === "set" ? "Set a sign-in PIN" : "Change PIN"}</DialogTitle>
+          <DialogTitle>{mode === "set" ? "Créer un code PIN de connexion" : "Changer le code PIN"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4">
           <Field>
-            <FieldLabel htmlFor="pin-new">New PIN (4–6 digits)</FieldLabel>
+            <FieldLabel htmlFor="pin-new">Nouveau code (4 à 6 chiffres)</FieldLabel>
             <Input
               id="pin-new"
               type="password"
@@ -78,7 +78,7 @@ export function PinDialog({
             <FieldDescription>6 digits recommended.</FieldDescription>
           </Field>
           <Field>
-            <FieldLabel htmlFor="pin-confirm">Confirm PIN</FieldLabel>
+            <FieldLabel htmlFor="pin-confirm">Confirmer le code</FieldLabel>
             <Input
               id="pin-confirm"
               type="password"
@@ -99,7 +99,7 @@ export function PinDialog({
           </Field>
           <DialogFooter>
             <Button type="submit" disabled={save.isPending || !valid}>
-              {save.isPending ? "Saving…" : "Save PIN"}
+              {save.isPending ? "Enregistrement…" : "Enregistrer le code"}
             </Button>
           </DialogFooter>
         </form>

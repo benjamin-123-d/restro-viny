@@ -61,7 +61,7 @@ export function StockItemDialog({
 
   const save = useServerAction(item ? updateStockItemAction : createStockItemAction, {
     onSuccess: () => {
-      toast.success(item ? "Item updated" : "Item added");
+      toast.success(item ? "Article modifié" : "Article ajouté");
       onOpenChange(false);
       onSaved();
     },
@@ -92,12 +92,12 @@ export function StockItemDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{item ? "Edit item" : "New stock item"}</DialogTitle>
+          <DialogTitle>{item ? "Modifier l'article" : "Nouvel article de stock"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
             <Field className="col-span-2">
-              <FieldLabel htmlFor="s-name">Name</FieldLabel>
+              <FieldLabel htmlFor="s-name">Nom</FieldLabel>
               <Input
                 id="s-name"
                 value={name}
@@ -107,7 +107,7 @@ export function StockItemDialog({
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="s-unit">Unit</FieldLabel>
+              <FieldLabel htmlFor="s-unit">Unité</FieldLabel>
               <Select value={unit} onValueChange={(v) => v && setUnit(v as StockUnit)}>
                 <SelectTrigger id="s-unit">
                   <span>
@@ -124,7 +124,7 @@ export function StockItemDialog({
               </Select>
             </Field>
             <Field>
-              <FieldLabel htmlFor="s-cat">Category</FieldLabel>
+              <FieldLabel htmlFor="s-cat">Famille</FieldLabel>
               <Input
                 id="s-cat"
                 value={category}
@@ -136,7 +136,7 @@ export function StockItemDialog({
 
           {item ? null : (
             <Field>
-              <FieldLabel htmlFor="s-opening">Opening stock on hand</FieldLabel>
+              <FieldLabel htmlFor="s-opening">Stock de départ</FieldLabel>
               <Input
                 id="s-opening"
                 inputMode="decimal"
@@ -149,7 +149,7 @@ export function StockItemDialog({
 
           <div className="grid grid-cols-3 gap-3">
             <Field>
-              <FieldLabel htmlFor="s-reorder">Reorder at</FieldLabel>
+              <FieldLabel htmlFor="s-reorder">Seuil de réapprovisionnement</FieldLabel>
               <Input
                 id="s-reorder"
                 inputMode="decimal"
@@ -169,7 +169,7 @@ export function StockItemDialog({
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="s-cost">Cost / unit</FieldLabel>
+              <FieldLabel htmlFor="s-cost">Coût HT / unité</FieldLabel>
               <Input
                 id="s-cost"
                 inputMode="decimal"
@@ -181,7 +181,7 @@ export function StockItemDialog({
           </div>
 
           <Field>
-            <FieldLabel htmlFor="s-supplier">Supplier</FieldLabel>
+            <FieldLabel htmlFor="s-supplier">Fournisseur</FieldLabel>
             <Input
               id="s-supplier"
               value={supplier}
@@ -190,7 +190,7 @@ export function StockItemDialog({
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="s-notes">Notes</FieldLabel>
+            <FieldLabel htmlFor="s-notes">Remarques</FieldLabel>
             <Textarea
               id="s-notes"
               value={notes}
@@ -202,13 +202,13 @@ export function StockItemDialog({
           <div className="flex items-center gap-2">
             <Switch id="s-active" checked={isActive} onCheckedChange={setIsActive} />
             <label htmlFor="s-active" className="text-sm">
-              Active
+              Actif
             </label>
           </div>
 
           <DialogFooter>
             <Button type="submit" disabled={save.isPending || !name.trim()}>
-              {save.isPending ? "Saving…" : "Save"}
+              {save.isPending ? "Enregistrement…" : "Enregistrer"}
             </Button>
           </DialogFooter>
         </form>

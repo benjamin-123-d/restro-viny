@@ -69,10 +69,10 @@ export function TableShareDialog({
     try {
       await navigator.clipboard.writeText(link);
       setCopied(true);
-      toast.success("Link copied");
+      toast.success("Lien copié");
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      toast.error("Couldn't copy the link");
+      toast.error("Impossible de copier le lien");
     }
   };
 
@@ -86,7 +86,7 @@ export function TableShareDialog({
         {!selfOrderEnabled ? (
           <p className="rounded-md bg-amber-50 p-2 text-xs text-amber-800">
             Guest self-ordering is off. Turn it on in{" "}
-            <span className="font-medium">Settings → Guest self-ordering</span>{" "}
+            <span className="font-medium">Réglages → Commande en ligne</span>{" "}
             for this link to work.
           </p>
         ) : null}
@@ -95,7 +95,7 @@ export function TableShareDialog({
           {qr ? (
             <Image
               src={qr}
-              alt={`QR code for ${table.label}`}
+              alt={`QR code de ${table.label}`}
               width={200}
               height={200}
               unoptimized
@@ -115,7 +115,7 @@ export function TableShareDialog({
             size="icon"
             variant="outline"
             onClick={copy}
-            aria-label="Copy link"
+            aria-label="Copier le lien"
           >
             {copied ? (
               <CheckIcon className="size-4" />

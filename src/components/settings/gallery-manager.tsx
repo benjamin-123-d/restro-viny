@@ -23,11 +23,11 @@ export function GalleryManager({
   const router = useRouter();
   const { inputRef, uploading, onFile, open } = useImageUpload(
     uploadGalleryImageAction,
-    "Photo added",
+    "Photo ajoutée",
   );
   const remove = useServerAction(removeGalleryImageAction, {
     onSuccess: () => {
-      toast.success("Photo removed");
+      toast.success("Photo retirée");
       router.refresh();
     },
     onError: (message) => toast.error(message),
@@ -48,7 +48,7 @@ export function GalleryManager({
             type="button"
             onClick={() => remove.execute({ imageId: image.id })}
             className="bg-destructive absolute -top-1.5 -right-1.5 rounded-full p-1 text-white"
-            aria-label="Remove photo"
+            aria-label="Retirer la photo"
           >
             <Trash2Icon className="size-3" />
           </button>
@@ -60,7 +60,7 @@ export function GalleryManager({
           onClick={open}
           disabled={uploading}
           className="text-muted-foreground flex size-24 items-center justify-center rounded-md border border-dashed disabled:opacity-50"
-          aria-label="Add photo"
+          aria-label="Ajouter une photo"
         >
           <UploadIcon className="size-5" />
         </button>

@@ -81,7 +81,7 @@ export function StaffDialog({
 
   const save = useServerAction(staff ? updateStaffAction : createStaffAction, {
     onSuccess: () => {
-      toast.success(staff ? "Staff updated" : "Staff added");
+      toast.success(staff ? "Membre modifié" : "Membre ajouté");
       onOpenChange(false);
       onSaved();
     },
@@ -125,7 +125,7 @@ export function StaffDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{staff ? "Edit staff" : "New staff member"}</DialogTitle>
+          <DialogTitle>{staff ? "Modifier le membre" : "Nouveau membre du personnel"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-5">
           {staff ? (
@@ -153,7 +153,7 @@ export function StaffDialog({
               />
             </Field>
             <Field className="col-span-2">
-              <FieldLabel htmlFor="st-phone">Phone</FieldLabel>
+              <FieldLabel htmlFor="st-phone">Téléphone</FieldLabel>
               <PhoneInput
                 id="st-phone"
                 initialValue={staff?.phone}
@@ -161,7 +161,7 @@ export function StaffDialog({
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="st-role">Role</FieldLabel>
+              <FieldLabel htmlFor="st-role">Rôle</FieldLabel>
               <Select value={role} onValueChange={(v) => v && setRole(v as StaffRole)}>
                 <SelectTrigger id="st-role">
                   <span>
@@ -178,7 +178,7 @@ export function StaffDialog({
               </Select>
             </Field>
             <Field>
-              <FieldLabel htmlFor="st-status">Status</FieldLabel>
+              <FieldLabel htmlFor="st-status">Statut</FieldLabel>
               <Select
                 value={status}
                 onValueChange={(v) => v && setStatus(v as StaffStatus)}
@@ -201,7 +201,7 @@ export function StaffDialog({
 
           {staff ? null : (
             <Field>
-              <FieldLabel htmlFor="st-pin">POS PIN (4–6 digits)</FieldLabel>
+              <FieldLabel htmlFor="st-pin">Code PIN caisse (4 à 6 chiffres)</FieldLabel>
               <Input
                 id="st-pin"
                 inputMode="numeric"
@@ -211,7 +211,7 @@ export function StaffDialog({
                 placeholder="••••"
               />
               <p className="text-muted-foreground text-xs">
-                Used at the POS. Not a login password.
+                Utilisé à la caisse. Ce n'est pas un mot de passe de connexion.
               </p>
             </Field>
           )}
@@ -222,7 +222,7 @@ export function StaffDialog({
             </p>
             <div className="grid grid-cols-2 gap-3">
               <Field className="col-span-2">
-                <FieldLabel htmlFor="st-email">Email</FieldLabel>
+                <FieldLabel htmlFor="st-email">E-mail</FieldLabel>
                 <Input
                   id="st-email"
                   type="email"
@@ -232,7 +232,7 @@ export function StaffDialog({
                 />
               </Field>
               <Field className="col-span-2">
-                <FieldLabel htmlFor="st-addr1">Address</FieldLabel>
+                <FieldLabel htmlFor="st-addr1">Adresse</FieldLabel>
                 <Input
                   id="st-addr1"
                   value={form.addressLine1}
@@ -242,10 +242,10 @@ export function StaffDialog({
               </Field>
               <Field className="col-span-2">
                 <Input
-                  aria-label="Address line 2"
+                  aria-label="Complément d'adresse"
                   value={form.addressLine2}
                   onChange={set("addressLine2")}
-                  placeholder="Apartment, landmark (optional)"
+                  placeholder="Bâtiment, étage (facultatif)"
                 />
               </Field>
               <Field>
@@ -265,7 +265,7 @@ export function StaffDialog({
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="st-dob">Date of birth</FieldLabel>
+                <FieldLabel htmlFor="st-dob">Date de naissance</FieldLabel>
                 <Input
                   id="st-dob"
                   type="date"
@@ -282,7 +282,7 @@ export function StaffDialog({
                   <SelectTrigger id="st-gender">
                     <span>
                       {GENDER_OPTIONS.find((o) => o.value === gender)?.label ??
-                        "Select"}
+                        "Choisir"}
                     </span>
                   </SelectTrigger>
                   <SelectContent>
@@ -321,7 +321,7 @@ export function StaffDialog({
                     <span>
                       {EMPLOYMENT_TYPE_OPTIONS.find(
                         (o) => o.value === employmentType,
-                      )?.label ?? "Select"}
+                      )?.label ?? "Choisir"}
                     </span>
                   </SelectTrigger>
                   <SelectContent>
@@ -339,7 +339,7 @@ export function StaffDialog({
                   id="st-ec-name"
                   value={form.emergencyContactName}
                   onChange={set("emergencyContactName")}
-                  placeholder="Name"
+                  placeholder="Nom"
                 />
               </Field>
               <Field>
@@ -348,11 +348,11 @@ export function StaffDialog({
                   id="st-ec-phone"
                   value={form.emergencyContactPhone}
                   onChange={set("emergencyContactPhone")}
-                  placeholder="Phone"
+                  placeholder="Téléphone"
                 />
               </Field>
               <Field className="col-span-2">
-                <FieldLabel htmlFor="st-notes">Notes</FieldLabel>
+                <FieldLabel htmlFor="st-notes">Remarques</FieldLabel>
                 <Textarea
                   id="st-notes"
                   value={form.notes}
@@ -365,7 +365,7 @@ export function StaffDialog({
 
           <DialogFooter>
             <Button type="submit" disabled={disabled}>
-              {save.isPending ? "Saving…" : "Save"}
+              {save.isPending ? "Enregistrement…" : "Enregistrer"}
             </Button>
           </DialogFooter>
         </form>

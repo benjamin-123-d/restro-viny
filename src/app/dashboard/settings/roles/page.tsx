@@ -15,12 +15,12 @@ export default async function RolesPage() {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
-          title="Roles & access"
-          description="Decide who can see and change what."
+          title="Rôles et accès"
+          description="Qui peut voir et modifier quoi."
         />
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -30,10 +30,10 @@ export default async function RolesPage() {
   if (!access) {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
-        <PageHeader title="Roles & access" description="" />
+        <PageHeader title="Rôles et accès" description="" />
         <EmptyState
-          title="No access"
-          description="You are not a member of this restaurant."
+          title="Pas d'accès"
+          description="Vous n'êtes pas membre de ce restaurant."
         />
       </div>
     );
@@ -48,8 +48,8 @@ export default async function RolesPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Roles & access"
-        description="Give people roles, and each role a level per area — read, edit, or nothing. Someone with two roles gets the best of both."
+        title="Rôles et accès"
+        description="Donnez des rôles aux personnes, et à chaque rôle un niveau par module : lecture, édition ou rien. Avec deux rôles, on cumule le meilleur des deux."
       />
       <RolesManager
         initialRoles={roles}

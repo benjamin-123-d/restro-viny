@@ -8,8 +8,8 @@ import { staffLogoutAction } from "@/actions/staff-auth.actions";
 import { Button } from "@/components/ui/button";
 
 const ROLE_LABEL: Record<string, string> = {
-  WAITER: "Waiter",
-  KITCHEN: "Kitchen",
+  WAITER: "Serveur",
+  KITCHEN: "Cuisine",
 };
 
 export function StaffHome({
@@ -47,11 +47,11 @@ export function StaffHome({
 
       <div className="border-border/60 rounded-lg border border-dashed p-6 text-center">
         <p className="font-medium">
-          {role === "KITCHEN" ? "Kitchen display" : "Order taking"} is coming
-          next.
+          {role === "KITCHEN" ? "L'écran cuisine" : "La prise de commande"} arrive
+          bientôt.
         </p>
         <p className="text-muted-foreground mt-1 text-sm">
-          You&apos;re signed in. Your work screen will appear here.
+          Vous êtes connecté. Votre écran de travail s&apos;affichera ici.
         </p>
       </div>
     </div>

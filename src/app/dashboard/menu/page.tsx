@@ -14,12 +14,12 @@ export default async function MenuPage() {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
-          title="Menu"
-          description="Manage your categories, dishes, prices and availability."
+          title="Carte"
+          description="Vos catégories, plats, prix et disponibilités."
         />
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant, then come back to build your menu."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant pour composer la carte."
         />
       </div>
     );

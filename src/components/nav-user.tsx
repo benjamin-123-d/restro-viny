@@ -82,12 +82,12 @@ export function NavUser({
               <DropdownMenuItem>
                 <CircleUserRoundIcon
                 />
-                Account
+                Compte
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCardIcon
                 />
-                Billing
+                Facturation
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <BellIcon
@@ -99,7 +99,7 @@ export function NavUser({
             <DropdownMenuItem onClick={() => void logoutAction()}>
               <LogOutIcon
               />
-              Log out
+              Se déconnecter
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

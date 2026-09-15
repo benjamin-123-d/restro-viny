@@ -130,19 +130,19 @@ export const DEFAULT_ROLES: readonly {
   permissions: Partial<Record<PermissionModule, PermissionLevel>>;
 }[] = [
   {
-    name: "Administrator",
+    name: "Administrateur",
     color: "#8B54FE",
     rank: 100,
     isAdmin: true,
-    description: "Full access to everything, including roles and settings.",
+    description: "Accès complet, rôles et réglages compris.",
     permissions: {},
   },
   {
-    name: "Manager",
+    name: "Gérant",
     color: "#2563EB",
     rank: 80,
     isAdmin: false,
-    description: "Runs the day to day: buying, selling, stock and the menu.",
+    description: "Gère le quotidien : achats, ventes, stock et carte.",
     permissions: {
       PURCHASING: "EDIT",
       SELLING: "EDIT",
@@ -156,11 +156,11 @@ export const DEFAULT_ROLES: readonly {
     },
   },
   {
-    name: "Buyer",
+    name: "Acheteur",
     color: "#059669",
     rank: 60,
     isAdmin: false,
-    description: "Raises orders and receives deliveries.",
+    description: "Passe les commandes et réceptionne les livraisons.",
     permissions: {
       PURCHASING: "EDIT",
       STOCK: "EDIT",
@@ -169,11 +169,11 @@ export const DEFAULT_ROLES: readonly {
     },
   },
   {
-    name: "Stores clerk",
+    name: "Magasinier",
     color: "#D97706",
     rank: 40,
     isAdmin: false,
-    description: "Counts and moves stock, but does not set prices.",
+    description: "Compte et déplace le stock, sans fixer les prix.",
     permissions: {
       STOCK: "EDIT",
       INVENTORY: "EDIT",
@@ -181,11 +181,11 @@ export const DEFAULT_ROLES: readonly {
     },
   },
   {
-    name: "Accountant",
+    name: "Comptable",
     color: "#4B5563",
     rank: 30,
     isAdmin: false,
-    description: "Sees the money without changing operations.",
+    description: "Voit les chiffres sans modifier l'exploitation.",
     permissions: {
       PURCHASING: "READ",
       SELLING: "READ",
@@ -197,11 +197,11 @@ export const DEFAULT_ROLES: readonly {
     },
   },
   {
-    name: "Viewer",
+    name: "Lecture seule",
     color: "#6B7280",
     rank: 10,
     isAdmin: false,
-    description: "Read-only across the business.",
+    description: "Consultation de tout, sans modification.",
     permissions: {
       PURCHASING: "READ",
       SELLING: "READ",
@@ -217,15 +217,15 @@ export const DEFAULT_ROLES: readonly {
 
 /** Human labels for the module list, used by the permission matrix. */
 export const MODULE_LABEL: Readonly<Record<PermissionModule, string>> = {
-  PURCHASING: "Purchasing",
-  SELLING: "Selling",
+  PURCHASING: "Achats",
+  SELLING: "Ventes aux entreprises",
   STOCK: "Stock",
-  INVENTORY: "Inventory",
-  MENU: "Menu",
-  ORDERS: "Orders & POS",
+  INVENTORY: "Inventaire et food cost",
+  MENU: "Carte",
+  ORDERS: "Commandes et caisse",
   TABLES: "Tables",
-  STAFF: "Staff",
-  REPORTS: "Reports",
-  ACCOUNTING: "Accounting",
-  SETTINGS: "Settings",
+  STAFF: "Personnel",
+  REPORTS: "Ventes et statistiques",
+  ACCOUNTING: "Comptabilité",
+  SETTINGS: "Réglages",
 };

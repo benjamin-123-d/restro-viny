@@ -27,7 +27,7 @@ export function SelfOrderCard({
 
   const save = useServerAction(setSelfOrderEnabledAction, {
     refresh: true,
-    onSuccess: () => toast.success("Self-ordering updated"),
+    onSuccess: () => toast.success("Commande en ligne mise à jour"),
     onError: (message) => {
       setChecked((prev) => !prev);
       toast.error(message);
@@ -42,16 +42,16 @@ export function SelfOrderCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Guest self-ordering</CardTitle>
+        <CardTitle>Commande par les clients (QR code)</CardTitle>
         <CardDescription>
-          Let seated guests scan a QR code and order from their phone. Orders go
-          straight to the kitchen and attach to the table&apos;s bill.
+          Les clients à table scannent un QR code et commandent depuis leur téléphone. Les commandes partent
+          directement en cuisine et s&apos;ajoutent à la note de la table.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <label htmlFor="self-order" className="text-sm font-medium">
-            {checked ? "Enabled" : "Disabled"}
+            {checked ? "Activée" : "Désactivée"}
           </label>
           <Switch
             id="self-order"

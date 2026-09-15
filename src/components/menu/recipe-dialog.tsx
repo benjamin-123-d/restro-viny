@@ -52,7 +52,7 @@ export function RecipeDialog({
 
   const add = useServerAction(setRecipeComponentAction, {
     onSuccess: () => {
-      toast.success("Ingredient added");
+      toast.success("Ingrédient ajouté");
       setStockItemId("");
       setQuantity("");
       router.refresh();
@@ -61,7 +61,7 @@ export function RecipeDialog({
   });
   const remove = useServerAction(removeRecipeComponentAction, {
     onSuccess: () => {
-      toast.success("Ingredient removed");
+      toast.success("Ingrédient retiré");
       router.refresh();
     },
     onError: (message) => toast.error(message),
@@ -82,7 +82,7 @@ export function RecipeDialog({
           <DialogTitle>Recipe · {item.name}</DialogTitle>
         </DialogHeader>
         <p className="text-muted-foreground text-xs">
-          Ingredients are deducted from stock each time this item is sold.
+          Les ingrédients sortent du stock à chaque vente de cet article. Coûts et fiabilité : onglet Food cost → Fiches techniques.
         </p>
 
         {components.length > 0 ? (
@@ -97,7 +97,7 @@ export function RecipeDialog({
                   <Button
                     size="icon-sm"
                     variant="ghost"
-                    aria-label="Remove ingredient"
+                    aria-label="Retirer l'ingrédient"
                     onClick={() => remove.execute({ id: c.id })}
                   >
                     <XIcon className="size-3.5" />
@@ -107,23 +107,23 @@ export function RecipeDialog({
             ))}
           </ul>
         ) : (
-          <p className="text-muted-foreground text-sm">No ingredients yet.</p>
+          <p className="text-muted-foreground text-sm">Aucun ingrédient.</p>
         )}
 
         {stockItems.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            Add stock items in Inventory first, then link them here.
+            Créez d'abord les ingrédients dans Inventaire ou Food cost, puis reliez-les ici.
           </p>
         ) : (
           <div className="flex items-end gap-2">
             <Field className="flex-1">
-              <FieldLabel htmlFor="rc-stock">Ingredient</FieldLabel>
+              <FieldLabel htmlFor="rc-stock">Ingrédient</FieldLabel>
               <Select
                 value={stockItemId || undefined}
                 onValueChange={(v) => v && setStockItemId(v)}
               >
                 <SelectTrigger id="rc-stock">
-                  <span>{selected?.name ?? "Select…"}</span>
+                  <span>{selected?.name ?? "Choisir…"}</span>
                 </SelectTrigger>
                 <SelectContent>
                   {available.map((s) => (
@@ -150,14 +150,14 @@ export function RecipeDialog({
               onClick={submit}
               disabled={!stockItemId || !(qty > 0) || add.isPending}
             >
-              Add
+              Ajouter
             </Button>
           </div>
         )}
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Done
+            Terminé
           </Button>
         </DialogFooter>
       </DialogContent>

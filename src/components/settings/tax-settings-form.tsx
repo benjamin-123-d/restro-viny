@@ -48,7 +48,7 @@ export function TaxSettingsForm({ profile }: { profile: TaxProfileDTO }) {
 
   const save = useServerAction(updateTaxProfileAction, {
     onSuccess: () => {
-      toast.success("Tax settings saved")
+      toast.success("Réglages GST enregistrés")
       router.refresh()
     },
     onError: (message) => toast.error(message),
@@ -71,9 +71,9 @@ export function TaxSettingsForm({ profile }: { profile: TaxProfileDTO }) {
     <>
       <Card className="max-w-xl">
         <CardHeader>
-          <CardTitle>GST / Tax</CardTitle>
+          <CardTitle>GST (Inde)</CardTitle>
           <CardDescription>
-            Controls how GST is applied to your menu items and bills.
+            Uniquement pour un établissement en Inde.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -138,7 +138,7 @@ export function TaxSettingsForm({ profile }: { profile: TaxProfileDTO }) {
                     onCheckedChange={setInclusive}
                   />
                   <label htmlFor="incl" className="text-sm">
-                    Menu prices include GST
+                    Prix de la carte GST incluse
                   </label>
                 </div>
                 {type === "COMPOSITION" ? (
@@ -156,7 +156,7 @@ export function TaxSettingsForm({ profile }: { profile: TaxProfileDTO }) {
 
             <div className="flex justify-end">
               <Button type="submit" disabled={save.isPending}>
-                {save.isPending ? "Saving…" : "Save"}
+                {save.isPending ? "Enregistrement…" : "Enregistrer"}
               </Button>
             </div>
           </form>

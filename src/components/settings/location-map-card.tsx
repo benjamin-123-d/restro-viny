@@ -75,7 +75,7 @@ export function LocationMapCard({
       if (submittedRef.current) {
         setSavedPin(submittedRef.current);
       }
-      toast.success("Location saved");
+      toast.success("Emplacement enregistré");
     },
     onError: (message) => toast.error(message),
   });
@@ -120,11 +120,11 @@ export function LocationMapCard({
       setAccuracy(Math.round(best.accuracy));
       setPin(best.lat, best.lng);
       toast.success(
-        `Location detected (\u00b1${Math.round(best.accuracy)} m) \u2014 adjust if needed, then Save.`,
+        `Position détectée (\u00b1${Math.round(best.accuracy)} m) \u2014 ajustez si besoin, puis enregistrez.`,
       );
     } else {
       toast.error(
-        "Couldn't get an accurate fix. Try again or enter it manually.",
+        "Position imprécise. Réessayez ou saisissez-la à la main.",
       );
     }
   };
@@ -143,7 +143,7 @@ export function LocationMapCard({
 
   const useMyLocation = () => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      toast.error("Geolocation isn't supported on this device.");
+      toast.error("La géolocalisation n'est pas disponible sur cet appareil.");
       return;
     }
     stopWatch();
@@ -171,8 +171,8 @@ export function LocationMapCard({
         setLocating(false);
         toast.error(
           error.code === error.PERMISSION_DENIED
-            ? "Location permission denied — allow access or enter it manually."
-            : "Couldn't get your location. Try again or enter it manually.",
+            ? "Accès à la position refusé : autorisez-le ou saisissez les coordonnées."
+            : "Impossible d'obtenir votre position. Réessayez ou saisissez-la à la main.",
         );
       },
       { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 },
@@ -197,7 +197,7 @@ export function LocationMapCard({
 
   const saveManual = () => {
     if (!pin) {
-      toast.error("Enter a valid latitude (\u221290\u202685) and longitude.");
+      toast.error("Saisissez une latitude (\u221290 à 85) et une longitude valides.");
       return;
     }
     persist(pin.lat, pin.lng);
@@ -213,10 +213,10 @@ export function LocationMapCard({
       setLngInput("");
       setAccuracy(null);
       submittedRef.current = null;
-      toast.success("Map pin removed");
+      toast.success("Repère retiré");
       router.refresh();
     } else {
-      toast.error(result.error ?? "Something went wrong");
+      toast.error(result.error ?? "Une erreur est survenue");
     }
   };
 
@@ -230,17 +230,17 @@ export function LocationMapCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Location &amp; map pin</CardTitle>
+        <CardTitle>Emplacement sur la carte</CardTitle>
         <CardDescription>
-          Drop a precise pin so guests, delivery riders and Google can find you.
-          Fetch it in one tap, or enter the coordinates by hand.
+          Placez un repère précis pour que clients, livreurs et Google vous trouvent.
+          Détectez-le en un geste, ou saisissez les coordonnées à la main.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {address ? (
           <p className="text-muted-foreground text-sm">
-            Address: <span className="text-foreground">{address}</span>{" "}
-            <span className="text-xs">(edit the text address in Profile)</span>
+            Adresse : <span className="text-foreground">{address}</span>{" "}
+            <span className="text-xs">(modifiable dans l'onglet Profil)</span>
           </p>
         ) : null}
 
@@ -252,9 +252,9 @@ export function LocationMapCard({
           >
             {locating
               ? accuracy != null
-                ? `Refining… ±${accuracy} m`
-                : "Locating…"
-              : "Use my current location"}
+                ? `Affinage… ±${accuracy} m`
+                : "Localisation…"
+              : "Utiliser ma position actuelle"}
           </Button>
           {mapsUrl ? (
             <Button
@@ -264,7 +264,7 @@ export function LocationMapCard({
                 <a href={mapsUrl} target="_blank" rel="noopener noreferrer" />
               }
             >
-              Open in Google Maps
+              Ouvrir dans Google Maps
             </Button>
           ) : null}
         </div>
@@ -292,16 +292,16 @@ export function LocationMapCard({
           </Field>
         </div>
         <FieldDescription>
-          Browser positioning can be off by 10–50 m (more on Wi-Fi / desktop).
-          Fetch to get close, then nudge the pin to your exact entrance and
-          Save.
+          La position du navigateur peut varier de 10 à 50 m (davantage en Wi-Fi ou sur ordinateur).
+          Détectez pour vous en approcher, puis déplacez le repère jusqu'à votre entrée et
+          enregistrez.
         </FieldDescription>
 
         {pin ? (
           <div className="flex flex-col gap-3">
             <div className="overflow-hidden rounded-lg border">
               <iframe
-                title="Restaurant location on Google Maps"
+                title="Emplacement du restaurant sur Google Maps"
                 src={embedUrl ?? undefined}
                 className="h-64 w-full"
                 loading="lazy"
@@ -310,7 +310,7 @@ export function LocationMapCard({
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium">Nudge</span>
+              <span className="text-sm font-medium">Ajuster</span>
               <div className="flex overflow-hidden rounded-md border">
                 {[1, 5, 10].map((s) => (
                   <button
@@ -333,7 +333,7 @@ export function LocationMapCard({
                   type="button"
                   variant="outline"
                   size="icon-sm"
-                  aria-label={`Move pin ${step} m north`}
+                  aria-label={`Déplacer le repère de ${step} m vers le nord`}
                   onClick={() => nudge(step, 0)}
                 >
                   <ArrowUpIcon />
@@ -342,7 +342,7 @@ export function LocationMapCard({
                   type="button"
                   variant="outline"
                   size="icon-sm"
-                  aria-label={`Move pin ${step} m south`}
+                  aria-label={`Déplacer le repère de ${step} m vers le sud`}
                   onClick={() => nudge(-step, 0)}
                 >
                   <ArrowDownIcon />
@@ -351,7 +351,7 @@ export function LocationMapCard({
                   type="button"
                   variant="outline"
                   size="icon-sm"
-                  aria-label={`Move pin ${step} m west`}
+                  aria-label={`Déplacer le repère de ${step} m vers l'ouest`}
                   onClick={() => nudge(0, -step)}
                 >
                   <ArrowLeftIcon />
@@ -360,7 +360,7 @@ export function LocationMapCard({
                   type="button"
                   variant="outline"
                   size="icon-sm"
-                  aria-label={`Move pin ${step} m east`}
+                  aria-label={`Déplacer le repère de ${step} m vers l'est`}
                   onClick={() => nudge(0, step)}
                 >
                   <ArrowRightIcon />
@@ -371,8 +371,8 @@ export function LocationMapCard({
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="text-muted-foreground text-xs">
                 {pin.lat}, {pin.lng}
-                {accuracy != null ? ` · detected ±${accuracy} m` : ""}
-                {dirty ? " · unsaved" : savedPin ? " · saved" : ""}
+                {accuracy != null ? ` · détecté à ±${accuracy} m` : ""}
+                {dirty ? " · non enregistré" : savedPin ? " · enregistré" : ""}
               </span>
               <div className="flex gap-2">
                 <Button
@@ -382,7 +382,7 @@ export function LocationMapCard({
                   onClick={removePin}
                   disabled={clearing}
                 >
-                  {clearing ? "Removing…" : "Remove pin"}
+                  {clearing ? "Suppression…" : "Retirer le repère"}
                 </Button>
                 <Button
                   type="button"
@@ -390,22 +390,22 @@ export function LocationMapCard({
                   onClick={saveManual}
                   disabled={save.isPending || !dirty}
                 >
-                  {save.isPending ? "Saving…" : "Save pin"}
+                  {save.isPending ? "Enregistrement…" : "Enregistrer le repère"}
                 </Button>
               </div>
             </div>
 
             {accuracy != null && accuracy > 40 ? (
               <p className="text-xs text-amber-700">
-                Approximate fix (±{accuracy} m). Nudge to your exact spot, or
-                fetch again from a phone with GPS for a tighter reading.
+                Position approximative (±{accuracy} m). Ajustez à l'endroit exact, ou
+                relancez depuis un téléphone avec GPS pour plus de précision.
               </p>
             ) : null}
           </div>
         ) : (
           <p className="text-muted-foreground rounded-lg border border-dashed px-4 py-6 text-center text-sm">
-            No map pin yet. Fetch your location or enter coordinates to preview
-            it here.
+            Aucun repère pour l'instant. Détectez votre position ou saisissez des coordonnées pour
+            l'afficher ici.
           </p>
         )}
       </CardContent>

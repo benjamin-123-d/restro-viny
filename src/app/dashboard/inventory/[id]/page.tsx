@@ -33,12 +33,12 @@ export default async function StockHistoryPage({
           description={`On hand ${item.onHand} ${UNIT_LABELS[item.unit]}`}
         />
         <Button variant="outline" render={<Link href="/dashboard/inventory" />}>
-          Back to inventory
+          Retour à l'inventaire
         </Button>
       </div>
 
       {movements.length === 0 ? (
-        <p className="text-muted-foreground text-sm">No movements yet.</p>
+        <p className="text-muted-foreground text-sm">Aucun mouvement.</p>
       ) : (
         <ul className="divide-y rounded-lg border">
           {movements.map((m) => (

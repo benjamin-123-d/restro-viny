@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useServerAction } from "@/hooks/use-server-action";
 
 const USERNAME_ERRORS: Record<string, string> = {
-  USERNAME_TAKEN: "That username is already taken.",
+  USERNAME_TAKEN: "Cet identifiant est déjà pris.",
 };
 
 const clean = (value: string) =>
@@ -35,7 +35,7 @@ export function UsernameCard({ username }: { readonly username: string }) {
 
   const save = useServerAction(updateUsernameAction, {
     refresh: true,
-    onSuccess: () => toast.success("Username updated"),
+    onSuccess: () => toast.success("Identifiant modifié"),
     onError: (message) => toast.error(USERNAME_ERRORS[message] ?? message),
   });
 
@@ -45,10 +45,10 @@ export function UsernameCard({ username }: { readonly username: string }) {
     setRegenerating(false);
     if (result.success) {
       setValue(result.data ?? value);
-      toast.success("New username generated");
+      toast.success("Nouvel identifiant généré");
       router.refresh();
     } else {
-      toast.error(result.error ?? "Something went wrong");
+      toast.error(result.error ?? "Une erreur est survenue");
     }
   };
 
@@ -58,10 +58,10 @@ export function UsernameCard({ username }: { readonly username: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Username</CardTitle>
+        <CardTitle>Identifiant</CardTitle>
         <CardDescription>
-          A unique handle for your restaurant, generated automatically. Change it
-          to something memorable.
+          L'identifiant unique de votre restaurant, créé automatiquement. Choisissez-en
+          un facile à retenir.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
@@ -69,7 +69,7 @@ export function UsernameCard({ username }: { readonly username: string }) {
           <div className="border-input flex flex-1 items-center rounded-md border pl-3 focus-within:ring-[3px] focus-within:ring-ring/50">
             <span className="text-muted-foreground text-sm">@</span>
             <Input
-              aria-label="Username"
+              aria-label="Identifiant"
               value={value}
               onChange={(e) => setValue(clean(e.target.value))}
               className="border-0 shadow-none focus-visible:ring-0"
@@ -79,7 +79,7 @@ export function UsernameCard({ username }: { readonly username: string }) {
             onClick={() => save.execute({ username: value })}
             disabled={save.isPending || !valid || !dirty}
           >
-            {save.isPending ? "Saving…" : "Save"}
+            {save.isPending ? "Enregistrement…" : "Enregistrer"}
           </Button>
           <Button
             variant="outline"

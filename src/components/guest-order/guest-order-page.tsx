@@ -47,14 +47,14 @@ import type { MenuDTO, MenuItemDTO } from "@/types/menu";
 import type { GuestOrderSummaryDTO } from "@/types/order";
 
 const ERRORS: Record<string, string> = {
-  GUEST_OTP_RATE_LIMITED: "Please wait a moment before requesting another code.",
-  GUEST_OTP_EXPIRED: "That code expired — request a new one.",
-  GUEST_OTP_INVALID: "Incorrect code. Try again.",
-  GUEST_OTP_TOO_MANY_ATTEMPTS: "Too many attempts. Request a new code.",
-  GUEST_NOT_VERIFIED: "Please verify your phone first.",
-  GUEST_ORDER_DISABLED: "Ordering isn't available right now.",
-  GUEST_ORDER_TABLE_INVALID: "This table link is invalid. Please ask a server.",
-  ITEM_UNAVAILABLE: "An item just sold out. Please review your cart.",
+  GUEST_OTP_RATE_LIMITED: "Patientez un instant avant de redemander un code.",
+  GUEST_OTP_EXPIRED: "Ce code a expiré : demandez-en un nouveau.",
+  GUEST_OTP_INVALID: "Code incorrect. Réessayez.",
+  GUEST_OTP_TOO_MANY_ATTEMPTS: "Trop d'essais. Demandez un nouveau code.",
+  GUEST_NOT_VERIFIED: "Vérifiez d'abord votre téléphone.",
+  GUEST_ORDER_DISABLED: "La commande en ligne n'est pas disponible pour le moment.",
+  GUEST_ORDER_TABLE_INVALID: "Ce lien de table n'est pas valable. Demandez à un serveur.",
+  ITEM_UNAVAILABLE: "Un article vient d'être épuisé. Vérifiez votre panier.",
 };
 const toMessage = (m: string) => ERRORS[m] ?? m;
 
@@ -65,20 +65,20 @@ const orderStatus = (
   o: GuestOrderSummaryDTO,
 ): { label: string; className: string } => {
   if (o.status === "COMPLETED") {
-    return { label: "Paid", className: "bg-slate-100 text-slate-700" };
+    return { label: "Payée", className: "bg-slate-100 text-slate-700" };
   }
   if (o.status === "VOID") {
-    return { label: "Cancelled", className: "bg-red-100 text-red-800" };
+    return { label: "Annulée", className: "bg-red-100 text-red-800" };
   }
   switch (o.kitchenStatus) {
     case "WAITING":
-      return { label: "In queue", className: "bg-amber-100 text-amber-900" };
+      return { label: "En attente", className: "bg-amber-100 text-amber-900" };
     case "PREPARING":
-      return { label: "Preparing", className: "bg-sky-100 text-sky-900" };
+      return { label: "En préparation", className: "bg-sky-100 text-sky-900" };
     case "READY":
-      return { label: "Ready", className: "bg-emerald-100 text-emerald-900" };
+      return { label: "Prête", className: "bg-emerald-100 text-emerald-900" };
     default:
-      return { label: "Served", className: "bg-slate-100 text-slate-700" };
+      return { label: "Servie", className: "bg-slate-100 text-slate-700" };
   }
 };
 
@@ -183,7 +183,7 @@ export function GuestOrderPage({
     setOrdersOpen(false);
     setOtpSent(false);
     setCode("");
-    toast(expired ? "Session expired — verify again to order" : "Logged out");
+    toast(expired ? "Session expirée : vérifiez à nouveau pour commander" : "Déconnecté");
   };
 
   // Keep the timer below pointed at the latest logout closure.
@@ -259,7 +259,7 @@ export function GuestOrderPage({
   const sendCode = useServerAction(guestRequestOtpAction, {
     onSuccess: () => {
       setOtpSent(true);
-      toast.success("Code sent");
+      toast.success("Code envoyé");
     },
     onError: (m) => toast.error(toMessage(m)),
   });
@@ -301,10 +301,10 @@ export function GuestOrderPage({
         <div className="bg-primary/10 text-primary flex size-16 items-center justify-center rounded-full text-3xl">
           ✓
         </div>
-        <h1 className="text-xl font-semibold">Order placed</h1>
+        <h1 className="text-xl font-semibold">Commande envoyée</h1>
         <p className="text-muted-foreground text-sm">
-          Your order for <span className="font-medium">{tableLabel}</span> has
-          been sent to the kitchen. A server will bring it over.
+          Votre commande pour <span className="font-medium">{tableLabel}</span> est
+          partie en cuisine. Un serveur vous l'apportera.
         </p>
         <div className="flex w-full max-w-xs flex-col gap-2">
           <Button
@@ -313,7 +313,7 @@ export function GuestOrderPage({
               setOrdersOpen(true);
             }}
           >
-            Track your orders
+            Suivre mes commandes
           </Button>
           <Button
             variant="outline"
@@ -323,7 +323,7 @@ export function GuestOrderPage({
               setPlaced(false);
             }}
           >
-            Order more
+            Commander autre chose
           </Button>
         </div>
       </div>
@@ -357,11 +357,11 @@ export function GuestOrderPage({
                 size="sm"
                 onClick={() => setOrdersOpen(true)}
               >
-                Your orders ({myOrders.length})
+                Mes commandes ({myOrders.length})
               </Button>
             ) : null}
             <Button variant="ghost" size="sm" onClick={() => logout(false)}>
-              Log out
+              Se déconnecter
             </Button>
           </div>
         ) : null}
@@ -379,10 +379,10 @@ export function GuestOrderPage({
             onClick={() => setReviewOpen(true)}
           >
             <span className="block text-sm font-medium">
-              {itemCount} item{itemCount === 1 ? "" : "s"}
+              {itemCount} article{itemCount === 1 ? "" : "s"}
             </span>
             <span className="text-muted-foreground text-xs">
-              {formatCurrency(bill.grandTotal)} · Review
+              {formatCurrency(bill.grandTotal)} · Vérifier
             </span>
           </button>
           <Button
@@ -391,7 +391,7 @@ export function GuestOrderPage({
             disabled={itemCount === 0 || busy}
             onClick={onPlaceTap}
           >
-            {busy ? "Placing…" : "Place order"}
+            {busy ? "Envoi…" : "Commander"}
           </Button>
         </div>
       </div>
@@ -409,11 +409,11 @@ export function GuestOrderPage({
         <Dialog open onOpenChange={setReviewOpen}>
           <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Your order</DialogTitle>
+              <DialogTitle>Votre commande</DialogTitle>
             </DialogHeader>
             {cart.cart.length === 0 ? (
               <p className="text-muted-foreground py-6 text-center text-sm">
-                Your cart is empty.
+                Votre panier est vide.
               </p>
             ) : (
               <ul className="divide-y">
@@ -475,7 +475,7 @@ export function GuestOrderPage({
               </ul>
             )}
             <div className="flex items-center justify-between border-t pt-3">
-              <span className="text-sm font-medium">Total</span>
+              <span className="text-sm font-medium">Total TTC</span>
               <span className="text-base font-semibold tabular-nums">
                 {formatCurrency(bill.grandTotal)}
               </span>
@@ -486,7 +486,7 @@ export function GuestOrderPage({
                 disabled={itemCount === 0 || busy}
                 onClick={onPlaceTap}
               >
-                {busy ? "Placing…" : verified ? "Place order" : "Verify & place"}
+                {busy ? "Envoi…" : verified ? "Commander" : "Vérifier et commander"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -498,10 +498,10 @@ export function GuestOrderPage({
         <Dialog open onOpenChange={(o) => !busy && setVerifyOpen(o)}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Verify your phone</DialogTitle>
+              <DialogTitle>Vérifiez votre téléphone</DialogTitle>
             </DialogHeader>
             <p className="text-muted-foreground text-sm">
-              We&apos;ll text you a one-time code to confirm your order.
+              Nous vous envoyons un code par SMS pour confirmer votre commande.
             </p>
             <div className="flex flex-col gap-3">
               <PhoneInput onChange={setPhone} disabled={otpSent || busy} />
@@ -509,7 +509,7 @@ export function GuestOrderPage({
                 <Input
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                  placeholder="6-digit code"
+                  placeholder="Code à 6 chiffres"
                   inputMode="numeric"
                   maxLength={6}
                   className="h-11 text-center text-lg tracking-widest"
@@ -525,7 +525,7 @@ export function GuestOrderPage({
                     verify.execute({ username, tableId, phone, code })
                   }
                 >
-                  {busy ? "Placing…" : "Verify & place order"}
+                  {busy ? "Envoi…" : "Vérifier et commander"}
                 </Button>
               ) : (
                 <Button
@@ -535,7 +535,7 @@ export function GuestOrderPage({
                     sendCode.execute({ username, tableId, phone })
                   }
                 >
-                  {sendCode.isPending ? "Sending…" : "Send code"}
+                  {sendCode.isPending ? "Envoi…" : "Recevoir le code"}
                 </Button>
               )}
             </DialogFooter>
@@ -547,11 +547,11 @@ export function GuestOrderPage({
       <Sheet open={ordersOpen} onOpenChange={setOrdersOpen}>
         <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Your orders</SheetTitle>
+            <SheetTitle>Mes commandes</SheetTitle>
           </SheetHeader>
           {myOrders.length === 0 ? (
             <p className="text-muted-foreground px-4 pb-6 text-sm">
-              No orders yet.
+              Aucune commande pour l'instant.
             </p>
           ) : (
             <ul className="flex flex-col gap-3 px-4 pb-6">
@@ -583,7 +583,7 @@ export function GuestOrderPage({
                             {l.name}
                             {l.variantName ? ` · ${l.variantName}` : ""}
                           </span>
-                          {l.state === "SERVED" ? <span>Served</span> : null}
+                          {l.state === "SERVED" ? <span>Servi</span> : null}
                         </li>
                       ))}
                     </ul>

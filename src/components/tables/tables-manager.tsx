@@ -43,7 +43,7 @@ export function TablesManager({
   const del = useServerAction(deleteTableAction, {
     refresh: true,
     onSuccess: () => {
-      toast.success("Table removed");
+      toast.success("Table retirée");
       setDeleteTarget(null);
     },
     onError: (message) => toast.error(message),
@@ -63,15 +63,15 @@ export function TablesManager({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageHeader
           title="Tables"
-          description="Set up your floor so servers can seat dine-in orders."
+          description="Votre salle : les serveurs y rattachent les commandes sur place."
         />
-        <Button onClick={openNew}>Add table</Button>
+        <Button onClick={openNew}>Ajouter une table</Button>
       </div>
 
       {tables.length === 0 ? (
         <EmptyState
-          title="No tables yet"
-          description="Add your tables and sections so the POS can attach dine-in orders to a table."
+          title="Aucune table"
+          description="Ajoutez vos tables et vos salles pour rattacher les commandes sur place."
         />
       ) : (
         groupTablesBySection(tables).map(([section, rows]) => (
@@ -106,7 +106,7 @@ export function TablesManager({
                       onClick={() => setShareTarget(table)}
                     >
                       <QrCodeIcon className="size-4" />
-                      Share
+                      Partager
                     </Button>
                     <Button
                       size="sm"
@@ -114,7 +114,7 @@ export function TablesManager({
                       className="h-8 px-2 text-xs"
                       onClick={() => openEdit(table)}
                     >
-                      Edit
+                      Modifier
                     </Button>
                     <Button
                       size="sm"
@@ -122,7 +122,7 @@ export function TablesManager({
                       className="text-destructive h-8 px-2 text-xs"
                       onClick={() => setDeleteTarget(table)}
                     >
-                      Remove
+                      Retirer
                     </Button>
                   </div>
                 </li>
@@ -156,18 +156,18 @@ export function TablesManager({
               <DialogTitle>Remove {deleteTarget.label}?</DialogTitle>
             </DialogHeader>
             <p className="text-muted-foreground text-sm">
-              Past orders keep their record. You can re-add this label later.
+              Les commandes passées gardent leur historique. Vous pourrez recréer cette table plus tard.
             </p>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setDeleteTarget(null)}>
-                Cancel
+                Annuler
               </Button>
               <Button
                 variant="destructive"
                 disabled={del.isPending}
                 onClick={() => del.execute({ id: deleteTarget.id })}
               >
-                {del.isPending ? "Removing…" : "Remove"}
+                {del.isPending ? "Suppression…" : "Retirer"}
               </Button>
             </DialogFooter>
           </DialogContent>

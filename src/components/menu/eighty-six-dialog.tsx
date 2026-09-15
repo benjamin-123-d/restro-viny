@@ -20,10 +20,10 @@ import { cn } from "@/lib/utils"
 import type { MenuItemDTO } from "@/types/menu"
 
 const REASONS = [
-  { value: "OUT_OF_STOCK", label: "Out of stock" },
+  { value: "OUT_OF_STOCK", label: "Rupture de stock" },
   { value: "QUALITY", label: "Quality" },
   { value: "PREP_TIME", label: "Prep time" },
-  { value: "OTHER", label: "Other" },
+  { value: "OTHER", label: "Autre" },
 ] as const
 
 const DURATIONS = [
@@ -92,7 +92,7 @@ export function EightySixDialog({
 
   const save = useServerAction(disableItemAction, {
     onSuccess: () => {
-      toast.success("Item marked unavailable")
+      toast.success("Article marqué indisponible")
       onOpenChange(false)
       onSaved()
     },
@@ -119,7 +119,7 @@ export function EightySixDialog({
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">Reason</span>
+            <span className="text-sm font-medium">Motif</span>
             <div className="flex flex-wrap gap-2">
               {REASONS.map((r) => (
                 <Chip
@@ -147,7 +147,7 @@ export function EightySixDialog({
             </div>
           </div>
           <Field>
-            <FieldLabel htmlFor="eightysix-note">Note (optional)</FieldLabel>
+            <FieldLabel htmlFor="eightysix-note">Note (facultatif)</FieldLabel>
             <Input
               id="eightysix-note"
               value={note}
@@ -157,7 +157,7 @@ export function EightySixDialog({
           </Field>
           <DialogFooter>
             <Button type="submit" variant="destructive" disabled={save.isPending}>
-              {save.isPending ? "Saving…" : "Mark unavailable"}
+              {save.isPending ? "Enregistrement…" : "Marquer indisponible"}
             </Button>
           </DialogFooter>
         </form>

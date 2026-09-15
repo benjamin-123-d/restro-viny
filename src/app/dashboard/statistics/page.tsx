@@ -53,16 +53,16 @@ const MonthlyBars = ({ months }: { months: readonly SeriesPoint[] }) => {
     <div className="rounded-lg border bg-white p-4">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-zinc-900">
-          Sales against purchases
+          Ventes et achats
         </p>
         <div className="flex items-center gap-4 text-xs text-zinc-600">
           <span className="flex items-center gap-1.5">
             <span className="inline-block h-2 w-3 rounded-sm bg-blue-500" />
-            Sales
+            Ventes
           </span>
           <span className="flex items-center gap-1.5">
             <span className="inline-block h-2 w-3 rounded-sm bg-amber-500" />
-            Purchases
+            Achats
           </span>
         </div>
       </div>
@@ -77,12 +77,12 @@ const MonthlyBars = ({ months }: { months: readonly SeriesPoint[] }) => {
               <div
                 className="w-1/3 rounded-t bg-blue-500"
                 style={{ height: `${(month.sales / peak) * 100}%` }}
-                title={`Sales ${formatCurrency(month.sales)}`}
+                title={`Ventes ${formatCurrency(month.sales)}`}
               />
               <div
                 className="w-1/3 rounded-t bg-amber-500"
                 style={{ height: `${(month.purchases / peak) * 100}%` }}
-                title={`Purchases ${formatCurrency(month.purchases)}`}
+                title={`Achats ${formatCurrency(month.purchases)}`}
               />
             </div>
             <span className="text-xs text-zinc-500">{month.label}</span>
@@ -125,7 +125,7 @@ const Leaderboard = ({
                     style={{ width: `${share}%` }}
                   />
                 </div>
-                <span className="text-xs text-zinc-400">{row.count} inv.</span>
+                <span className="text-xs text-zinc-400">{row.count} fact.</span>
               </div>
             </li>
           );
@@ -141,12 +141,12 @@ export default async function StatisticsPage() {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
-          title="Statistics"
-          description="One view across buying, selling and stock."
+          title="Statistiques"
+          description="Une vue d'ensemble des achats, des ventes et du stock."
         />
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
@@ -157,58 +157,58 @@ export default async function StatisticsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Statistics"
-        description="Money in against money out, what is owed either way, and where the stock sits — across every module at once."
+        title="Statistiques"
+        description="Ce qui rentre et ce qui sort, ce qui est dû dans les deux sens, et la valeur du stock, tous modules confondus."
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Sales billed" value={formatCurrency(s.salesTotal)} />
+        <Stat label="Ventes facturées" value={formatCurrency(s.salesTotal)} />
         <Stat
-          label="Purchases billed"
+          label="Achats facturés"
           value={formatCurrency(s.purchaseTotal)}
         />
         <Stat
-          label="Gross margin"
+          label="Marge brute"
           value={formatCurrency(s.grossMargin)}
-          sub={`${s.marginPercent}% of sales`}
+          sub={`${s.marginPercent} % des ventes`}
           tone={s.grossMargin >= 0 ? "good" : "danger"}
         />
-        <Stat label="Stock value" value={formatCurrency(s.stockValue)} />
+        <Stat label="Valeur du stock" value={formatCurrency(s.stockValue)} />
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat
-          label="Owed to you"
+          label="Ce qu'on vous doit"
           value={formatCurrency(s.receivable)}
           sub={
             s.overdueReceivable > 0
-              ? `${formatCurrency(s.overdueReceivable)} overdue`
-              : "nothing overdue"
+              ? `${formatCurrency(s.overdueReceivable)} en retard`
+              : "rien en retard"
           }
           tone={s.overdueReceivable > 0 ? "danger" : undefined}
         />
         <Stat
-          label="You owe"
+          label="Ce que vous devez"
           value={formatCurrency(s.payable)}
           sub={
             s.overduePayable > 0
-              ? `${formatCurrency(s.overduePayable)} overdue`
-              : "nothing overdue"
+              ? `${formatCurrency(s.overduePayable)} en retard`
+              : "rien en retard"
           }
           tone={s.overduePayable > 0 ? "danger" : undefined}
         />
         <Stat
-          label="Open orders"
+          label="Commandes en cours"
           value={`${s.openSalesOrders} / ${s.openPurchaseOrders}`}
-          sub="sales / purchase"
+          sub="ventes / achats"
         />
         <Stat
-          label="Quotation win rate"
+          label="Devis acceptés"
           value={s.quotationWinRate === null ? "—" : `${s.quotationWinRate}%`}
           sub={
             s.quotationWinRate === null
-              ? "nothing decided yet"
-              : "of decided quotes"
+              ? "aucun devis tranché"
+              : "des devis tranchés"
           }
         />
       </div>
@@ -217,23 +217,23 @@ export default async function StatisticsPage() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Leaderboard
-          title="Top customers"
+          title="Meilleurs clients"
           rows={s.topCustomers}
-          emptyLabel="No customer has been invoiced yet."
+          emptyLabel="Aucun client facturé pour l'instant."
         />
         <Leaderboard
-          title="Top suppliers"
+          title="Principaux fournisseurs"
           rows={s.topSuppliers}
-          emptyLabel="No supplier has billed you yet."
+          emptyLabel="Aucun fournisseur ne vous a facturé."
         />
       </div>
 
       <DocTable
-        headers={[{ label: "Watch list" }, { label: "Count", align: "right" }]}
+        headers={[{ label: "Points de vigilance" }, { label: "Nombre", align: "right" }]}
       >
         <tr className="border-b">
           <td className="px-3 py-2 text-zinc-800">
-            Items at or below reorder level
+            Articles sous le seuil de réapprovisionnement
           </td>
           <td className="px-3 py-2 text-right">
             <span
@@ -249,7 +249,7 @@ export default async function StatisticsPage() {
         </tr>
         <tr className="border-b">
           <td className="px-3 py-2 text-zinc-800">
-            Batches expiring within 14 days
+            Lots qui expirent dans les 14 jours
           </td>
           <td className="px-3 py-2 text-right">
             <span
@@ -265,7 +265,7 @@ export default async function StatisticsPage() {
         </tr>
         <tr>
           <td className="px-3 py-2 text-zinc-800">
-            Net position (owed to you − you owe)
+            Position nette (ce qu'on vous doit − ce que vous devez)
           </td>
           <td className="px-3 py-2 text-right">
             <Money

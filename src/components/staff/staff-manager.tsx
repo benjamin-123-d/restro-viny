@@ -74,7 +74,7 @@ function StaffRow({
           </p>
           <p className="text-muted-foreground text-xs">
             {member.employeeCode} · {member.phone}
-            {member.hasPin ? " · PIN set" : " · No PIN"}
+            {member.hasPin ? " · code PIN défini" : " · sans code PIN"}
           </p>
         </div>
       </div>
@@ -85,7 +85,7 @@ function StaffRow({
           className="h-8 px-2 text-xs"
           onClick={onEdit}
         >
-          Edit
+          Modifier
         </Button>
         <Button
           size="sm"
@@ -93,7 +93,7 @@ function StaffRow({
           className="h-8 px-2 text-xs"
           onClick={onResetPin}
         >
-          Reset PIN
+          Changer le code PIN
         </Button>
         <Button
           size="sm"
@@ -101,7 +101,7 @@ function StaffRow({
           className="text-destructive h-8 px-2 text-xs"
           onClick={onRemove}
         >
-          Remove
+          Retirer
         </Button>
       </div>
     </li>
@@ -118,7 +118,7 @@ export function StaffManager({ staff }: { readonly staff: StaffDTO[] }) {
   const del = useServerAction(deleteStaffAction, {
     refresh: true,
     onSuccess: () => {
-      toast.success("Staff removed");
+      toast.success("Membre retiré");
       setDeleteTarget(null);
     },
     onError: (message) => toast.error(message),
@@ -138,16 +138,16 @@ export function StaffManager({ staff }: { readonly staff: StaffDTO[] }) {
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageHeader
-          title="Staff"
-          description="Your team — roles, contact details and POS PINs for the floor and kitchen."
+          title="Personnel"
+          description="Votre équipe : rôles, coordonnées et codes PIN de caisse pour la salle et la cuisine."
         />
-        <Button onClick={openNew}>Add staff</Button>
+        <Button onClick={openNew}>Ajouter un membre</Button>
       </div>
 
       {staff.length === 0 ? (
         <EmptyState
-          title="No staff yet"
-          description="Add your waiters, kitchen and management team so they can be identified at the POS."
+          title="Aucun membre du personnel"
+          description="Ajoutez serveurs, cuisiniers et encadrement pour les identifier à la caisse."
         />
       ) : (
         STAFF_ROLE_OPTIONS.map((role) => {
@@ -203,14 +203,14 @@ export function StaffManager({ staff }: { readonly staff: StaffDTO[] }) {
             </p>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setDeleteTarget(null)}>
-                Cancel
+                Annuler
               </Button>
               <Button
                 variant="destructive"
                 disabled={del.isPending}
                 onClick={() => del.execute({ id: deleteTarget.id })}
               >
-                {del.isPending ? "Removing…" : "Remove"}
+                {del.isPending ? "Suppression…" : "Retirer"}
               </Button>
             </DialogFooter>
           </DialogContent>

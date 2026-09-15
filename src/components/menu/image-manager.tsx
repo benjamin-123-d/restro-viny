@@ -24,7 +24,7 @@ export function ImageManager({
 
   const remove = useServerAction(deleteItemImageAction, {
     onSuccess: () => {
-      toast.success("Photo removed")
+      toast.success("Photo retirée")
       router.refresh()
     },
     onError: (message) => toast.error(message),
@@ -41,10 +41,10 @@ export function ImageManager({
     setUploading(false)
     if (inputRef.current) inputRef.current.value = ""
     if (result.success) {
-      toast.success("Photo added")
+      toast.success("Photo ajoutée")
       router.refresh()
     } else {
-      toast.error(result.error ?? "Upload failed")
+      toast.error(result.error ?? "Envoi impossible")
     }
   }
 
@@ -65,7 +65,7 @@ export function ImageManager({
               type="button"
               onClick={() => remove.execute({ imageId: img.id })}
               className="absolute -top-1.5 -right-1.5 rounded-full bg-destructive p-1 text-white"
-              aria-label="Remove photo"
+              aria-label="Retirer la photo"
             >
               <Trash2Icon className="size-3" />
             </button>
@@ -76,7 +76,7 @@ export function ImageManager({
           onClick={() => inputRef.current?.click()}
           disabled={uploading || images.length >= 3}
           className="flex size-16 items-center justify-center rounded-md border border-dashed text-muted-foreground disabled:opacity-50"
-          aria-label="Add photo"
+          aria-label="Ajouter une photo"
         >
           <UploadIcon className="size-5" />
         </button>
@@ -89,7 +89,7 @@ export function ImageManager({
         onChange={onFile}
       />
       <p className="text-muted-foreground text-xs">
-        Up to 3 photos, max 5 MB each.
+        3 photos maximum, 5 Mo chacune.
       </p>
     </div>
   )

@@ -158,8 +158,8 @@ describe("ensureDefaultRoles", () => {
     const names = vi
       .mocked(createRoleRepo)
       .mock.calls.map((c) => (c[1] as { name: string }).name);
-    expect(names).toContain("Administrator");
-    expect(names).toContain("Viewer");
+    expect(names).toContain("Administrateur");
+    expect(names).toContain("Lecture seule");
   });
 
   it("does nothing when roles already exist", async () => {

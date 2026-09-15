@@ -63,7 +63,7 @@ export function InventoryManager({
   const del = useServerAction(deleteStockItemAction, {
     refresh: true,
     onSuccess: () => {
-      toast.success("Item removed");
+      toast.success("Article retiré");
       setDeleteTarget(null);
     },
     onError: (message) => toast.error(message),
@@ -83,8 +83,8 @@ export function InventoryManager({
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageHeader
-          title="Inventory"
-          description="A manual stock log — receive, waste and count to keep on-hand honest."
+          title="Inventaire"
+          description="Le suivi manuel du stock : entrées, pertes et comptages pour garder un stock juste."
         />
         <div className="flex flex-wrap gap-2">
           {lowCount > 0 ? (
@@ -97,23 +97,23 @@ export function InventoryManager({
             disabled={activeItems.length === 0}
             onClick={() => setBulkOpen(true)}
           >
-            Receive
+            Entrée
           </Button>
           <Button
             variant="outline"
             disabled={activeItems.length === 0}
             onClick={() => setCountOpen(true)}
           >
-            Count
+            Comptage
           </Button>
-          <Button onClick={openNew}>Add item</Button>
+          <Button onClick={openNew}>Ajouter un article</Button>
         </div>
       </div>
 
       {items.length === 0 ? (
         <EmptyState
-          title="No stock items yet"
-          description="Add the ingredients + supplies you want to track, then log deliveries and wastage."
+          title="Aucun article en stock"
+          description="Ajoutez les ingrédients et fournitures à suivre, puis enregistrez livraisons et pertes."
         />
       ) : (
         groupByCategory(items).map(([category, rows]) => (
@@ -130,19 +130,19 @@ export function InventoryManager({
                       {item.name}
                       {item.isLow ? (
                         <Badge className="bg-amber-100 text-[10px] text-amber-800">
-                          Low
+                          Stock bas
                         </Badge>
                       ) : null}
                       {!item.isActive ? (
                         <Badge variant="secondary" className="text-[10px]">
-                          Inactive
+                          Inactif
                         </Badge>
                       ) : null}
                     </p>
                     <p className="text-muted-foreground text-xs">
                       {item.reorderLevel != null
-                        ? `Reorder at ${item.reorderLevel}`
-                        : "No reorder level"}
+                        ? `Réapprovisionner à ${item.reorderLevel}`
+                        : "Pas de seuil de réappro"}
                       {item.parLevel != null ? ` · Par ${item.parLevel}` : ""}
                       {item.costPerUnit != null ? ` · ${formatCurrency(item.costPerUnit)}/${UNIT_LABELS[item.unit]}` : ""}
                     </p>
@@ -161,7 +161,7 @@ export function InventoryManager({
                         className="h-8 px-2 text-xs"
                         onClick={() => setAdjust({ item, type: "RECEIVE" })}
                       >
-                        Receive
+                        Entrée
                       </Button>
                       <Button
                         size="sm"
@@ -169,7 +169,7 @@ export function InventoryManager({
                         className="text-destructive h-8 px-2 text-xs"
                         onClick={() => setAdjust({ item, type: "WASTE" })}
                       >
-                        Waste
+                        Perte
                       </Button>
                       <Button
                         size="sm"
@@ -185,7 +185,7 @@ export function InventoryManager({
                         className="h-8 px-2 text-xs"
                         onClick={() => openEdit(item)}
                       >
-                        Edit
+                        Modifier
                       </Button>
                       <Button
                         size="sm"
@@ -193,7 +193,7 @@ export function InventoryManager({
                         className="text-destructive h-8 px-2 text-xs"
                         onClick={() => setDeleteTarget(item)}
                       >
-                        Remove
+                        Retirer
                       </Button>
                     </div>
                   </div>
@@ -240,18 +240,18 @@ export function InventoryManager({
               <DialogTitle>Remove {deleteTarget.name}?</DialogTitle>
             </DialogHeader>
             <p className="text-muted-foreground text-sm">
-              Its movement history is kept. You can re-add the name later.
+              Son historique de mouvements est conservé. Vous pourrez recréer ce nom plus tard.
             </p>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setDeleteTarget(null)}>
-                Cancel
+                Annuler
               </Button>
               <Button
                 variant="destructive"
                 disabled={del.isPending}
                 onClick={() => del.execute({ id: deleteTarget.id })}
               >
-                {del.isPending ? "Removing…" : "Remove"}
+                {del.isPending ? "Suppression…" : "Retirer"}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -39,7 +39,7 @@ export function CategoryDialog({
     category ? updateCategoryAction : createCategoryAction,
     {
       onSuccess: () => {
-        toast.success(category ? "Category updated" : "Category created")
+        toast.success(category ? "Catégorie modifiée" : "Catégorie créée")
         onOpenChange(false)
         onSaved()
       },
@@ -61,11 +61,11 @@ export function CategoryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{category ? "Edit category" : "New category"}</DialogTitle>
+          <DialogTitle>{category ? "Modifier la catégorie" : "Nouvelle catégorie"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4">
           <Field>
-            <FieldLabel htmlFor="cat-name">Name</FieldLabel>
+            <FieldLabel htmlFor="cat-name">Nom</FieldLabel>
             <Input
               id="cat-name"
               value={name}
@@ -90,12 +90,12 @@ export function CategoryDialog({
               onCheckedChange={setIsActive}
             />
             <label htmlFor="cat-active" className="text-sm">
-              Visible on the menu
+              Visible sur la carte
             </label>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={save.isPending || !name.trim()}>
-              {save.isPending ? "Saving…" : "Save"}
+              {save.isPending ? "Enregistrement…" : "Enregistrer"}
             </Button>
           </DialogFooter>
         </form>

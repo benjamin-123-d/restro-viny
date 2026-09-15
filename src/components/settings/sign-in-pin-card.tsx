@@ -36,43 +36,43 @@ export function SignInPinCard({ status }: { readonly status: PinStatus }) {
     const result = await removePinAction();
     setRemoving(false);
     if (result.success) {
-      toast.success("PIN removed");
+      toast.success("Code PIN supprimé");
       setRemoveOpen(false);
       router.refresh();
     } else {
-      toast.error(result.error ?? "Something went wrong");
+      toast.error(result.error ?? "Une erreur est survenue");
     }
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sign-in PIN</CardTitle>
+        <CardTitle>Code PIN de connexion</CardTitle>
         <CardDescription>
-          Sign in with your phone number and a PIN, skipping the SMS code. Keep
-          it secret — anyone with your phone number and PIN can sign in.
+          Connectez-vous avec votre numéro et un code PIN, sans attendre le SMS. Gardez-le
+          secret : toute personne ayant votre numéro et ce code peut se connecter.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap items-center justify-between gap-3">
         {status.hasPin ? (
           <p className="text-muted-foreground text-sm">
-            PIN enabled
+            Code PIN activé
             {status.pinUpdatedAt
-              ? ` · updated ${formatDateTime(status.pinUpdatedAt)}`
+              ? ` · modifié le ${formatDateTime(status.pinUpdatedAt)}`
               : ""}
           </p>
         ) : (
           <p className="text-muted-foreground text-sm">
-            No PIN set. You currently sign in with a one-time SMS code.
+            Aucun code PIN : vous vous connectez avec un code reçu par SMS.
           </p>
         )}
         <div className="flex gap-2">
           <Button onClick={() => setDialogOpen(true)}>
-            {status.hasPin ? "Change PIN" : "Set a PIN"}
+            {status.hasPin ? "Changer le code" : "Créer un code PIN"}
           </Button>
           {status.hasPin ? (
             <Button variant="outline" onClick={() => setRemoveOpen(true)}>
-              Remove
+              Supprimer
             </Button>
           ) : null}
         </div>
@@ -90,7 +90,7 @@ export function SignInPinCard({ status }: { readonly status: PinStatus }) {
         <Dialog open onOpenChange={(open) => !open && setRemoveOpen(false)}>
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
-              <DialogTitle>Remove your sign-in PIN?</DialogTitle>
+              <DialogTitle>Supprimer votre code PIN ?</DialogTitle>
             </DialogHeader>
             <p className="text-muted-foreground text-sm">
               You&apos;ll sign in with a one-time SMS code until you set a new
@@ -98,10 +98,10 @@ export function SignInPinCard({ status }: { readonly status: PinStatus }) {
             </p>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setRemoveOpen(false)}>
-                Cancel
+                Annuler
               </Button>
               <Button variant="destructive" disabled={removing} onClick={remove}>
-                {removing ? "Removing…" : "Remove PIN"}
+                {removing ? "Suppression…" : "Supprimer le code"}
               </Button>
             </DialogFooter>
           </DialogContent>

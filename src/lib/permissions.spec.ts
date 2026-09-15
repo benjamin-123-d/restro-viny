@@ -196,7 +196,7 @@ describe("DEFAULT_ROLES", () => {
   });
 
   it("keeps the Viewer role read-only everywhere", () => {
-    const viewer = DEFAULT_ROLES.find((r) => r.name === "Viewer");
+    const viewer = DEFAULT_ROLES.find((r) => r.name === "Lecture seule");
     expect(viewer).toBeDefined();
     for (const level of Object.values(viewer?.permissions ?? {})) {
       expect(level).toBe("READ");
