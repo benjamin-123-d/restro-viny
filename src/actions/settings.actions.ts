@@ -9,6 +9,7 @@ import {
   setInvoiceFooterSchema,
   setSelfOrderSchema,
   updateGeolocationSchema,
+  updateLegalProfileSchema,
   updateProfileSchema,
   updateTaxProfileSchema,
   updateUsernameSchema,
@@ -25,6 +26,7 @@ import {
 import {
   updateRestaurantProfile,
   updateTaxProfile,
+  updateLegalProfile,
   updateUsername,
   regenerateUsername,
   setInvoiceFooterNote,
@@ -42,6 +44,11 @@ import { failure, success, type ActionResult } from "@/types";
 export const updateTaxProfileAction = withManagerValidation(
   updateTaxProfileSchema,
   (data, ctx) => updateTaxProfile(ctx.restaurantId, data),
+);
+
+export const updateLegalProfileAction = withManagerValidation(
+  updateLegalProfileSchema,
+  (data, ctx) => updateLegalProfile(ctx.restaurantId, data),
 );
 
 export const updateRestaurantProfileAction = withManagerValidation(

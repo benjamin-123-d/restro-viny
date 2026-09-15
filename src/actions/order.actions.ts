@@ -19,6 +19,7 @@ import {
   voidLine,
   voidWholeOrder,
 } from "@/services/order.service";
+import { recordReceiptReprint } from "@/services/receipt.service";
 import { settle, settleTable } from "@/services/settlement.service";
 
 export const createOrderAction = withManagerValidation(
@@ -59,4 +60,10 @@ export const settleOrderAction = withManagerValidation(
 export const settleTableAction = withManagerValidation(
   settleTableSchema,
   (data, ctx) => settleTable(ctx, data),
+);
+
+/** A duplicate receipt is about to be printed: give it the next number. */
+export const recordReceiptReprintAction = withManagerValidation(
+  fireOrderSchema,
+  (data, ctx) => recordReceiptReprint(ctx.restaurantId, data.orderId),
 );

@@ -114,6 +114,16 @@ export const findOrderById = (
 ): Promise<OrderWithRelations | null> =>
   prisma.order.findUnique({ where: { id }, include: ORDER_INCLUDE });
 
+/** Count one more printed duplicate of the receipt; returns the new count. */
+export const incrementReceiptReprints = async (id: string): Promise<number> => {
+  const updated = await prisma.order.update({
+    where: { id },
+    data: { receiptReprints: { increment: 1 } },
+    select: { receiptReprints: true },
+  });
+  return updated.receiptReprints;
+};
+
 export const findOrderByIdempotencyKey = (
   key: string,
 ): Promise<OrderWithRelations | null> =>

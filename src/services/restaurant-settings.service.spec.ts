@@ -27,6 +27,7 @@ import { generateUniqueUsername } from "@/services/restaurant.service";
 import {
   fssaiStatus,
   getInvoiceFooterNote,
+  getLegalProfile,
   getRestaurantProfile,
   getSelfOrderEnabled,
   getSelfOrderShareInfo,
@@ -38,6 +39,7 @@ import {
   setInvoiceFooterNote,
   setSelfOrderEnabled,
   updateGeolocation,
+  updateLegalProfile,
   updateRestaurantProfile,
   updateTaxProfile,
   updateUsername,
@@ -442,3 +444,43 @@ describe("geolocation", () => {
   });
 });
 
+
+describe("French legal profile", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("reads the territory and the legal mentions", async () => {
+    vi.mocked(findRestaurantById).mockResolvedValue(
+      makeRestaurant({ vatTerritory: "MARTINIQUE", siret: "73282932000074", nafCode: "56.10A" }),
+    );
+    const legal = await getLegalProfile("res_1");
+    expect(legal).toMatchObject({ vatTerritory: "MARTINIQUE", siret: "73282932000074", nafCode: "56.10A" });
+  });
+
+  it("stores identifiers in one shape and switches French rules on", async () => {
+    await updateLegalProfile("res_1", {
+      vatTerritory: "CORSE",
+      siret: "732 829 320 00074",
+      vatNumber: "fr 44 732829320",
+      nafCode: "5610a",
+      legalName: undefined,
+      legalForm: undefined,
+      shareCapital: undefined,
+      rcs: undefined,
+      drinksLicense: undefined,
+    });
+    expect(updateRestaurant).toHaveBeenCalledWith("res_1", expect.objectContaining({
+      taxSystem: "FR_VAT",
+      pricesTaxInclusive: true,
+      vatTerritory: "CORSE",
+      siret: "73282932000074",
+      vatNumber: "FR44732829320",
+      nafCode: "56.10A",
+      rcs: null,
+    }));
+  });
+
+  it("throws when the restaurant is missing", async () => {
+    vi.mocked(findRestaurantById).mockResolvedValue(null);
+    await expect(getLegalProfile("res_1")).rejects.toThrow(RESTAURANT_NOT_FOUND);
+  });
+});

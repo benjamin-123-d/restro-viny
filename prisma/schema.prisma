@@ -511,6 +511,9 @@ model Order {
   roundOff       Decimal      @default(0) @db.Decimal(10, 2)
   grandTotal     Decimal      @default(0) @db.Decimal(10, 2)
 
+  /// How many duplicates of the receipt have been printed; each is numbered.
+  receiptReprints Int @default(0)
+
   placedById      String?
   placedByStaffId String?
   voidedById      String?

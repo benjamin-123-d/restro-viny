@@ -31,6 +31,7 @@ const baseOrder = (
   compTotal: 0 as unknown as OrderWithRelations["compTotal"],
   roundOff: 0 as unknown as OrderWithRelations["roundOff"],
   grandTotal: 1000 as unknown as OrderWithRelations["grandTotal"],
+  receiptReprints: 0,
   placedById: null,
   placedByStaffId: null,
   voidedById: null,

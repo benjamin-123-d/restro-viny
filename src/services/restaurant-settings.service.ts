@@ -1,7 +1,9 @@
 import type { Prisma } from "@/generated/prisma/client";
+import { formatNafCode, normaliseDigits } from "@/lib/french-legal";
 import {
   businessHoursSchema,
   type UpdateGeolocationInput,
+  type UpdateLegalProfileInput,
   type UpdateProfileInput,
   type UpdateTaxProfileInput,
 } from "@/lib/validators/restaurant";
@@ -17,6 +19,7 @@ import { generateUniqueUsername } from "@/services/restaurant.service";
 import type {
   BusinessHoursDTO,
   FssaiStatus,
+  LegalProfileDTO,
   RestaurantProfileDTO,
   ServiceOptions,
   TaxProfileDTO,
@@ -68,6 +71,50 @@ export const updateTaxProfile = async (
     pricesTaxInclusive: input.pricesTaxInclusive,
     gstin: unregistered ? null : input.gstin ?? null,
     sacCode: unregistered ? null : input.sacCode ?? null,
+  });
+};
+
+export const getLegalProfile = async (
+  restaurantId: string,
+): Promise<LegalProfileDTO> => {
+  const restaurant = await findRestaurantById(restaurantId);
+  if (!restaurant || restaurant.deletedAt) {
+    throw new Error(RESTAURANT_NOT_FOUND);
+  }
+  return {
+    vatTerritory: restaurant.vatTerritory,
+    legalName: restaurant.legalName,
+    legalForm: restaurant.legalForm,
+    shareCapital: restaurant.shareCapital,
+    siret: restaurant.siret,
+    vatNumber: restaurant.vatNumber,
+    nafCode: restaurant.nafCode,
+    rcs: restaurant.rcs,
+    drinksLicense: restaurant.drinksLicense,
+  };
+};
+
+/**
+ * Save the territory and legal mentions. Identifiers are stored in one
+ * canonical shape (digits only, upper case) whatever spacing was typed, and
+ * French rules are switched on: VAT per line, prices shown TTC.
+ */
+export const updateLegalProfile = async (
+  restaurantId: string,
+  input: UpdateLegalProfileInput,
+): Promise<void> => {
+  await updateRestaurant(restaurantId, {
+    taxSystem: "FR_VAT",
+    pricesTaxInclusive: true,
+    vatTerritory: input.vatTerritory,
+    legalName: input.legalName ?? null,
+    legalForm: input.legalForm ?? null,
+    shareCapital: input.shareCapital ?? null,
+    siret: input.siret ? normaliseDigits(input.siret) : null,
+    vatNumber: input.vatNumber ? input.vatNumber.replace(/[\s.-]/g, "").toUpperCase() : null,
+    nafCode: input.nafCode ? formatNafCode(input.nafCode) : null,
+    rcs: input.rcs ?? null,
+    drinksLicense: input.drinksLicense ?? null,
   });
 };
 

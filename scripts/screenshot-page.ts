@@ -35,8 +35,17 @@ const main = async () => {
   const prisma = new PrismaClient({
     adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL ?? "" }),
   });
-  const restaurant = await prisma.restaurant.findFirst({ select: { ownerId: true } });
+  const restaurant = await prisma.restaurant.findFirst({ select: { id: true, ownerId: true } });
+  // ":lastOrder" in the route stands for the most recent settled order.
+  const lastOrder = route.includes(":lastOrder")
+    ? await prisma.order.findFirst({
+        where: { restaurantId: restaurant?.id, status: "COMPLETED" },
+        orderBy: { invoiceNumber: "desc" },
+        select: { id: true },
+      })
+    : null;
   await prisma.$disconnect();
+  const pagePath = lastOrder ? route.replace(":lastOrder", lastOrder.id) : route;
   if (!restaurant) throw new Error("Aucun restaurant.");
 
   const token = await new SignJWT({})
@@ -126,7 +135,7 @@ const main = async () => {
     const loaded = new Promise<void>((resolve) =>
       listeners.push((m) => m === "Page.loadEventFired" && resolve()),
     );
-    await send("Page.navigate", { url: `${BASE}${route}` });
+    await send("Page.navigate", { url: `${BASE}${pagePath}` });
     await loaded;
     if (dark) {
       await send("Runtime.evaluate", { expression: "document.documentElement.classList.add('dark')" });

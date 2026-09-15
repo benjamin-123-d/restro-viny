@@ -9,6 +9,7 @@ import {
 
 import { GalleryManager } from "@/components/settings/gallery-manager";
 import { InvoiceFooterCard } from "@/components/settings/invoice-footer-card";
+import { LegalProfileForm } from "@/components/settings/legal-profile-form";
 import { LocationMapCard } from "@/components/settings/location-map-card";
 import { ProfileHeader } from "@/components/settings/profile-header";
 import { RestaurantProfileForm } from "@/components/settings/restaurant-profile-form";
@@ -30,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import {
   getInvoiceFooterNote,
+  getLegalProfile,
   getRestaurantProfile,
   getSelfOrderEnabled,
   getTaxProfile,
@@ -37,12 +39,12 @@ import {
 import { getPinStatus } from "@/services/pin-auth.service";
 
 const TABS = [
-  { value: "profile", label: "Profile", icon: StoreIcon },
-  { value: "location", label: "Location", icon: MapPinIcon },
-  { value: "ordering", label: "Ordering", icon: QrCodeIcon },
-  { value: "billing", label: "Billing & tax", icon: ReceiptIcon },
-  { value: "media", label: "Media", icon: ImagesIcon },
-  { value: "access", label: "Access", icon: KeyRoundIcon },
+  { value: "profile", label: "Profil", icon: StoreIcon },
+  { value: "location", label: "Adresse et carte", icon: MapPinIcon },
+  { value: "ordering", label: "Commande en ligne", icon: QrCodeIcon },
+  { value: "billing", label: "TVA et facturation", icon: ReceiptIcon },
+  { value: "media", label: "Photos et vidéos", icon: ImagesIcon },
+  { value: "access", label: "Accès", icon: KeyRoundIcon },
 ] as const;
 
 const NAV_TRIGGER =
@@ -54,20 +56,21 @@ export default async function SettingsPage() {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
-          title="Settings"
-          description="Manage your restaurant configuration."
+          title="Réglages"
+          description="La configuration de votre restaurant."
         />
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant first."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant."
         />
       </div>
     );
   }
 
-  const [profile, taxProfile] = await Promise.all([
+  const [profile, taxProfile, legalProfile] = await Promise.all([
     getRestaurantProfile(ctx.restaurantId),
     getTaxProfile(ctx.restaurantId),
+    getLegalProfile(ctx.restaurantId),
   ]);
   const pinStatus = await getPinStatus(ctx.userId);
   const selfOrderEnabled = await getSelfOrderEnabled(ctx.restaurantId);
@@ -80,11 +83,10 @@ export default async function SettingsPage() {
     profile.addressLine1,
     profile.city,
     profile.phone,
-    profile.fssaiLicense,
+    legalProfile.siret,
+    legalProfile.vatNumber,
+    legalProfile.legalForm,
   ];
-  if (taxProfile.gstRegistrationType !== "UNREGISTERED") {
-    essentials.push(taxProfile.gstin);
-  }
   const completeness = {
     done: essentials.filter(Boolean).length,
     total: essentials.length,
@@ -104,8 +106,8 @@ export default async function SettingsPage() {
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <PageHeader
-        title="Settings"
-        description="Your restaurant profile, branding, location and tax configuration."
+        title="Réglages"
+        description="Profil, image de marque, adresse, TVA et mentions légales de votre restaurant."
       />
       <ProfileHeader profile={profile} completeness={completeness} />
 
@@ -155,8 +157,17 @@ export default async function SettingsPage() {
             keepMounted
             className="flex flex-col gap-6"
           >
-            <TaxSettingsForm profile={taxProfile} />
+            <LegalProfileForm profile={legalProfile} />
             <InvoiceFooterCard note={invoiceFooter} />
+            {/* The original Indian GST settings, kept for outlets outside France. */}
+            <details className="rounded-xl border bg-card p-4 text-sm">
+              <summary className="cursor-pointer font-medium text-muted-foreground">
+                Régime hors France (GST indienne)
+              </summary>
+              <div className="mt-4">
+                <TaxSettingsForm profile={taxProfile} />
+              </div>
+            </details>
           </TabsContent>
 
           <TabsContent
@@ -168,7 +179,7 @@ export default async function SettingsPage() {
               <CardHeader>
                 <CardTitle>Photos</CardTitle>
                 <CardDescription>
-                  A showcase gallery for your restaurant (up to 8).
+                  La galerie de votre restaurant (8 photos maximum).
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -177,10 +188,10 @@ export default async function SettingsPage() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Videos</CardTitle>
+                <CardTitle>Vidéos</CardTitle>
                 <CardDescription>
-                  Add promo clips by link (YouTube / Instagram / Vimeo) or
-                  upload a file (up to 6).
+                  Ajoutez des vidéos par lien (YouTube, Instagram, Vimeo) ou
+                  envoyez un fichier (6 maximum).
                 </CardDescription>
               </CardHeader>
               <CardContent>

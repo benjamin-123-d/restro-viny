@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+import {
+  isValidNafCode,
+  isValidSiret,
+  isValidVatNumber,
+  normaliseDigits,
+} from "@/lib/french-legal";
 import { orderTypeSchema } from "@/lib/validators/order";
 import { idSchema } from "@/lib/validators/shared";
 
@@ -30,6 +36,59 @@ export const updateTaxProfileSchema = z
   );
 
 export type UpdateTaxProfileInput = z.infer<typeof updateTaxProfileSchema>;
+
+// ------------------------------------------------------ French legal profile ---
+
+export const vatTerritorySchema = z.enum([
+  "METROPOLE",
+  "CORSE",
+  "GUADELOUPE",
+  "MARTINIQUE",
+  "REUNION",
+  "GUYANE",
+  "MAYOTTE",
+]);
+
+/** Empty inputs mean "not provided yet", never an empty string on a receipt. */
+const legalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, `${max} caractères maximum.`)
+    .optional()
+    .transform((v) => (v ? v : undefined));
+
+export const updateLegalProfileSchema = z
+  .object({
+    vatTerritory: vatTerritorySchema,
+    legalName: legalText(120),
+    legalForm: legalText(60),
+    shareCapital: legalText(40),
+    siret: legalText(20).refine((v) => !v || isValidSiret(v), {
+      message: "SIRET invalide : vérifiez les 14 chiffres sur votre extrait Kbis ou l'avis de situation INSEE.",
+    }),
+    vatNumber: legalText(20).refine((v) => !v || isValidVatNumber(v), {
+      message: "Numéro de TVA invalide : FR, puis 2 chiffres de clé, puis les 9 chiffres du SIREN.",
+    }),
+    nafCode: legalText(8).refine((v) => !v || isValidNafCode(v), {
+      message: "Code NAF invalide (exemple : 56.10A pour la restauration traditionnelle).",
+    }),
+    rcs: legalText(80),
+    drinksLicense: legalText(60),
+  })
+  .refine(
+    (v) =>
+      !v.siret ||
+      !v.vatNumber ||
+      !/^FR/i.test(v.vatNumber) ||
+      normaliseDigits(v.vatNumber).slice(-9) === normaliseDigits(v.siret).slice(0, 9),
+    {
+      message: "Ce numéro de TVA ne correspond pas au SIREN de votre SIRET.",
+      path: ["vatNumber"],
+    },
+  );
+
+export type UpdateLegalProfileInput = z.infer<typeof updateLegalProfileSchema>;
 
 // ------------------------------------------------------------ restaurant profile ---
 

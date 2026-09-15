@@ -21,15 +21,10 @@ export const SERVICE_VAR: Readonly<Record<ServiceType, string>> = {
   DELIVERY: "var(--sales-delivery)",
 };
 
-export const PAYMENT_NAME: Readonly<Record<string, string>> = {
-  CASH: "Espèces",
-  CARD: "Carte bancaire",
-  MEAL_VOUCHER: "Titre-restaurant",
-  UPI: "Virement instantané",
-  OTHER: "Autre",
-};
-
-export const paymentName = (mode: string): string => PAYMENT_NAME[mode] ?? mode;
+export {
+  PAYMENT_MODE_LABEL as PAYMENT_NAME,
+  paymentModeLabel as paymentName,
+} from "@/lib/payment-labels";
 
 export const WEEKDAY_SHORT = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 export const WEEKDAY_LONG = [

@@ -22,16 +22,16 @@ export function InvoiceFooterCard({ note }: { readonly note: string }) {
 
   const save = useServerAction(setInvoiceFooterAction, {
     refresh: true,
-    onSuccess: () => toast.success("Invoice footer updated"),
+    onSuccess: () => toast.success("Pied de facture enregistré"),
     onError: (message) => toast.error(message),
   });
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Invoice footer note</CardTitle>
+        <CardTitle>Message en pied de facture</CardTitle>
         <CardDescription>
-          A custom message printed at the bottom of every bill / invoice.
+          Un message imprimé en bas de chaque note et facture.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
@@ -40,18 +40,18 @@ export function InvoiceFooterCard({ note }: { readonly note: string }) {
           onChange={(e) => setValue(e.target.value)}
           rows={3}
           maxLength={300}
-          placeholder="e.g. Thank you! Visit again. We also take orders on Swiggy & Zomato."
+          placeholder="Ex. : Merci de votre visite ! Service compris. Réservations au 04 00 00 00 00."
         />
         <div className="flex items-center justify-between gap-3">
           <FieldDescription>
-            Up to 300 characters. Leave empty to remove.
+            300 caractères maximum. Laissez vide pour ne rien imprimer.
           </FieldDescription>
           <Button
             size="sm"
             disabled={save.isPending || value.trim() === note.trim()}
             onClick={() => save.execute({ note: value.trim() })}
           >
-            {save.isPending ? "Saving…" : "Save"}
+            {save.isPending ? "Enregistrement…" : "Enregistrer"}
           </Button>
         </div>
       </CardContent>

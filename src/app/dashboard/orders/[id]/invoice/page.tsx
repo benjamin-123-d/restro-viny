@@ -1,63 +1,185 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { PrintButton } from "@/components/orders/print-button";
-import { formatCurrency } from "@/lib/format";
+import { ReceiptPrintButton } from "@/components/orders/receipt-print-button";
+import { formatVatRate } from "@/lib/french-vat";
+import { formatDate, formatTime } from "@/lib/format";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
-import { findRestaurantById } from "@/repositories/restaurant.repository";
-import { getOrder } from "@/services/order.service";
-import type { OrderLineDTO } from "@/types/order";
+import { cn } from "@/lib/utils";
+import { getReceipt, ORDER_NOT_SETTLED } from "@/services/receipt.service";
+import type { ReceiptDTO } from "@/types/receipt";
 
-const round2 = (n: number): number =>
-  Math.round((n + Number.EPSILON) * 100) / 100;
-const money = (n: number): string => n.toFixed(2);
+export const metadata = { title: "Facture" };
 
-const TYPE_LABEL: Record<string, string> = {
-  DINE_IN: "Dine In",
-  TAKEAWAY: "Takeaway",
-  DELIVERY: "Delivery",
-};
+/** Amounts on a receipt: "12,50", the euro sign only on the grand total. */
+const amount = (n: number): string =>
+  n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-const unitPrice = (line: OrderLineDTO): number =>
-  line.unitPrice + line.modifiers.reduce((s, m) => s + m.priceDelta, 0);
+const Hr = () => <div className="my-2 border-t border-dashed border-black" />;
 
-const lineAmount = (line: OrderLineDTO): number =>
-  line.isComp ? 0 : unitPrice(line) * line.quantity;
-
-const dateIST = (iso: string): string =>
-  new Date(iso).toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    timeZone: "Europe/Paris",
-  });
-
-const timeIST = (iso: string): string =>
-  new Date(iso).toLocaleTimeString("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "Europe/Paris",
-  });
-
-function Hr() {
-  return <div className="my-1.5 border-t border-dashed border-black" />;
-}
-
-function TotalRow({
+const Row = ({
   label,
   value,
-  bold,
+  strong,
 }: {
   readonly label: string;
   readonly value: string;
-  readonly bold?: boolean;
-}) {
+  readonly strong?: boolean;
+}) => (
+  <div className={cn("flex justify-between gap-2", strong && "text-[14px] font-bold")}>
+    <span>{label}</span>
+    <span className="tabular-nums">{value}</span>
+  </div>
+);
+
+function Receipt({ r }: { readonly r: ReceiptDTO }) {
+  const s = r.seller;
+  const idLine = [s.siret && `SIRET ${s.siret}`, s.nafCode && `NAF ${s.nafCode}`]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
-    <div className={`flex justify-between ${bold ? "font-bold" : ""}`}>
-      <span>{label}</span>
-      <span className="tabular-nums">{value}</span>
-    </div>
+    <article className="mx-auto w-full max-w-[340px] bg-white p-4 font-mono text-[12px] leading-snug text-black shadow-sm ring-1 ring-black/10 print:max-w-none print:p-0 print:shadow-none print:ring-0">
+      <header className="flex flex-col items-center text-center">
+        <p className="text-[15px] font-bold uppercase">{s.name}</p>
+        {s.legalName && s.legalName !== s.name ? <p>{s.legalName}</p> : null}
+        {s.legalIdentity ? <p>{s.legalIdentity}</p> : null}
+        {s.addressLines.map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+        {s.phone ? <p>Tél. {s.phone}</p> : null}
+        {s.email ? <p>{s.email}</p> : null}
+        {idLine ? <p>{idLine}</p> : null}
+        {s.vatNumber ? <p>TVA intracom. {s.vatNumber}</p> : null}
+        {s.rcs ? <p>{s.rcs}</p> : null}
+        {s.drinksLicense ? <p>{s.drinksLicense}</p> : null}
+      </header>
+
+      <Hr />
+
+      <div className="text-center">
+        <p className="text-[14px] font-bold">FACTURE {r.number}</p>
+        {r.duplicateNumber != null ? (
+          <p className="mt-1 border-2 border-black py-0.5 font-bold tracking-widest">
+            DUPLICATA N° {r.duplicateNumber}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="mt-2 flex flex-col gap-0.5">
+        <div className="flex justify-between">
+          <span>
+            {formatDate(r.issuedAt)} {formatTime(r.issuedAt)}
+          </span>
+          <span className="font-bold">
+            {r.serviceLabel}
+            {r.tableLabel ? ` · ${r.tableLabel}` : ""}
+          </span>
+        </div>
+        <span>Commande n° {r.orderNumber}</span>
+        {r.customerName ? <span>Client : {r.customerName}</span> : null}
+        {r.customerAddress ? <span>{r.customerAddress}</span> : null}
+      </div>
+
+      <Hr />
+
+      <div className="flex font-bold">
+        <span className="w-7">Qté</span>
+        <span className="flex-1">Désignation</span>
+        <span className="w-14 text-right">P.U.</span>
+        <span className="w-16 text-right">Total</span>
+        <span className="w-4" />
+      </div>
+      <Hr />
+      <ul className="flex flex-col gap-1">
+        {r.lines.map((line, i) => (
+          <li key={i}>
+            <div className="flex">
+              <span className="w-7 tabular-nums">{line.quantity}</span>
+              <span className="flex-1 pr-1">
+                {line.name}
+                {line.offered ? " (offert)" : ""}
+              </span>
+              <span className="w-14 text-right tabular-nums">{amount(line.unitTTC)}</span>
+              <span className="w-16 text-right tabular-nums">{amount(line.totalTTC)}</span>
+              <span className="w-4 text-right">{line.vatCode}</span>
+            </div>
+            {line.details.map((d) => (
+              <p key={d} className="pl-7 text-[11px]">
+                + {d}
+              </p>
+            ))}
+          </li>
+        ))}
+      </ul>
+
+      <Hr />
+
+      <div className="flex flex-col gap-0.5">
+        <Row label={`Sous-total TTC (${r.itemCount} art.)`} value={amount(r.subtotalTTC)} />
+        {r.discountTTC !== 0 ? (
+          <Row
+            label={`Remise${r.discountReason ? ` (${r.discountReason})` : ""}`}
+            value={`−${amount(r.discountTTC)}`}
+          />
+        ) : null}
+        {r.roundingTTC !== 0 ? <Row label="Arrondi" value={amount(r.roundingTTC)} /> : null}
+      </div>
+      <Hr />
+      <Row label="TOTAL TTC" value={`${amount(r.totalTTC)} €`} strong />
+      <Hr />
+
+      <table className="w-full text-[11px]">
+        <thead>
+          <tr className="text-left">
+            <th className="font-bold">TVA</th>
+            <th className="text-right font-bold">Taux</th>
+            <th className="text-right font-bold">HT</th>
+            <th className="text-right font-bold">TVA</th>
+            <th className="text-right font-bold">TTC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {r.vat.map((v) => (
+            <tr key={v.code}>
+              <td>{v.code}</td>
+              <td className="text-right tabular-nums">{formatVatRate(v.rate)}</td>
+              <td className="text-right tabular-nums">{amount(v.baseHT)}</td>
+              <td className="text-right tabular-nums">{amount(v.vat)}</td>
+              <td className="text-right tabular-nums">{amount(v.totalTTC)}</td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr className="font-bold">
+            <td colSpan={2}>Total</td>
+            <td className="text-right tabular-nums">{amount(r.totalHT)}</td>
+            <td className="text-right tabular-nums">{amount(r.totalVAT)}</td>
+            <td className="text-right tabular-nums">{amount(r.totalTTC)}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      {r.payments.length > 0 ? (
+        <>
+          <Hr />
+          <div className="flex flex-col gap-0.5">
+            {r.payments.map((p, i) => (
+              <Row key={i} label={p.label} value={amount(p.amount)} />
+            ))}
+            {r.changeGiven > 0 ? <Row label="Rendu monnaie" value={amount(r.changeGiven)} /> : null}
+          </div>
+        </>
+      ) : null}
+
+      <Hr />
+      <footer className="flex flex-col gap-1 text-center">
+        {r.notices.map((n) => (
+          <p key={n}>{n}</p>
+        ))}
+        {r.footer ? <p className="whitespace-pre-line">{r.footer}</p> : null}
+      </footer>
+    </article>
   );
 }
 
@@ -74,168 +196,61 @@ export default async function InvoicePage({
   }
   const { id } = await params;
   const { copy } = await searchParams;
-  const [order, restaurant] = await Promise.all([
-    getOrder(ctx.restaurantId, id).catch(() => null),
-    findRestaurantById(ctx.restaurantId),
-  ]);
-  if (!order || !restaurant) {
+  const duplicate = copy === "1" || copy === "duplicata";
+
+  let receipt: ReceiptDTO;
+  try {
+    receipt = await getReceipt(ctx.restaurantId, id, duplicate);
+  } catch (error) {
+    if (error instanceof Error && error.message === ORDER_NOT_SETTLED) {
+      return (
+        <div className="mx-auto flex max-w-sm flex-col gap-2 p-6 text-center text-sm">
+          <p>
+            Cette commande n&apos;est pas encore encaissée : la facture sera disponible après le
+            paiement.
+          </p>
+          <Link href={`/dashboard/orders/${id}`} className="underline">
+            Retour à la commande
+          </Link>
+        </div>
+      );
+    }
     notFound();
   }
 
-  if (order.status !== "COMPLETED") {
-    return (
-      <div className="mx-auto max-w-sm p-6 text-center text-sm">
-        <p>This order hasn&apos;t been settled yet.</p>
-        <Link href={`/dashboard/orders/${order.id}`} className="underline">
-          Back to order
-        </Link>
-      </div>
-    );
-  }
-
-  const registered = restaurant.gstRegistrationType !== "UNREGISTERED";
-  const lines = order.lines.filter((l) => l.state !== "VOID");
-  const totalQty = lines.reduce((s, l) => s + l.quantity, 0);
-  const cgst = round2(order.taxTotal / 2);
-  const sgst = round2(order.taxTotal - cgst);
-
-  // Show the GST rate only when every taxable line shares one rate.
-  const taxableRates = new Set(
-    lines.filter((l) => !l.isComp && l.taxRate > 0).map((l) => l.taxRate),
-  );
-  const halfRate = taxableRates.size === 1 ? [...taxableRates][0] / 2 : null;
-  const rateSuffix = halfRate != null ? `@${halfRate}%` : "";
-
-  const addressLine = [
-    restaurant.addressLine1,
-    restaurant.addressLine2,
-    [restaurant.city, restaurant.state].filter(Boolean).join(", "),
-    restaurant.postalCode,
-  ]
-    .filter(Boolean)
-    .join(", ");
-
-  const roundOffLabel =
-    order.roundOff === 0
-      ? null
-      : `${order.roundOff > 0 ? "+" : "−"}${money(Math.abs(order.roundOff))}`;
-
-  const footer =
-    restaurant.invoiceFooterNote?.trim() || "Thank you! Visit again.";
-
   return (
-    <div className="mx-auto w-full max-w-[320px] p-4 font-mono text-[12px] leading-tight text-black">
-      <div className="mb-4 flex items-center justify-between print:hidden">
-        <span className="text-muted-foreground text-xs">
-          {registered ? "Tax invoice" : "Bill of supply"}
-        </span>
-        <PrintButton label="Print invoice" />
+    <div className="flex flex-col gap-4 p-4 print:p-0">
+      <div className="mx-auto flex w-full max-w-[340px] flex-wrap items-center justify-between gap-2 print:hidden">
+        <nav className="flex rounded-lg bg-muted p-0.5 text-xs font-medium" aria-label="Exemplaire">
+          <Link
+            href={`/dashboard/orders/${id}/invoice`}
+            aria-current={!duplicate ? "page" : undefined}
+            className={cn(
+              "rounded-md px-2.5 py-1",
+              !duplicate ? "bg-background shadow-xs" : "text-muted-foreground",
+            )}
+          >
+            Original
+          </Link>
+          <Link
+            href={`/dashboard/orders/${id}/invoice?copy=1`}
+            aria-current={duplicate ? "page" : undefined}
+            className={cn(
+              "rounded-md px-2.5 py-1",
+              duplicate ? "bg-background shadow-xs" : "text-muted-foreground",
+            )}
+          >
+            Duplicata
+          </Link>
+        </nav>
+        <ReceiptPrintButton orderId={id} duplicate={duplicate} />
       </div>
-
-      {/* Header */}
-      <div className="flex flex-col items-center text-center">
-        <p className="text-sm font-bold tracking-wide">
-          {registered ? "TAX INVOICE" : "BILL OF SUPPLY"}
-          {copy === "1" ? " (DUPLICATE)" : ""}
-        </p>
-        {restaurant.legalName ? (
-          <p className="uppercase">{restaurant.legalName}</p>
-        ) : null}
-        <p className="text-sm font-bold uppercase">{restaurant.name}</p>
-        {restaurant.tagline ? <p>{restaurant.tagline}</p> : null}
-        {addressLine ? <p>{addressLine}</p> : null}
-        {restaurant.phone ? <p>M: {restaurant.phone}</p> : null}
-        {registered && restaurant.gstin ? (
-          <p>GSTIN: {restaurant.gstin}</p>
-        ) : null}
-        {restaurant.fssaiLicense ? (
-          <p>FSSAI: {restaurant.fssaiLicense}</p>
-        ) : null}
-      </div>
-
-      <Hr />
-
-      {/* Meta */}
-      <div className="flex flex-col gap-0.5">
-        {order.customerName ? <p>Name: {order.customerName}</p> : null}
-        <div className="flex justify-between">
-          <span>Date: {order.settledAt ? dateIST(order.settledAt) : ""}</span>
-          <span className="font-bold">
-            {TYPE_LABEL[order.orderType] ?? order.orderType}
-            {order.orderType === "DINE_IN" && order.tableLabel
-              ? `: ${order.tableLabel}`
-              : ""}
-          </span>
-        </div>
-        {order.settledAt ? <span>{timeIST(order.settledAt)}</span> : null}
-        <div className="flex justify-between">
-          <span>Bill No.: {order.invoiceNumber ?? order.orderNumber}</span>
-          <span>Token No.: {order.orderNumber}</span>
-        </div>
-      </div>
-
-      <Hr />
-
-      {/* Items */}
-      <div className="flex font-bold">
-        <span className="flex-1">Item</span>
-        <span className="w-8 text-right">Qty</span>
-        <span className="w-14 text-right">Price</span>
-        <span className="w-16 text-right">Amount</span>
-      </div>
-      <Hr />
-      <div className="flex flex-col gap-0.5">
-        {lines.map((line) => (
-          <div key={line.id} className="flex">
-            <span className="flex-1 pr-1">
-              {line.name}
-              {line.variantName ? ` (${line.variantName})` : ""}
-              {line.isComp ? " — comp" : ""}
-            </span>
-            <span className="w-8 text-right tabular-nums">{line.quantity}</span>
-            <span className="w-14 text-right tabular-nums">
-              {money(unitPrice(line))}
-            </span>
-            <span className="w-16 text-right tabular-nums">
-              {money(lineAmount(line))}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <Hr />
-
-      {/* Totals */}
-      <div className="flex flex-col gap-0.5">
-        <TotalRow
-          label={`Sub Total  Qty: ${totalQty}`}
-          value={money(order.subtotal)}
-        />
-        {order.discountTotal > 0 ? (
-          <TotalRow label="Discount" value={`−${money(order.discountTotal)}`} />
-        ) : null}
-        {registered ? (
-          <>
-            <TotalRow label={`SGST${rateSuffix}`} value={money(sgst)} />
-            <TotalRow label={`CGST${rateSuffix}`} value={money(cgst)} />
-          </>
-        ) : null}
-        {roundOffLabel ? (
-          <TotalRow label="Round off" value={roundOffLabel} />
-        ) : null}
-      </div>
-
-      <Hr />
-
-      <TotalRow
-        label="Grand Total"
-        value={formatCurrency(order.grandTotal)}
-        bold
-      />
-
-      <Hr />
-
-      <p className="whitespace-pre-line text-center">{footer}</p>
+      <Receipt r={receipt} />
+      <p className="mx-auto max-w-[340px] text-center text-xs text-muted-foreground print:hidden">
+        <Link href="/dashboard/sales" className="underline underline-offset-2">
+          Toutes les factures de vente
+        </Link>
+      </p>
     </div>
   );
 }

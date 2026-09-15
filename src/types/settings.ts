@@ -1,5 +1,20 @@
 import type { OrderType } from "@/types/order";
 
+import type { VatTerritory } from "@/lib/french-vat";
+
+/** The mentions French law puts on every invoice and receipt. */
+export interface LegalProfileDTO {
+  readonly vatTerritory: VatTerritory;
+  readonly legalName: string | null;
+  readonly legalForm: string | null;
+  readonly shareCapital: string | null;
+  readonly siret: string | null;
+  readonly vatNumber: string | null;
+  readonly nafCode: string | null;
+  readonly rcs: string | null;
+  readonly drinksLicense: string | null;
+}
+
 export type GstRegistrationType = "REGULAR" | "COMPOSITION" | "UNREGISTERED";
 
 export interface TaxProfileDTO {
