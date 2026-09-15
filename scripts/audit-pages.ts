@@ -21,6 +21,22 @@ const prisma = new PrismaClient({
 });
 
 const STATIC_ROUTES = [
+  "/dashboard/food-cost",
+  "/dashboard/food-cost/ingredients",
+  "/dashboard/food-cost/fiches",
+  "/dashboard/food-cost/achats",
+  "/dashboard/food-cost/inventaire",
+  "/dashboard/food-cost/pertes",
+  "/dashboard/food-cost/bases",
+  "/dashboard/food-cost/reglages",
+  "/dashboard/inventory/reappro",
+  "/dashboard/purchasing/quotations/request",
+  "/dashboard/purchasing/quotations/new",
+  "/dashboard/purchasing/receipts/new",
+  "/dashboard/purchasing/rfq/new",
+  "/dashboard/selling/deliveries/new",
+  "/dashboard/stock/requests/new",
+  "/dashboard/stock/counts/new",
   "/dashboard",
   "/dashboard/purchasing",
   "/dashboard/purchasing/suppliers",
