@@ -11,6 +11,7 @@ import {
   saveRecipeCardAction,
   verifyRecipeCardAction,
 } from "@/actions/food-cost.actions";
+import { ItemCombobox } from "@/components/forms/item-combobox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
@@ -129,20 +130,19 @@ export function RecipeCardEditor({
                   return (
                     <tr key={line.key} className="border-t">
                       <td className="py-1.5 pr-2">
-                        <select
+                        <ItemCombobox
+                          label="Ingrédient"
+                          options={ingredients.map((i) => ({
+                            id: i.id,
+                            label: i.isPreparation ? `Base · ${i.name}` : i.name,
+                            hint: UNIT_LABELS[i.unit],
+                          }))}
                           value={line.stockItemId}
-                          onChange={(e) => setLine(line.key, { stockItemId: e.target.value })}
-                          className="h-9 w-full rounded-md border bg-background px-2 text-sm"
+                          onChange={(stockItemId) => setLine(line.key, { stockItemId })}
                           disabled={!canEdit}
-                          aria-label="Ingrédient"
-                        >
-                          <option value="">Choisir…</option>
-                          {ingredients.map((i) => (
-                            <option key={i.id} value={i.id}>
-                              {i.isPreparation ? `Base · ${i.name}` : i.name}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="Tapez l'ingrédient…"
+                          className="min-w-52"
+                        />
                       </td>
                       <td className="py-1.5 pr-2">
                         <div className="flex items-center justify-end gap-1.5">

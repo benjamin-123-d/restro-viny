@@ -6,6 +6,8 @@ import { toast } from "sonner";
 
 import { recordPurchaseAction } from "@/actions/food-cost.actions";
 import { FieldHint } from "@/components/forms/help-box";
+import { ItemCombobox, type CreatedItem } from "@/components/forms/item-combobox";
+import { UNIT_LABELS } from "@/lib/inventory";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
@@ -26,12 +28,17 @@ const toNumber = (v: string): number | undefined => {
  */
 export function QuickPurchaseForm({ ingredients }: { readonly ingredients: readonly IngredientDTO[] }) {
   const [stockItemId, setStockItemId] = useState("");
+  const [created, setCreated] = useState<CreatedItem | null>(null);
   const [quantity, setQuantity] = useState("");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const item = ingredients.find((i) => i.id === stockItemId);
+  const item =
+    ingredients.find((i) => i.id === stockItemId) ??
+    (created && created.id === stockItemId
+      ? { name: created.label, unit: created.unit, purchaseUnit: created.purchaseUnit, purchaseFactor: created.purchaseFactor, lastPurchasePrice: created.lastPurchasePrice }
+      : undefined);
   const qty = toNumber(quantity);
   const total = toNumber(amount);
   const unitName = item?.purchaseUnit ?? "unité";
@@ -62,20 +69,22 @@ export function QuickPurchaseForm({ ingredients }: { readonly ingredients: reado
           <label htmlFor="pur-item" className="text-sm font-medium">
             Ingrédient
           </label>
-          <select
+          <ItemCombobox
             id="pur-item"
+            label="Ingrédient"
+            options={ingredients.map((i) => ({
+              id: i.id,
+              label: i.name,
+              hint: i.purchaseUnit ? `${i.purchaseUnit} · ${UNIT_LABELS[i.unit]}` : UNIT_LABELS[i.unit],
+            }))}
             value={stockItemId}
-            onChange={(e) => setStockItemId(e.target.value)}
-            className="mt-1 h-11 w-full rounded-md border bg-background px-3 text-base"
-          >
-            <option value="">Choisir…</option>
-            {ingredients.map((i) => (
-              <option key={i.id} value={i.id}>
-                {i.name}
-                {i.purchaseUnit ? ` (${i.purchaseUnit})` : ""}
-              </option>
-            ))}
-          </select>
+            onChange={(id, newItem) => {
+              setStockItemId(id);
+              if (newItem) setCreated(newItem);
+            }}
+            invalid={Boolean(errors.stockItemId)}
+            className="mt-1"
+          />
           {errors.stockItemId ? <p className="text-xs text-destructive">{errors.stockItemId}</p> : null}
         </div>
         <div>

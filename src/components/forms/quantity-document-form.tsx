@@ -8,6 +8,7 @@ import { humanError } from "@/lib/error-messages";
 import type { ActionResult } from "@/types";
 
 import { FieldHint } from "./help-box";
+import { ItemCombobox } from "./item-combobox";
 
 /**
  * Documents made of items and quantities only, without prices: a request for
@@ -208,19 +209,11 @@ export function QuantityDocumentForm({
         </div>
         {lines.map((line) => (
           <div key={line.key} className="grid grid-cols-[minmax(0,1fr)_9rem_4rem_2rem] items-center gap-2">
-            <select
+            <ItemCombobox
+              options={items.map((i) => ({ id: i.id, label: i.label, hint: i.unit }))}
               value={line.stockItemId}
-              onChange={(e) => setLines((c) => c.map((l) => (l.key === line.key ? { ...l, stockItemId: e.target.value } : l)))}
-              className={inputClass}
-              aria-label="Article"
-            >
-              <option value="">Choisir…</option>
-              {items.map((i) => (
-                <option key={i.id} value={i.id}>
-                  {i.label}
-                </option>
-              ))}
-            </select>
+              onChange={(stockItemId) => setLines((c) => c.map((l) => (l.key === line.key ? { ...l, stockItemId } : l)))}
+            />
             <input
               inputMode="decimal"
               value={line.quantity}

@@ -192,6 +192,7 @@ const quotationListSelect = {
   validUntil: true,
   grandTotal: true,
   summaryOnly: true,
+  rfqId: true,
   supplier: { select: { name: true } },
   _count: { select: { documents: true } },
 } satisfies Prisma.SupplierQuotationSelect;

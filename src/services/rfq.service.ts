@@ -418,6 +418,7 @@ export const listSupplierQuotations = async (
     isExpired: isExpired(q.validUntil, now),
     summaryOnly: q.summaryOnly,
     documentCount: q._count.documents,
+    rfqId: q.rfqId,
   }));
 };
 

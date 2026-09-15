@@ -7,8 +7,7 @@ import { TabBar } from "@/components/purchasing/purchasing-ui";
 const TABS = [
   { href: "/dashboard/purchasing", label: "Vue d'ensemble" },
   { href: "/dashboard/purchasing/suppliers", label: "Fournisseurs" },
-  { href: "/dashboard/purchasing/rfq", label: "Demandes de devis" },
-  { href: "/dashboard/purchasing/quotations", label: "Devis reçus" },
+  { href: "/dashboard/purchasing/quotations", label: "Devis" },
   { href: "/dashboard/purchasing/orders", label: "Commandes" },
   { href: "/dashboard/purchasing/receipts", label: "Réceptions" },
   { href: "/dashboard/purchasing/invoices", label: "Factures" },

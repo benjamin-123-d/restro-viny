@@ -25,8 +25,8 @@ export default async function NewRfqPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 lg:p-6">
-      <Link href="/dashboard/purchasing/rfq" className="text-sm text-muted-foreground hover:text-foreground">
-        ← Retour aux demandes de devis
+      <Link href="/dashboard/purchasing/quotations?vue=demandes" className="text-sm text-muted-foreground hover:text-foreground">
+        ← Retour aux devis
       </Link>
       <PageHeader title="Nouvelle demande de devis" description="La même liste pour plusieurs fournisseurs, pour comparer leurs prix ligne à ligne." />
       <HelpBox
@@ -42,7 +42,7 @@ export default async function NewRfqPage() {
         items={stock.filter((i) => i.isActive).map((i) => ({ id: i.id, label: i.name, unit: UNIT_LABELS[i.unit] }))}
         suppliers={suppliers.filter((s) => !s.disabled && !s.preventRfq).map((s) => ({ value: s.id, label: s.name }))}
         action={createRfqAction}
-        redirectTo="/dashboard/purchasing/rfq"
+        redirectTo="/dashboard/purchasing/quotations?vue=demandes"
       />
     </div>
   );

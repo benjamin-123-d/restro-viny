@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
+import { ItemCombobox } from "@/components/forms/item-combobox";
 import { formatCurrency } from "@/lib/format";
 import { humanError } from "@/lib/error-messages";
 import type { ActionResult } from "@/types";
@@ -305,23 +306,25 @@ export const DocumentForm = ({
                 return (
                   <tr key={line.key} className="border-b align-top">
                     <td className="py-2 pr-2">
-                      <select
+                      <ItemCombobox
+                        options={config.catalogue.map((item) => ({ id: item.id, label: item.label, hint: item.unit }))}
                         value={line.itemId}
-                        onChange={(e) => pickItem(line.key, e.target.value)}
-                        className={inputClass}
-                      >
-                        <option value="">
-                          {config.lineMode === "sales"
-                            ? "— Article du stock (optionnel) —"
-                            : "— Choisir un article —"}
-                        </option>
-                        {config.catalogue.map((item) => (
-                          <option key={item.id} value={item.id}>
-                            {item.label}
-                            {item.unit ? ` (${item.unit})` : ""}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(itemId, created) =>
+                          created
+                            ? update(line.key, {
+                                itemId,
+                                itemName: created.label,
+                                ...(created.lastPurchasePrice != null && {
+                                  rate: String(Math.round((created.lastPurchasePrice / created.purchaseFactor) * 100) / 100),
+                                }),
+                              })
+                            : pickItem(line.key, itemId)
+                        }
+                        placeholder={config.lineMode === "sales" ? "Article du stock (optionnel)" : "Tapez le nom de l'article…"}
+                        allowCreate={config.lineMode !== "sales"}
+                        invalid={Boolean(itemError)}
+                        className="min-w-48"
+                      />
                       {config.lineMode === "sales" && (
                         <input
                           type="text"

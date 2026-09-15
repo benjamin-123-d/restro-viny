@@ -43,8 +43,11 @@ const groupByCategory = (
 
 export function InventoryManager({
   items,
+  purchaseSection,
 }: {
   readonly items: StockItemDTO[];
+  /** The shared market purchase block, rendered on the server. */
+  readonly purchaseSection?: React.ReactNode;
 }) {
   const router = useRouter();
   const activeItems = items.filter((i) => i.isActive);
@@ -89,7 +92,7 @@ export function InventoryManager({
         <div className="flex flex-wrap gap-2">
           {lowCount > 0 ? (
             <Badge variant="secondary" className="self-center">
-              {lowCount} low
+              {lowCount} en alerte
             </Badge>
           ) : null}
           <Button
@@ -112,6 +115,18 @@ export function InventoryManager({
           <Button onClick={openNew}>Ajouter un article</Button>
         </div>
       </div>
+
+      {purchaseSection ? (
+        <details className="group rounded-xl bg-card shadow-xs ring-1 ring-foreground/10" open={items.length > 0}>
+          <summary className="cursor-pointer list-none px-4 py-3 text-base font-semibold">
+            Achat marché
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              le même formulaire que dans Achats et Food cost
+            </span>
+          </summary>
+          <div className="border-t p-4">{purchaseSection}</div>
+        </details>
+      ) : null}
 
       {items.length === 0 ? (
         <EmptyState

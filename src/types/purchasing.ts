@@ -242,6 +242,8 @@ export interface SupplierQuotationListItemDTO {
   readonly isExpired: boolean;
   readonly summaryOnly: boolean;
   readonly documentCount: number;
+  /** The request this quote answers, when it answers one. */
+  readonly rfqId: string | null;
 }
 
 // ------------------------------------------------------- purchase order ---
