@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/orders/print-button";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { formatDateTime } from "@/lib/format";
+import { ORDER_TYPE_LABEL } from "@/lib/order-labels";
 import { getOrder } from "@/services/order.service";
 
 export default async function KotPage({
@@ -25,13 +26,13 @@ export default async function KotPage({
   return (
     <div className="mx-auto max-w-sm p-6 font-mono text-sm">
       <div className="mb-4 flex items-center justify-between print:hidden">
-        <span className="text-muted-foreground text-xs">Kitchen ticket</span>
-        <PrintButton label="Print KOT" />
+        <span className="text-muted-foreground text-xs">Bon de cuisine</span>
+        <PrintButton label="Imprimer le bon" />
       </div>
 
       <div className="border-b border-dashed pb-2 text-center">
-        <p className="text-base font-bold">KOT · #{order.orderNumber}</p>
-        <p>{order.orderType.replace("_", "-")}</p>
+        <p className="text-base font-bold">BON CUISINE · n° {order.orderNumber}</p>
+        <p>{ORDER_TYPE_LABEL[order.orderType]}</p>
         {order.tableLabel ? <p>Table {order.tableLabel}</p> : null}
         {order.customerName ? <p>{order.customerName}</p> : null}
         <p className="text-xs">{formatDateTime(order.createdAt)}</p>
@@ -58,7 +59,7 @@ export default async function KotPage({
 
       {order.note ? (
         <p className="border-t border-dashed pt-2 text-xs italic">
-          Note: {order.note}
+          Note : {order.note}
         </p>
       ) : null}
     </div>

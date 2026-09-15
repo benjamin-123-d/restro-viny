@@ -20,6 +20,8 @@ import {
   selfOrderAlertPhrase,
 } from "@/lib/announce";
 import { formatCurrency, formatTime } from "@/lib/format";
+import { ORDER_TYPE_LABEL } from "@/lib/order-labels";
+import { paymentModeLabel } from "@/lib/payment-labels";
 import type { OrderDTO, TodaySalesDTO } from "@/types/order";
 
 type Tab = "OPEN" | "COMPLETED";
@@ -115,29 +117,29 @@ export function OrdersBoard({
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <PageHeader title="Orders" description="Live tickets and today's settlements." />
+        <PageHeader title="Commandes" description="Les commandes en cours et les encaissements du jour." />
         <div className="flex items-center gap-2">
           <SoundToggle
             supported={supported}
             enabled={enabled}
             onToggle={toggle}
           />
-          <Button render={<Link href="/dashboard/pos" />}>New order</Button>
+          <Button render={<Link href="/dashboard/pos" />}>Nouvelle commande</Button>
         </div>
       </div>
 
       {/* Today's sales */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Net sales" value={formatCurrency(sales.gross)} />
-        <Stat label="GST collected" value={formatCurrency(sales.tax)} />
-        <Stat label="Orders" value={String(sales.orders)} />
-        <Stat label="Voids" value={String(sales.voids)} />
+        <Stat label="Ventes du jour" value={formatCurrency(sales.gross)} />
+        <Stat label="TVA collectée" value={formatCurrency(sales.tax)} />
+        <Stat label="Commandes" value={String(sales.orders)} />
+        <Stat label="Annulations" value={String(sales.voids)} />
       </div>
       {sales.byMode.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {sales.byMode.map((m) => (
             <Badge key={m.mode} variant="secondary">
-              {m.mode}: {formatCurrency(m.amount)} · {m.count}
+              {paymentModeLabel(m.mode)} : {formatCurrency(m.amount)} · {m.count}
             </Badge>
           ))}
         </div>
@@ -150,21 +152,21 @@ export function OrdersBoard({
           variant={tab === "OPEN" ? "default" : "outline"}
           onClick={() => setTab("OPEN")}
         >
-          Open ({open.length})
+          En cours ({open.length})
         </Button>
         <Button
           size="sm"
           variant={tab === "COMPLETED" ? "default" : "outline"}
           onClick={() => setTab("COMPLETED")}
         >
-          Completed ({completed.length})
+          Encaissées ({completed.length})
         </Button>
       </div>
 
       {tab === "COMPLETED" ? (
         completed.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            No settled orders today.
+            Aucune commande encaissée aujourd'hui.
           </p>
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -174,7 +176,7 @@ export function OrdersBoard({
           </ul>
         )
       ) : open.length === 0 ? (
-        <p className="text-muted-foreground text-sm">No open tickets.</p>
+        <p className="text-muted-foreground text-sm">Aucune commande en cours.</p>
       ) : (
         <div className="flex flex-col gap-5">
           {groups.map((group) =>
@@ -185,13 +187,13 @@ export function OrdersBoard({
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-sm font-medium">
-                    {group.tableLabel} · {group.orders.length} orders ·{" "}
+                    {group.tableLabel} · {group.orders.length} commandes ·{" "}
                     <span className="tabular-nums">
                       {formatCurrency(group.total)}
                     </span>
                   </span>
                   <Button size="sm" onClick={() => setSettleGroup(group)}>
-                    Settle table
+                    Encaisser la table
                   </Button>
                 </div>
                 <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -249,7 +251,7 @@ function OrderCard({
             {order.invoiceNumber ? (
               <span className="text-muted-foreground font-normal">
                 {" "}
-                · Inv {order.invoiceNumber}
+                · Fact. {order.invoiceNumber}
               </span>
             ) : null}
           </span>
@@ -259,7 +261,7 @@ function OrderCard({
         </div>
         <div className="text-muted-foreground flex items-center justify-between text-sm">
           <span>
-            {order.orderType.replace("_", "-")}
+            {ORDER_TYPE_LABEL[order.orderType]}
             {order.tableLabel ? ` · ${order.tableLabel}` : ""}
             {order.customerName ? ` · ${order.customerName}` : ""}
           </span>
@@ -275,7 +277,7 @@ function OrderCard({
             <span className="tabular-nums">
               {tab === "COMPLETED"
                 ? formatCurrency(order.grandTotal)
-                : `${activeCount(order.lines)} items`}
+                : `${activeCount(order.lines)} article${activeCount(order.lines) > 1 ? "s" : ""}`}
             </span>
           </span>
         </div>

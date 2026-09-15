@@ -28,8 +28,8 @@ const minutesAgo = (iso: string): string => {
 
 const orderTitle = (order: OrderDTO): string =>
   order.orderType === "DINE_IN"
-    ? order.tableLabel ?? "Dine-in"
-    : `Takeaway #${order.orderNumber}`;
+    ? order.tableLabel ?? "Sur place"
+    : `À emporter n° ${order.orderNumber}`;
 
 const itemCount = (order: OrderDTO): number =>
   order.lines.filter((l) => l.state !== "VOID").reduce((s, l) => s + l.quantity, 0);
@@ -41,9 +41,9 @@ const hasSelfOrder = (order: OrderDTO): boolean =>
   order.lines.some((l) => l.state !== "VOID" && l.source === "SELF_ORDER");
 
 const AUTH_ERRORS: Record<string, string> = {
-  STAFF_FORBIDDEN: "You don't have permission to do that.",
-  NO_STAFF_SESSION: "Session expired. Please sign in again.",
-  ORDER_NOT_OPEN: "This order is no longer open.",
+  STAFF_FORBIDDEN: "Vous n'avez pas le droit de faire cela.",
+  NO_STAFF_SESSION: "Session expirée : reconnectez-vous.",
+  ORDER_NOT_OPEN: "Cette commande n'est plus en cours.",
 };
 const toMessage = (m: string) => AUTH_ERRORS[m] ?? m;
 
@@ -65,8 +65,8 @@ export function WaiterHome({
   const pickup = useServerAction(markPickedUpAction, {
     refresh: true,
     onSuccess: () => {
-      toast.success("Picked up \u2713");
-      announce("Order utha liya", "boop");
+      toast.success("Commande récupérée \u2713");
+      announce("Commande récupérée", "boop");
     },
     onError: (m) => toast.error(toMessage(m)),
   });
@@ -77,7 +77,7 @@ export function WaiterHome({
     return () => clearInterval(id);
   }, [router]);
 
-  // Announce when an order turns ready in Hindi ("T1 ka order taiyar hai").
+  // Announce when an order turns ready ("Table T1, la commande est prête").
   useEffect(() => {
     const ready = openOrders.filter(isReady);
     const ids = ready.map((o) => o.id);
@@ -168,7 +168,7 @@ export function WaiterHome({
                       disabled={pickup.isPending}
                       onClick={() => pickup.execute({ orderId: order.id })}
                     >
-                      Pick up
+                      Récupérer
                     </Button>
                   </div>
                 ) : null}

@@ -20,7 +20,7 @@ export function CartLineList({
   if (cart.length === 0) {
     return (
       <p className="text-muted-foreground py-8 text-center text-sm">
-        Tap items to start an order.
+        Touchez un article pour commencer la commande.
       </p>
     );
   }

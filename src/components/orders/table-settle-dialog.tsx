@@ -48,7 +48,7 @@ export function TableSettleDialog({
   const settle = useServerAction(settleTableAction, {
     refresh: true,
     onSuccess: () => {
-      toast.success(`Settled ${orders.length} orders on ${tableLabel}`);
+      toast.success(`${orders.length} commandes encaissées pour ${tableLabel}`);
       onOpenChange(false);
       onSettled();
     },
@@ -97,8 +97,8 @@ export function TableSettleDialog({
         <DialogFooter>
           <Button disabled={!canSettle} onClick={submit}>
             {settle.isPending
-              ? "Settling…"
-              : `Settle · ${formatCurrency(combined)}`}
+              ? "Encaissement…"
+              : `Encaisser · ${formatCurrency(combined)}`}
           </Button>
         </DialogFooter>
       </DialogContent>

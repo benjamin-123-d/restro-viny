@@ -8,18 +8,18 @@ export interface SpeakableOrder {
 }
 
 /**
- * Pick the best available Hindi voice for announcements: an exact `hi-IN`
- * voice when present, else any `hi-*` voice, else `null` (caller falls back to
- * the browser default with `lang = "hi-IN"`).
+ * Pick the best available French voice for announcements: an exact `fr-FR`
+ * voice when present, else any `fr-*` voice, else `null` (caller falls back to
+ * the browser default voice).
  */
-export const pickHindiVoice = (
+export const pickFrenchVoice = (
   voices: readonly SpeechSynthesisVoice[],
 ): SpeechSynthesisVoice | null => {
-  const hindi = voices.filter((v) => v.lang?.toLowerCase().startsWith("hi"));
-  if (hindi.length === 0) {
+  const french = voices.filter((v) => v.lang?.toLowerCase().startsWith("fr"));
+  if (french.length === 0) {
     return null;
   }
-  return hindi.find((v) => v.lang.toLowerCase() === "hi-in") ?? hindi[0];
+  return french.find((v) => v.lang.toLowerCase() === "fr-fr") ?? french[0];
 };
 
 /** Ids present in `current` that are not already in `seen`. */
@@ -28,23 +28,23 @@ export const newIds = (
   current: readonly string[],
 ): string[] => current.filter((id) => !seen.has(id));
 
-/** Kitchen alert for a fresh ticket — e.g. "Naya order, T1". */
+/** Kitchen alert for a fresh ticket — e.g. "Nouvelle commande, table T1". */
 export const newOrderPhrase = (o: SpeakableOrder): string =>
   o.orderType === "DINE_IN" && o.tableLabel
-    ? `Naya order, ${o.tableLabel}`
-    : `Naya ${o.orderType === "DELIVERY" ? "delivery" : "takeaway"} order`;
+    ? `Nouvelle commande, table ${o.tableLabel}`
+    : `Nouvelle commande ${o.orderType === "DELIVERY" ? "en livraison" : "à emporter"}`;
 
-/** Alert for a customer-placed self-order — e.g. "Naya self order, T1". */
+/** Alert for a customer-placed self-order — e.g. "Commande client, table T1". */
 export const selfOrderAlertPhrase = (o: SpeakableOrder): string =>
   o.orderType === "DINE_IN" && o.tableLabel
-    ? `Naya self order, ${o.tableLabel}`
-    : "Naya self order";
+    ? `Commande client, table ${o.tableLabel}`
+    : "Nouvelle commande client";
 
-/** Waiter alert for a ready order — e.g. "T1 ka order taiyar hai". */
+/** Waiter alert for a ready order — e.g. "Table T1, la commande est prête". */
 export const orderReadyPhrase = (o: SpeakableOrder): string =>
   o.orderType === "DINE_IN" && o.tableLabel
-    ? `${o.tableLabel} ka order taiyar hai`
-    : `Takeaway number ${o.orderNumber} taiyar hai`;
+    ? `Table ${o.tableLabel}, la commande est prête`
+    : `Commande à emporter numéro ${o.orderNumber} prête`;
 
 /** Per-order snapshot for alert detection: id + count of active self-order lines. */
 export interface OrderAlertSignature {

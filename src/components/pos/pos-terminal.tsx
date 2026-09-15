@@ -38,9 +38,9 @@ const ORDER_TYPES: readonly {
   label: string;
   key: keyof ServiceOptions;
 }[] = [
-  { value: "DINE_IN", label: "Dine-in", key: "dineIn" },
-  { value: "TAKEAWAY", label: "Takeaway", key: "takeaway" },
-  { value: "DELIVERY", label: "Delivery", key: "delivery" },
+  { value: "DINE_IN", label: "Sur place", key: "dineIn" },
+  { value: "TAKEAWAY", label: "À emporter", key: "takeaway" },
+  { value: "DELIVERY", label: "Livraison", key: "delivery" },
 ];
 
 export function PosTerminal({
@@ -109,9 +109,9 @@ export function PosTerminal({
       if (!data) {
         return;
       }
-      toast.success(`Order #${data.orderNumber} sent to kitchen`, {
+      toast.success(`Commande n° ${data.orderNumber} envoyée en cuisine`, {
         action: {
-          label: "Print KOT",
+          label: "Imprimer le bon",
           onClick: () => window.open(`/dashboard/orders/${data.id}/kot`, "_blank"),
         },
       });
@@ -165,7 +165,7 @@ export function PosTerminal({
             setPhoneSkipped(false);
           }
         }}
-        placeholder={phoneSkipped ? "Phone skipped" : "Phone number (required)"}
+        placeholder={phoneSkipped ? "Sans téléphone" : "Téléphone (obligatoire)"}
         inputMode="tel"
         disabled={phoneSkipped}
       />
@@ -245,7 +245,7 @@ export function PosTerminal({
                 <Textarea
                   value={customerAddress}
                   onChange={(e) => setCustomerAddress(e.target.value)}
-                  placeholder="Delivery address"
+                  placeholder="Adresse de livraison"
                   rows={2}
                 />
               ) : null}
@@ -266,7 +266,7 @@ export function PosTerminal({
           <Textarea
             value={orderNote}
             onChange={(e) => setOrderNote(e.target.value)}
-            placeholder="Order note (optional)"
+            placeholder="Note pour la commande (facultatif)"
             rows={1}
           />
           <dl className="flex flex-col gap-1 text-sm">
@@ -285,20 +285,20 @@ export function PosTerminal({
               </div>
             ) : null}
             <div className="flex justify-between text-base font-semibold">
-              <dt>Total</dt>
+              <dt>Total TTC</dt>
               <dd className="tabular-nums">{formatCurrency(bill.grandTotal)}</dd>
             </div>
           </dl>
           <Button size="lg" disabled={!canSend} onClick={send}>
             {createOrder.isPending
-              ? "Sending…"
+              ? "Envoi…"
               : cart.length === 0
-                ? `Send to kitchen · ${formatCurrency(bill.grandTotal)}`
+                ? `Envoyer en cuisine · ${formatCurrency(bill.grandTotal)}`
                 : phoneMissing
-                  ? "Add phone number"
+                  ? "Ajoutez un téléphone"
                   : deliveryNeedsAddress
-                    ? "Add delivery address"
-                    : `Send to kitchen · ${formatCurrency(bill.grandTotal)}`}
+                    ? "Ajoutez l'adresse de livraison"
+                    : `Envoyer en cuisine · ${formatCurrency(bill.grandTotal)}`}
           </Button>
         </div>
       </aside>
@@ -323,12 +323,12 @@ export function PosTerminal({
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
               <DialogTitle>
-                {occupiedConfirm.table.label} has an open order
+                {occupiedConfirm.table.label} a déjà une commande en cours
               </DialogTitle>
             </DialogHeader>
             <p className="text-muted-foreground text-sm">
-              This table already has a running order. Open it to add a round, or
-              start a separate new order.
+              Cette table a déjà une commande en cours. Ouvrez-la pour ajouter une
+              tournée, ou créez une nouvelle commande séparée.
             </p>
             <DialogFooter className="flex-col gap-2 sm:flex-row">
               <Button
@@ -337,7 +337,7 @@ export function PosTerminal({
                   router.push(`/dashboard/orders/${occupiedConfirm.orderId}`)
                 }
               >
-                Open existing order
+                Ouvrir la commande en cours
               </Button>
               <Button
                 onClick={() => {
@@ -345,7 +345,7 @@ export function PosTerminal({
                   setOccupiedConfirm(null);
                 }}
               >
-                New order anyway
+                Nouvelle commande quand même
               </Button>
             </DialogFooter>
           </DialogContent>

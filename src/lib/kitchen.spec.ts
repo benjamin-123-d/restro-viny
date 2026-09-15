@@ -29,11 +29,11 @@ describe("deriveKitchenStatus", () => {
 
 describe("kitchenAdvanceLabel", () => {
   it("is Start while any line is fired", () => {
-    expect(kitchenAdvanceLabel(["FIRED", "PREPARING"])).toBe("Start");
+    expect(kitchenAdvanceLabel(["FIRED", "PREPARING"])).toBe("Commencer");
   });
 
   it("is Mark ready once only preparing lines remain", () => {
-    expect(kitchenAdvanceLabel(["PREPARING", "PREPARED"])).toBe("Mark ready");
+    expect(kitchenAdvanceLabel(["PREPARING", "PREPARED"])).toBe("Marquer prêt");
   });
 
   it("is null when everything is prepared", () => {

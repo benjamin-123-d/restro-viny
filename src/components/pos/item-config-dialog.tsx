@@ -153,8 +153,8 @@ export function ItemConfigDialog({
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{group.name}</span>
                   <span className="text-muted-foreground text-xs">
-                    {group.isRequired ? "Required" : "Optional"}
-                    {group.maxSelect > 1 ? ` · up to ${group.maxSelect}` : ""}
+                    {group.isRequired ? "Obligatoire" : "Facultatif"}
+                    {group.maxSelect > 1 ? ` · jusqu'à ${group.maxSelect}` : ""}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -195,13 +195,13 @@ export function ItemConfigDialog({
               id="line-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="No onion, extra spicy…"
+              placeholder="Sans oignon, bien cuit…"
               rows={2}
             />
           </Field>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Quantity</span>
+            <span className="text-sm font-medium">Quantité</span>
             <div className="flex items-center gap-3">
               <Button
                 type="button"
@@ -227,8 +227,8 @@ export function ItemConfigDialog({
         <DialogFooter>
           <Button type="button" onClick={add} disabled={Boolean(unmetGroup)}>
             {unmetGroup
-              ? `Choose ${unmetGroup.name}`
-              : `Add · ${formatCurrency(lineTotal)}`}
+              ? `Choisir : ${unmetGroup.name}`
+              : `Ajouter · ${formatCurrency(lineTotal)}`}
           </Button>
         </DialogFooter>
       </DialogContent>

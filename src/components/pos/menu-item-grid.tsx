@@ -112,7 +112,7 @@ export function MenuItemGrid({
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search the menu"
+          placeholder="Rechercher dans la carte"
           className="h-10 pl-9"
           inputMode="search"
         />
@@ -120,7 +120,7 @@ export function MenuItemGrid({
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
         {sections.length === 0 ? (
-          <p className="text-muted-foreground text-sm">No items found.</p>
+          <p className="text-muted-foreground text-sm">Aucun article trouvé.</p>
         ) : (
           sections.map(({ category, items }) => (
             <section key={category.id} className="flex flex-col gap-2">

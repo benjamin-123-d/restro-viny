@@ -11,12 +11,12 @@ export default async function OrdersPage() {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
-          title="Orders"
-          description="Live tickets and today's settlements."
+          title="Commandes"
+          description="Les commandes en cours et les encaissements du jour."
         />
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant to start taking orders."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur de créer votre restaurant pour prendre des commandes."
         />
       </div>
     );

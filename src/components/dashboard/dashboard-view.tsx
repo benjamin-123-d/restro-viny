@@ -12,6 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format";
+import { ORDER_TYPE_LABEL } from "@/lib/order-labels";
+import { PAYMENT_MODE_LABEL } from "@/lib/payment-labels";
 import type { DashboardDTO } from "@/types/dashboard";
 
 const deltaPct = (current: number, previous: number): number | null =>
@@ -26,17 +28,8 @@ const ageClass = (mins: number | null): string =>
         ? "text-amber-700"
         : "text-emerald-700";
 
-const MODE_LABEL: Record<string, string> = {
-  CASH: "Cash",
-  UPI: "UPI",
-  CARD: "Card",
-  OTHER: "Other",
-};
-const TYPE_LABEL: Record<string, string> = {
-  DINE_IN: "Dine-in",
-  TAKEAWAY: "Takeaway",
-  DELIVERY: "Delivery",
-};
+const MODE_LABEL = PAYMENT_MODE_LABEL;
+const TYPE_LABEL: Record<string, string> = ORDER_TYPE_LABEL;
 
 export function DashboardView({
   data,
@@ -57,47 +50,47 @@ export function DashboardView({
           className="flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900"
         >
           <span>
-            <strong>{lowStock}</strong> inventory item
-            {lowStock === 1 ? "" : "s"} at or below reorder level.
+            <strong>{lowStock}</strong> article{lowStock === 1 ? "" : "s"} de stock
+            {lowStock === 1 ? " est" : " sont"} sous le seuil de réapprovisionnement.
           </span>
-          <span className="font-medium underline">View inventory</span>
+          <span className="font-medium underline">Voir l'inventaire</span>
         </Link>
       ) : null}
 
       {/* Today */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-muted-foreground text-sm font-medium">Today</h2>
+        <h2 className="text-muted-foreground text-sm font-medium">Aujourd'hui</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
-            label="Sales today"
+            label="Ventes du jour"
             value={formatCurrency(data.today.sales)}
             footer={
               <Delta
                 pct={deltaPct(data.today.sales, data.yesterdaySales)}
-                label="vs yesterday"
+                label="vs hier"
               />
             }
           />
           <StatCard
-            label="Orders today"
+            label="Commandes du jour"
             value={String(data.today.orders)}
             footer={
               <span className="text-muted-foreground">
-                Avg ticket {formatCurrency(data.today.aov)}
+                Ticket moyen {formatCurrency(data.today.aov)}
               </span>
             }
           />
           <StatCard
-            label="Open now"
+            label="En cours"
             value={formatCurrency(data.openNow.value)}
             footer={
               <span className="text-muted-foreground">
-                {data.openNow.count} open
+                {data.openNow.count} en cours
                 {data.openNow.oldestMinutes !== null ? (
                   <>
-                    {" · oldest "}
+                    {" · la plus ancienne "}
                     <span className={ageClass(data.openNow.oldestMinutes)}>
-                      {data.openNow.oldestMinutes}m
+                      {data.openNow.oldestMinutes} min
                     </span>
                   </>
                 ) : null}
@@ -106,14 +99,14 @@ export function DashboardView({
           />
           <Card className="@container/card">
             <CardHeader>
-              <CardDescription>Payments today</CardDescription>
+              <CardDescription>Encaissements du jour</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {formatCurrency(paymentsTotal)}
               </CardTitle>
             </CardHeader>
             <CardFooter className="text-sm">
               {data.paymentMixToday.length === 0 ? (
-                <span className="text-muted-foreground">No payments yet</span>
+                <span className="text-muted-foreground">Aucun encaissement</span>
               ) : (
                 <span className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-0.5">
                   {data.paymentMixToday.map((m) => (
@@ -130,39 +123,39 @@ export function DashboardView({
 
       {/* This month */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-muted-foreground text-sm font-medium">This month</h2>
+        <h2 className="text-muted-foreground text-sm font-medium">Ce mois-ci</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <StatCard
-            label="Month sales"
+            label="Ventes du mois"
             value={formatCurrency(data.month.sales)}
             footer={
               <Delta
                 pct={deltaPct(data.month.sales, data.lastMonthSales)}
-                label="vs last month"
+                label="vs mois dernier"
               />
             }
           />
           <StatCard
-            label="Month orders"
+            label="Commandes du mois"
             value={String(data.month.orders)}
             footer={
               <span className="text-muted-foreground">
-                Avg ticket {formatCurrency(data.month.aov)}
+                Ticket moyen {formatCurrency(data.month.aov)}
               </span>
             }
           />
           <StatCard
-            label="Tables seated"
+            label="Tables occupées"
             value={`${data.occupancy.occupied}/${data.occupancy.total}`}
             footer={
-              <span className="text-muted-foreground">Occupied right now</span>
+              <span className="text-muted-foreground">En ce moment</span>
             }
           />
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Daily sales</CardTitle>
-            <CardDescription>Settled sales per day this month</CardDescription>
+            <CardTitle className="text-base">Ventes par jour</CardTitle>
+            <CardDescription>Ventes encaissées chaque jour ce mois-ci</CardDescription>
           </CardHeader>
           <CardContent>
             <SalesTrendChart data={data.trend} />
@@ -174,11 +167,11 @@ export function DashboardView({
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Top items today</CardTitle>
+            <CardTitle className="text-base">Articles les plus vendus aujourd'hui</CardTitle>
           </CardHeader>
           <CardContent>
             {data.topItemsToday.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No sales yet today.</p>
+              <p className="text-muted-foreground text-sm">Aucune vente pour l'instant.</p>
             ) : (
               <ul className="flex flex-col gap-1.5">
                 {data.topItemsToday.map((it) => (
@@ -198,14 +191,14 @@ export function DashboardView({
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Today detail</CardTitle>
+            <CardTitle className="text-base">Détail du jour</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm">
             <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
-              <span>GST {formatCurrency(data.today.tax)}</span>
-              <span>Discounts {formatCurrency(data.today.discount)}</span>
+              <span>TVA {formatCurrency(data.today.tax)}</span>
+              <span>Remises {formatCurrency(data.today.discount)}</span>
               <span>
-                Voids{" "}
+                Annulations{" "}
                 <span className={data.voidsToday > 0 ? "text-amber-700" : ""}>
                   {data.voidsToday}
                 </span>

@@ -4,7 +4,7 @@ import { Volume2Icon, VolumeXIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-/** Speaker on/off control for Hindi voice announcements. Hidden when the
+/** Speaker on/off control for French voice announcements. Hidden when the
  *  browser has no speech engine. */
 export function SoundToggle({
   supported,
@@ -23,7 +23,7 @@ export function SoundToggle({
       type="button"
       variant="ghost"
       size="icon-sm"
-      aria-label={enabled ? "Awaaz band karein" : "Awaaz chalu karein"}
+      aria-label={enabled ? "Couper les annonces vocales" : "Activer les annonces vocales"}
       aria-pressed={enabled}
       onClick={onToggle}
     >

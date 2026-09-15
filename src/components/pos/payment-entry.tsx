@@ -125,7 +125,7 @@ export function PaymentEntryFields({
     <>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Payments</span>
+          <span className="text-sm font-medium">Paiements</span>
           <Button size="sm" variant="ghost" onClick={addRow}>
             + Split
           </Button>
@@ -154,7 +154,7 @@ export function PaymentEntryFields({
                 inputMode="decimal"
                 value={row.amount}
                 onChange={(e) => updateRow(row.key, { amount: e.target.value })}
-                placeholder="Amount"
+                placeholder="Montant"
               />
               <Button
                 size="sm"
@@ -178,13 +178,13 @@ export function PaymentEntryFields({
                 inputMode="decimal"
                 value={row.tendered}
                 onChange={(e) => updateRow(row.key, { tendered: e.target.value })}
-                placeholder="Cash tendered (for change)"
+                placeholder="Espèces remises (pour le rendu)"
               />
             ) : (
               <Input
                 value={row.reference}
                 onChange={(e) => updateRow(row.key, { reference: e.target.value })}
-                placeholder="Reference (optional)"
+                placeholder="Référence (facultatif)"
               />
             )}
           </div>
@@ -193,7 +193,7 @@ export function PaymentEntryFields({
 
       <dl className="flex flex-col gap-1 text-sm">
         <div className="flex justify-between">
-          <dt className="text-muted-foreground">Paid</dt>
+          <dt className="text-muted-foreground">Payé</dt>
           <dd className="tabular-nums">{formatCurrency(paid)}</dd>
         </div>
         {remaining > 0.5 ? (
@@ -203,7 +203,7 @@ export function PaymentEntryFields({
           </div>
         ) : change > 0 ? (
           <div className="flex justify-between font-medium">
-            <dt>Change due</dt>
+            <dt>Rendu monnaie</dt>
             <dd className="tabular-nums">{formatCurrency(change)}</dd>
           </div>
         ) : null}

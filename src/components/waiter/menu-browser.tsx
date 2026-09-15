@@ -46,7 +46,7 @@ export function MenuBrowser({
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search the menu"
+            placeholder="Rechercher dans la carte"
             className="h-11 pl-9 text-base"
             inputMode="search"
           />
@@ -88,7 +88,7 @@ export function MenuBrowser({
             const photo =
               item.images.find((i) => i.isPrimary) ?? item.images[0] ?? null;
             const hint = !item.available
-              ? "Unavailable"
+              ? "Indisponible"
               : item.variants.length > 0 || item.modifierGroups.length > 0
                 ? "Options"
                 : null;
@@ -143,7 +143,7 @@ export function MenuBrowser({
                   className="shrink-0"
                   disabled={!item.available}
                   onClick={() => onQuickAdd(item)}
-                  aria-label={`Add ${item.name}`}
+                  aria-label={`Ajouter ${item.name}`}
                 >
                   <PlusIcon className="size-4" />
                 </Button>

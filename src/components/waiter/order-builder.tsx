@@ -37,8 +37,8 @@ import type { TableDTO } from "@/types/table";
 
 import { formatCurrency } from "@/lib/format";
 const AUTH_ERRORS: Record<string, string> = {
-  STAFF_FORBIDDEN: "You don't have permission to do that.",
-  NO_STAFF_SESSION: "Session expired. Please sign in again.",
+  STAFF_FORBIDDEN: "Vous n'avez pas le droit de faire cela.",
+  NO_STAFF_SESSION: "Session expirée : reconnectez-vous.",
 };
 const toMessage = (m: string) => AUTH_ERRORS[m] ?? m;
 
@@ -112,7 +112,7 @@ export function OrderBuilder({
     l.isComp ? 0 : (l.unitPrice + modifiersDelta(l.modifiers)) * l.quantity;
 
   const done = () => {
-    toast.success(mode === "new" ? "Sent to kitchen ✓" : "Items sent ✓");
+    toast.success(mode === "new" ? "Envoyé en cuisine ✓" : "Articles envoyés ✓");
     cart.clear();
     idempotencyKey.current = uuid();
     router.push(`/u/${username}`);
@@ -185,12 +185,12 @@ export function OrderBuilder({
           size="sm"
           onClick={() => router.push(`/u/${username}`)}
         >
-          ← Back
+          ← Retour
         </Button>
         <span className="ml-auto text-sm font-medium">
           {mode === "add"
             ? existingOrder?.tableLabel ?? `#${existingOrder?.orderNumber}`
-            : "New order"}
+            : "Nouvelle commande"}
         </span>
       </div>
 
@@ -203,7 +203,7 @@ export function OrderBuilder({
                 className="flex-1"
                 onClick={() => setOrderType("DINE_IN")}
               >
-                Dine-in
+                Sur place
               </Button>
             ) : null}
             {allowTakeaway ? (
@@ -212,7 +212,7 @@ export function OrderBuilder({
                 className="flex-1"
                 onClick={() => setOrderType("TAKEAWAY")}
               >
-                Takeaway
+                À emporter
               </Button>
             ) : null}
           </div>
@@ -222,7 +222,7 @@ export function OrderBuilder({
               className="justify-start"
               onClick={() => setTableOpen(true)}
             >
-              {tableName ? `Table: ${tableName}` : "Select a table"}
+              {tableName ? `Table : ${tableName}` : "Choisir une table"}
             </Button>
           ) : null}
         </div>
@@ -232,10 +232,10 @@ export function OrderBuilder({
         <div className="mb-3 rounded-xl border">
           <div className="flex items-center justify-between border-b px-3 py-2">
             <span className="flex items-center gap-2 text-sm font-medium">
-              Sent to kitchen
+              Envoyé en cuisine
               <KitchenStatusBadge states={kitchenStates} />
             </span>
-            <span className="text-muted-foreground text-xs">Read-only</span>
+            <span className="text-muted-foreground text-xs">Lecture seule</span>
           </div>
           <ul className="divide-y">
             {sentLines.map((l) => (
@@ -256,8 +256,8 @@ export function OrderBuilder({
                       {[
                         l.modifiers.map((m) => m.name).join(", "),
                         l.lineNote,
-                        l.state === "SERVED" ? "Served" : null,
-                        l.isComp ? "Comp" : null,
+                        l.state === "SERVED" ? "Servi" : null,
+                        l.isComp ? "Offert" : null,
                       ]
                         .filter(Boolean)
                         .join(" · ")}
@@ -271,7 +271,7 @@ export function OrderBuilder({
             ))}
           </ul>
           <div className="flex items-center justify-between border-t px-3 py-2">
-            <span className="text-sm font-medium">Order total</span>
+            <span className="text-sm font-medium">Total de la commande</span>
             <span className="text-sm font-semibold tabular-nums">
               {formatCurrency(existingTotal)}
             </span>
@@ -307,7 +307,7 @@ export function OrderBuilder({
               {itemCount} item{itemCount === 1 ? "" : "s"}
             </span>
             <span className="text-muted-foreground text-xs">
-              {formatCurrency(bill.grandTotal)} · Review
+              {formatCurrency(bill.grandTotal)} · Vérifier
             </span>
           </button>
           <Button
@@ -316,7 +316,7 @@ export function OrderBuilder({
             disabled={!canSend}
             onClick={send}
           >
-            {isPending ? "Sending…" : needsTable ? "Pick a table" : "Send"}
+            {isPending ? "Envoi…" : needsTable ? "Choisir une table" : "Envoyer"}
           </Button>
         </div>
       </div>
@@ -334,11 +334,11 @@ export function OrderBuilder({
         <Dialog open onOpenChange={setTableOpen}>
           <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Select a table</DialogTitle>
+              <DialogTitle>Choisir une table</DialogTitle>
             </DialogHeader>
             {tables.length === 0 ? (
               <Field>
-                <FieldLabel htmlFor="tl">Table name</FieldLabel>
+                <FieldLabel htmlFor="tl">Nom de la table</FieldLabel>
                 <Input
                   id="tl"
                   value={tableLabel}
@@ -379,7 +379,7 @@ export function OrderBuilder({
             )}
             {tables.length === 0 ? (
               <DialogFooter>
-                <Button onClick={() => setTableOpen(false)}>Done</Button>
+                <Button onClick={() => setTableOpen(false)}>Valider</Button>
               </DialogFooter>
             ) : null}
           </DialogContent>
@@ -434,7 +434,7 @@ export function OrderBuilder({
                       variant="ghost"
                       className="text-destructive"
                       onClick={() => cart.removeLine(l.key)}
-                      aria-label="Remove"
+                      aria-label="Retirer"
                     >
                       <Trash2Icon className="size-4" />
                     </Button>
@@ -445,12 +445,12 @@ export function OrderBuilder({
 
             {mode === "new" ? (
               <Field>
-                <FieldLabel htmlFor="phone">Customer phone (optional)</FieldLabel>
+                <FieldLabel htmlFor="phone">Téléphone du client (facultatif)</FieldLabel>
                 <Input
                   id="phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Skip if not needed"
+                  placeholder="Laissez vide si inutile"
                   inputMode="tel"
                   className="h-11 text-base"
                 />
@@ -458,7 +458,7 @@ export function OrderBuilder({
             ) : null}
 
             <div className="flex items-center justify-between border-t pt-3 text-sm">
-              <span className="text-muted-foreground">Total</span>
+              <span className="text-muted-foreground">Total TTC</span>
               <span className="font-semibold tabular-nums">
                 {formatCurrency(bill.grandTotal)}
               </span>
@@ -474,7 +474,7 @@ export function OrderBuilder({
                   send();
                 }}
               >
-                {isPending ? "Sending…" : "Send to kitchen"}
+                {isPending ? "Envoi…" : "Envoyer en cuisine"}
               </Button>
             </DialogFooter>
           </DialogContent>

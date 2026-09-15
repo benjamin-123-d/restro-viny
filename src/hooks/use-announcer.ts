@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { pickHindiVoice } from "@/lib/announce";
+import { pickFrenchVoice } from "@/lib/announce";
 
 const STORAGE_KEY = "restro.announce";
 
@@ -42,7 +42,7 @@ const getAudioCtor = (): AudioCtor | undefined => {
 };
 
 /**
- * Hindi voice announcements via the browser's built-in Speech Synthesis engine,
+ * French voice announcements via the browser's built-in Speech Synthesis engine,
  * with a Web Audio beep/boop fallback when no speech voice is available. On by
  * default (persisted) and primed on the first user gesture, since browsers
  * block audio until the user interacts with the page.
@@ -98,15 +98,13 @@ export function useAnnouncer(): {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.95;
     if (voiceRef.current) {
-      // A real Hindi voice exists (e.g. Safari's local voices) — use it.
+      // A real French voice exists — use it.
       utterance.voice = voiceRef.current;
       utterance.lang = voiceRef.current.lang;
     }
-    // No Hindi voice (common in Chrome, whose only hi-IN is a network voice
-    // that is often absent in incognito): leave lang unset so the browser uses
-    // its default voice. Forcing lang="hi-IN" makes Chrome reject it as
-    // "language-unavailable" and stay silent; the romanized text is still
-    // intelligible read by an English voice.
+    // No French voice installed: leave lang unset so the browser uses its
+    // default voice rather than rejecting the utterance as
+    // "language-unavailable" and staying silent.
     utterance.onerror = (event) => {
       if (event.error !== "canceled" && event.error !== "interrupted") {
         console.warn("[announce] speech failed:", event.error);
@@ -149,7 +147,7 @@ export function useAnnouncer(): {
       const loadVoices = (): void => {
         const voices = synth.getVoices();
         hasVoicesRef.current = voices.length > 0;
-        voiceRef.current = pickHindiVoice(voices);
+        voiceRef.current = pickFrenchVoice(voices);
       };
       loadVoices();
       synth.addEventListener("voiceschanged", loadVoices);
@@ -185,7 +183,7 @@ export function useAnnouncer(): {
       if (next) {
         prime();
         if ("speechSynthesis" in window && hasVoicesRef.current) {
-          speak("Awaaz chalu");
+          speak("Annonces vocales activées");
         } else {
           playTone("beep");
         }
@@ -202,7 +200,7 @@ export function useAnnouncer(): {
         return;
       }
       // Prefer speech only when a voice is actually available; otherwise the
-      // hi-IN utterance would be silent, so fall back to the tone.
+      // utterance would be silent, so fall back to the tone.
       if (speechSupported && hasVoicesRef.current) {
         speak(text);
       } else if (audioSupported) {

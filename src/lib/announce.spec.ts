@@ -6,7 +6,7 @@ import {
   newOrderAlerts,
   newOrderPhrase,
   orderReadyPhrase,
-  pickHindiVoice,
+  pickFrenchVoice,
   selfOrderAlertPhrase,
   type SpeakableOrder,
 } from "./announce";
@@ -20,18 +20,18 @@ const voice = (lang: string, name = lang): SpeechSynthesisVoice =>
     voiceURI: name,
   }) as SpeechSynthesisVoice;
 
-describe("pickHindiVoice", () => {
-  it("prefers an exact hi-IN voice", () => {
-    const v = pickHindiVoice([voice("en-US"), voice("hi"), voice("hi-IN")]);
-    expect(v?.lang).toBe("hi-IN");
+describe("pickFrenchVoice", () => {
+  it("prefers an exact fr-FR voice", () => {
+    const v = pickFrenchVoice([voice("en-US"), voice("fr-CA"), voice("fr-FR")]);
+    expect(v?.lang).toBe("fr-FR");
   });
 
-  it("falls back to any hi-* voice", () => {
-    expect(pickHindiVoice([voice("en-US"), voice("hi")])?.lang).toBe("hi");
+  it("falls back to any fr-* voice", () => {
+    expect(pickFrenchVoice([voice("en-US"), voice("fr-BE")])?.lang).toBe("fr-BE");
   });
 
-  it("returns null when no Hindi voice exists", () => {
-    expect(pickHindiVoice([voice("en-US"), voice("fr-FR")])).toBeNull();
+  it("returns null when no French voice exists", () => {
+    expect(pickFrenchVoice([voice("en-US"), voice("hi-IN")])).toBeNull();
   });
 });
 
@@ -54,43 +54,43 @@ const order = (over: Partial<SpeakableOrder> = {}): SpeakableOrder => ({
 
 describe("newOrderPhrase", () => {
   it("names the table for dine-in", () => {
-    expect(newOrderPhrase(order())).toBe("Naya order, T1");
+    expect(newOrderPhrase(order())).toBe("Nouvelle commande, table T1");
   });
 
   it("uses a generic phrase for takeaway", () => {
     expect(
       newOrderPhrase(order({ orderType: "TAKEAWAY", tableLabel: null })),
-    ).toBe("Naya takeaway order");
+    ).toBe("Nouvelle commande à emporter");
   });
 
   it("uses a delivery phrase for delivery", () => {
     expect(
       newOrderPhrase(order({ orderType: "DELIVERY", tableLabel: null })),
-    ).toBe("Naya delivery order");
+    ).toBe("Nouvelle commande en livraison");
   });
 });
 
 describe("orderReadyPhrase", () => {
   it("announces the table for dine-in", () => {
-    expect(orderReadyPhrase(order())).toBe("T1 ka order taiyar hai");
+    expect(orderReadyPhrase(order())).toBe("Table T1, la commande est prête");
   });
 
   it("announces the number for takeaway", () => {
     expect(
       orderReadyPhrase(order({ orderType: "TAKEAWAY", tableLabel: null })),
-    ).toBe("Takeaway number 7 taiyar hai");
+    ).toBe("Commande à emporter numéro 7 prête");
   });
 });
 
 describe("selfOrderAlertPhrase", () => {
   it("names the table for dine-in", () => {
-    expect(selfOrderAlertPhrase(order())).toBe("Naya self order, T1");
+    expect(selfOrderAlertPhrase(order())).toBe("Commande client, table T1");
   });
 
   it("uses a generic phrase without a table", () => {
     expect(
       selfOrderAlertPhrase(order({ orderType: "TAKEAWAY", tableLabel: null })),
-    ).toBe("Naya self order");
+    ).toBe("Nouvelle commande client");
   });
 });
 

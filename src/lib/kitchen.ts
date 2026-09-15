@@ -4,9 +4,9 @@ export type KitchenStatus = "WAITING" | "PREPARING" | "READY";
 export const KITCHEN_ACTIVE_STATES = ["FIRED", "PREPARING", "PREPARED"] as const;
 
 export const KITCHEN_STATUS_LABEL: Record<KitchenStatus, string> = {
-  WAITING: "Waiting",
-  PREPARING: "Preparing",
-  READY: "Ready",
+  WAITING: "En attente",
+  PREPARING: "En préparation",
+  READY: "Prêt",
 };
 
 const isActive = (state: string): boolean =>
@@ -37,10 +37,10 @@ export const kitchenAdvanceLabel = (
   states: readonly string[],
 ): string | null => {
   if (states.some((s) => s === "FIRED")) {
-    return "Start";
+    return "Commencer";
   }
   if (states.some((s) => s === "PREPARING")) {
-    return "Mark ready";
+    return "Marquer prêt";
   }
   return null;
 };

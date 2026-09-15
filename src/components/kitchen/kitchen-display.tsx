@@ -29,8 +29,8 @@ const STATUS_STYLE: Record<KitchenStatus, string> = {
 };
 
 const AUTH_ERRORS: Record<string, string> = {
-  STAFF_FORBIDDEN: "You don't have permission to do that.",
-  NO_STAFF_SESSION: "Session expired. Please sign in again.",
+  STAFF_FORBIDDEN: "Vous n'avez pas le droit de faire cela.",
+  NO_STAFF_SESSION: "Session expirée : reconnectez-vous.",
 };
 const toMessage = (m: string): string => AUTH_ERRORS[m] ?? m;
 
@@ -40,12 +40,12 @@ const selfOrderLineCount = (t: KitchenTicketDTO): number =>
 
 const ticketTitle = (t: KitchenTicketDTO): string => {
   if (t.orderType === "DINE_IN") {
-    return t.tableLabel ?? "Dine-in";
+    return t.tableLabel ?? "Sur place";
   }
   if (t.orderType === "DELIVERY") {
-    return `Delivery #${t.orderNumber}`;
+    return `Livraison n° ${t.orderNumber}`;
   }
-  return `Takeaway #${t.orderNumber}`;
+  return `À emporter n° ${t.orderNumber}`;
 };
 
 const elapsedLabel = (iso: string | null, now: number): string => {
@@ -140,7 +140,7 @@ function TicketCard({
           </Button>
         ) : (
           <p className="rounded-xl bg-emerald-50 py-3 text-center text-sm font-semibold text-emerald-800">
-            Ready for pickup
+            Prêt à servir
           </p>
         )}
       </div>
@@ -178,8 +178,8 @@ export function KitchenDisplay({
     };
   }, [router]);
 
-  // Announce freshly-arrived tickets ("Naya order, T1") and guest add-ons
-  // ("Naya self order, T1") in Hindi.
+  // Announce freshly-arrived tickets ("Nouvelle commande, table T1") and guest
+  // add-ons ("Commande client, table T1") out loud.
   useEffect(() => {
     const sigs = tickets.map((t) => ({
       id: t.orderId,
@@ -235,7 +235,7 @@ export function KitchenDisplay({
 
       {tickets.length === 0 ? (
         <p className="text-muted-foreground rounded-xl border border-dashed p-8 text-center text-sm">
-          No tickets right now. New orders appear here automatically.
+          Aucun bon pour le moment. Les nouvelles commandes apparaissent ici automatiquement.
         </p>
       ) : (
         <ul className="flex flex-col gap-3">

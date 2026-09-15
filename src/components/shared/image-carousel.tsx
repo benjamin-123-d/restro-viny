@@ -87,7 +87,7 @@ export function ImageCarousel({
           <button
             key={img.id}
             type="button"
-            aria-label={`Show photo ${i + 1}`}
+            aria-label={`Afficher la photo ${i + 1}`}
             onClick={() => emblaApi?.scrollTo(i)}
             className={`size-1.5 rounded-full transition-colors ${
               i === selected ? "bg-primary" : "bg-muted-foreground/30"
