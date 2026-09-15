@@ -1,3 +1,4 @@
+import { NewButton } from "@/components/forms/doc-actions";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import {
@@ -32,6 +33,9 @@ export default async function DeliveryNotesPage() {
         title="Bons de livraison"
         description="Les marchandises remises aux clients. Valider un bon fait sortir le stock de son entrepôt."
       />
+      <div className="-mt-2 flex justify-end">
+        <NewButton href="/dashboard/selling/deliveries/new" label="Nouveau bon de livraison" />
+      </div>
       {rows.length === 0 ? (
         <EmptyState
           title="Rien de livré pour l'instant"

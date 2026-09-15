@@ -46,14 +46,14 @@ export function DashboardView({
 
       {lowStock > 0 ? (
         <Link
-          href="/dashboard/inventory"
+          href="/dashboard/inventory/reappro"
           className="flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900"
         >
           <span>
             <strong>{lowStock}</strong> article{lowStock === 1 ? "" : "s"} de stock
             {lowStock === 1 ? " est" : " sont"} sous le seuil de réapprovisionnement.
           </span>
-          <span className="font-medium underline">Voir l'inventaire</span>
+          <span className="font-medium underline">Commander le réassort</span>
         </Link>
       ) : null}
 

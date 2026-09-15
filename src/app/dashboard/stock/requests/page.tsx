@@ -1,3 +1,4 @@
+import { NewButton } from "@/components/forms/doc-actions";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import {
@@ -30,6 +31,9 @@ export default async function MaterialRequestsPage() {
         title="Demandes d'articles"
         description="Les demandes internes : à acheter, à transférer ou à sortir de la réserve."
       />
+      <div className="-mt-2 flex justify-end">
+        <NewButton href="/dashboard/stock/requests/new" label="Nouvelle demande" />
+      </div>
       {rows.length === 0 ? (
         <EmptyState
           title="Aucune demande d'articles"

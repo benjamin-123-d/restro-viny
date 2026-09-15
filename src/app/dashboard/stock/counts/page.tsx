@@ -1,3 +1,4 @@
+import { NewButton } from "@/components/forms/doc-actions";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import {
@@ -31,6 +32,9 @@ export default async function StockCountsPage() {
         title="Comptages de stock"
         description="Les comptages physiques et la valeur de ce qu'ils ont corrigé."
       />
+      <div className="-mt-2 flex justify-end">
+        <NewButton href="/dashboard/stock/counts/new" label="Nouveau comptage" />
+      </div>
       {rows.length === 0 ? (
         <EmptyState
           title="Aucun comptage"

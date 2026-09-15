@@ -1,3 +1,4 @@
+import { NewButton } from "@/components/forms/doc-actions";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import {
@@ -32,6 +33,9 @@ export default async function PurchaseReceiptsPage() {
         title="Réceptions de marchandises"
         description="Les livraisons reçues. C'est la validation d'une réception qui fait entrer la marchandise en stock."
       />
+      <div className="-mt-2 flex justify-end">
+        <NewButton href="/dashboard/purchasing/receipts/new" label="Nouvelle réception" />
+      </div>
       {receipts.length === 0 ? (
         <EmptyState
           title="Rien de reçu pour l'instant"

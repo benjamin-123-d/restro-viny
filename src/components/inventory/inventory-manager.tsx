@@ -106,6 +106,9 @@ export function InventoryManager({
           >
             Comptage
           </Button>
+          <Button variant="outline" render={<Link href="/dashboard/inventory/reappro" />}>
+            Commander le réassort
+          </Button>
           <Button onClick={openNew}>Ajouter un article</Button>
         </div>
       </div>

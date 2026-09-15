@@ -1,3 +1,4 @@
+import { NewButton } from "@/components/forms/doc-actions";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import {
@@ -30,6 +31,9 @@ export default async function RfqPage() {
         title="Demandes de devis"
         description="Demandez à plusieurs fournisseurs de chiffrer le même panier, puis comparez leurs réponses ligne à ligne."
       />
+      <div className="-mt-2 flex justify-end">
+        <NewButton href="/dashboard/purchasing/rfq/new" label="Nouvelle demande de devis" />
+      </div>
       {rfqs.length === 0 ? (
         <EmptyState
           title="Aucune demande"

@@ -53,8 +53,8 @@ export default async function RfqDetailPage({
 
       {comparison.suppliers.length === 0 ? (
         <div className="rounded-lg border border-dashed bg-white p-8 text-center text-sm text-zinc-500">
-          Aucun devis reçu pour l'instant. Dès que les fournisseurs répondent, leurs prix
-          s'affichent ici côte à côte.
+          Aucun devis reçu pour l’instant. Dès que les fournisseurs répondent, leurs prix
+          s’affichent ici côte à côte.
         </div>
       ) : (
         <DocTable
