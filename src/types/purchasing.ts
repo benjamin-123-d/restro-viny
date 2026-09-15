@@ -226,6 +226,9 @@ export interface SupplierQuotationDTO extends PurchaseDocumentTotals {
   readonly termsText: string | null;
   readonly items: readonly PurchaseLineDTO[];
   readonly isExpired: boolean;
+  readonly supplierReference: string | null;
+  readonly summaryOnly: boolean;
+  readonly documents: readonly PurchaseDocumentDTO[];
 }
 
 export interface SupplierQuotationListItemDTO {
@@ -237,6 +240,8 @@ export interface SupplierQuotationListItemDTO {
   readonly validUntil: string | null;
   readonly grandTotal: number;
   readonly isExpired: boolean;
+  readonly summaryOnly: boolean;
+  readonly documentCount: number;
 }
 
 // ------------------------------------------------------- purchase order ---
@@ -360,6 +365,8 @@ export interface PurchaseInvoiceDTO extends PurchaseDocumentTotals {
   readonly payments: readonly SupplierPaymentAllocationDTO[];
   readonly isEditable: boolean;
   readonly daysOverdue: number;
+  readonly summaryOnly: boolean;
+  readonly documents: readonly PurchaseDocumentDTO[];
 }
 
 export interface PurchaseInvoiceListItemDTO {
@@ -373,6 +380,8 @@ export interface PurchaseInvoiceListItemDTO {
   readonly grandTotal: number;
   readonly outstandingAmount: number;
   readonly daysOverdue: number;
+  readonly summaryOnly: boolean;
+  readonly documentCount: number;
 }
 
 // ----------------------------------------------------- supplier payment ---
@@ -451,4 +460,46 @@ export interface PurchasingOverviewDTO {
     readonly supplierName: string;
     readonly amount: number;
   }[];
+}
+
+// ------------------------------------------- supplier documents and email ---
+
+export type PurchaseDocumentKind = "QUOTATION" | "INVOICE";
+export type PurchaseDocumentSource = "FILE" | "PHOTO" | "EMAIL";
+
+/** A supplier's document as imported; the file itself is served separately. */
+export interface PurchaseDocumentDTO {
+  readonly id: string;
+  readonly kind: PurchaseDocumentKind;
+  readonly source: PurchaseDocumentSource;
+  readonly fileName: string;
+  readonly mimeType: string;
+  readonly sizeBytes: number;
+  readonly createdAt: string;
+  readonly isImage: boolean;
+  readonly url: string;
+}
+
+export type SupplierMessageStatus = "SENT" | "FAILED" | "MAILTO";
+
+export interface SupplierMessageDTO {
+  readonly id: string;
+  readonly supplierId: string;
+  readonly supplierName: string;
+  readonly toEmail: string;
+  readonly subject: string;
+  readonly status: SupplierMessageStatus;
+  readonly error: string | null;
+  readonly createdAt: string;
+}
+
+export interface QuoteRequestResultDTO {
+  readonly supplierId: string;
+  readonly supplierName: string;
+  readonly toEmail: string | null;
+  /** NO_EMAIL: the supplier has no address on file, nothing was sent. */
+  readonly status: SupplierMessageStatus | "NO_EMAIL";
+  readonly error: string | null;
+  /** Opens the same message in the user's own mail app. */
+  readonly mailto: string | null;
 }

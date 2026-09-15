@@ -21,6 +21,16 @@ const TONE_CLASS: Readonly<Record<Tone, string>> = {
 /** How each status across the chain should read at a glance. */
 const STATUS_TONE: Readonly<Record<string, Tone>> = {
   DRAFT: "neutral",
+  POSTED: "good",
+  RECEIVED: "good",
+  PARTIALLY_RECEIVED: "warn",
+  PENDING: "warn",
+  TO_DELIVER_AND_BILL: "info",
+  TO_DELIVER: "info",
+  CREDIT_NOTE_ISSUED: "warn",
+  OPEN: "info",
+  REPLIED: "info",
+  LOST: "neutral",
   CANCELLED: "neutral",
   CLOSED: "neutral",
   STOPPED: "neutral",
@@ -42,7 +52,44 @@ const STATUS_TONE: Readonly<Record<string, Tone>> = {
   OVERDUE: "danger",
 };
 
+/** Every document status of every module, as a French owner reads it. */
+const STATUS_LABEL: Readonly<Record<string, string>> = {
+  DRAFT: "Brouillon",
+  SUBMITTED: "Validé",
+  CANCELLED: "Annulé",
+  CLOSED: "Clôturé",
+  STOPPED: "Arrêté",
+  EXPIRED: "Expiré",
+  OPEN: "Ouvert",
+  REPLIED: "Répondu",
+  LOST: "Perdu",
+  PENDING: "En attente",
+  ON_HOLD: "En attente",
+  TO_RECEIVE_AND_BILL: "À recevoir et facturer",
+  TO_RECEIVE: "À recevoir",
+  TO_BILL: "À facturer",
+  TO_DELIVER_AND_BILL: "À livrer et facturer",
+  TO_DELIVER: "À livrer",
+  PARTLY_BILLED: "Facturé en partie",
+  PARTIALLY_ORDERED: "Commandé en partie",
+  PARTIALLY_RECEIVED: "Reçu en partie",
+  PARTLY_PAID: "Payé en partie",
+  UNPAID: "À payer",
+  OVERDUE: "En retard",
+  PAID: "Payé",
+  RETURN: "Retour",
+  DEBIT_NOTE_ISSUED: "Avoir reçu",
+  CREDIT_NOTE_ISSUED: "Avoir émis",
+  COMPLETED: "Terminé",
+  ORDERED: "Commandé",
+  RECEIVED: "Reçu",
+  ISSUED: "Sorti",
+  TRANSFERRED: "Transféré",
+  POSTED: "Comptabilisé",
+};
+
 const humanise = (status: string): string =>
+  STATUS_LABEL[status] ??
   status
     .toLowerCase()
     .split("_")
@@ -116,9 +163,9 @@ export const DocTable = ({
   headers: readonly { label: string; align?: "right" }[];
   children: React.ReactNode;
 }) => (
-  <div className="overflow-x-auto rounded-lg border bg-white">
+  <div className="overflow-x-auto rounded-lg border bg-card">
     <table className="w-full min-w-[720px] text-sm">
-      <thead className="border-b bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
+      <thead className="border-b bg-muted/60 text-left text-xs uppercase tracking-wide text-muted-foreground">
         <tr>
           {headers.map((h) => (
             <th
@@ -163,7 +210,7 @@ export const TabBar = ({
 }: {
   tabs: readonly { href: string; label: string }[];
 }) => (
-  <nav className="overflow-x-auto border-b bg-white">
+  <nav className="overflow-x-auto border-b bg-card">
     <ul className="flex min-w-max gap-1 px-4 py-2 lg:px-6">
       {tabs.map((tab) => (
         <li key={tab.href}>

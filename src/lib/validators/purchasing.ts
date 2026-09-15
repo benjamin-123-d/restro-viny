@@ -389,3 +389,77 @@ export const generateScorecardSchema = z.object({
   periodEnd: z.coerce.date(),
 });
 export type GenerateScorecardInput = z.infer<typeof generateScorecardSchema>;
+
+// ------------------------------------------- documents imported from suppliers ---
+
+/** Form fields arrive as strings: an empty one means "not given". */
+const blank = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((v) => (v === "" || v === null ? undefined : v), schema);
+
+export const documentSourceSchema = z.enum(["FILE", "PHOTO", "EMAIL"]);
+
+const documentTotals = {
+  totalTTC: z.coerce
+    .number({ error: "Indiquez le total TTC du document." })
+    .positive("Indiquez le total TTC du document.")
+    .max(100_000_000),
+  vatAmount: blank(money.optional()),
+  vatRate: blank(percent.optional()),
+  notes: blank(optionalText(600)),
+  source: blank(documentSourceSchema.default("FILE")),
+};
+
+/** A supplier's quote recorded from its document: who, when, how much. */
+export const quickQuotationSchema = z
+  .object({
+    supplierId: idSchema,
+    supplierReference: blank(optionalText(80)),
+    transactionDate: blank(optionalDate),
+    validUntil: blank(optionalDate),
+    ...documentTotals,
+  })
+  .refine((v) => v.vatAmount == null || v.vatAmount <= v.totalTTC, {
+    message: "La TVA ne peut pas dépasser le total.",
+    path: ["vatAmount"],
+  });
+export type QuickQuotationInput = z.infer<typeof quickQuotationSchema>;
+
+/** A supplier's invoice recorded from its document with just its totals. */
+export const quickInvoiceSchema = z
+  .object({
+    supplierId: idSchema,
+    supplierInvoiceNo: blank(optionalText(80)),
+    postingDate: blank(optionalDate),
+    dueDate: blank(optionalDate),
+    ...documentTotals,
+  })
+  .refine((v) => v.vatAmount == null || v.vatAmount <= v.totalTTC, {
+    message: "La TVA ne peut pas dépasser le total.",
+    path: ["vatAmount"],
+  })
+  .refine((v) => !v.postingDate || !v.dueDate || v.dueDate >= v.postingDate, {
+    message: "L'échéance ne peut pas précéder la date de la facture.",
+    path: ["dueDate"],
+  });
+export type QuickInvoiceInput = z.infer<typeof quickInvoiceSchema>;
+
+export const purchaseDocumentIdSchema = z.object({ id: idSchema });
+
+const quoteRequestLineSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  quantity: positiveQty,
+  unit: z.string().trim().max(20).default(""),
+});
+
+/** Ask one or several suppliers for a price, by email. */
+export const quoteRequestSchema = z.object({
+  supplierIds: z.array(idSchema).min(1, "Choisissez au moins un fournisseur."),
+  lines: z.array(quoteRequestLineSchema).max(50).default([]),
+  message: blank(optionalText(2000)),
+  neededBy: blank(optionalDate),
+  rfqId: blank(idSchema.optional()),
+}).refine((v) => v.lines.length > 0 || Boolean(v.message), {
+  message: "Indiquez au moins un produit ou un message.",
+  path: ["lines"],
+});
+export type QuoteRequestInput = z.infer<typeof quoteRequestSchema>;

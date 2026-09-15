@@ -36,6 +36,25 @@ const MESSAGES: Readonly<Record<string, string>> = {
   JOURNAL_LINE_BOTH_SIDES: "Une ligne ne peut pas être à la fois au débit et au crédit.",
   JOURNAL_LINE_EMPTY: "Chaque ligne doit avoir un montant.",
   JOURNAL_NOT_DRAFT: "Seule une écriture en brouillon peut être comptabilisée.",
+
+  DOCUMENT_TYPE_INVALID: "Ce fichier n'est pas accepté : importez un PDF ou une photo (JPEG, PNG, HEIC).",
+  DOCUMENT_TOO_LARGE: "Ce fichier dépasse 15 Mo : réduisez-le ou prenez une photo plutôt qu'un scan.",
+  DOCUMENT_EMPTY: "Le fichier est vide.",
+  DOCUMENT_NOT_FOUND: "Document introuvable.",
+  DOCUMENT_PARENT_NOT_FOUND: "Le devis ou la facture de ce document est introuvable.",
+  TOTAL_VAT_ABOVE_TOTAL: "La TVA ne peut pas dépasser le total TTC.",
+  QUOTATION_NOT_FOUND: "Devis introuvable.",
+  QUOTATION_NOT_DRAFT: "Seul un devis en brouillon peut être modifié.",
+  QUOTATION_NOT_SUBMITTED: "Ce devis n'est pas validé.",
+  QUOTATION_NO_LINES: "Ce devis n'a pas de lignes : saisissez-les pour en faire une commande.",
+  INVOICE_NOT_FOUND: "Facture introuvable.",
+  INVOICE_NOT_DRAFT: "Seule une facture en brouillon peut être modifiée.",
+  INVOICE_NOT_SUBMITTED: "Cette facture n'est pas validée.",
+  RFQ_NOT_FOUND: "Demande de devis introuvable.",
+  RFQ_NOT_DRAFT: "Seule une demande en brouillon peut être modifiée.",
+  ORDER_NOT_FOUND: "Commande introuvable.",
+  ORDER_NOT_SETTLED: "Cette commande n'est pas encore encaissée.",
+  EMAIL_NOT_CONFIGURED: "Aucun service d'envoi d'e-mails n'est configuré.",
 };
 
 export const humanError = (code: string | undefined): string =>

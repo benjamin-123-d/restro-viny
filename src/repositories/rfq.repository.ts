@@ -152,6 +152,8 @@ export interface QuotationLineWriteData {
 }
 
 export interface QuotationWriteData {
+  supplierReference?: string | null;
+  summaryOnly?: boolean;
   supplierId: string;
   rfqId: string | null;
   transactionDate: Date;
@@ -166,6 +168,10 @@ export interface QuotationWriteData {
 }
 
 const quotationDetail = {
+  documents: {
+    select: { id: true, kind: true, source: true, fileName: true, mimeType: true, sizeBytes: true, createdAt: true },
+    orderBy: { createdAt: "asc" },
+  },
   supplier: { select: { id: true, name: true } },
   rfq: { select: { id: true, number: true } },
   items: {
@@ -185,7 +191,9 @@ const quotationListSelect = {
   transactionDate: true,
   validUntil: true,
   grandTotal: true,
+  summaryOnly: true,
   supplier: { select: { name: true } },
+  _count: { select: { documents: true } },
 } satisfies Prisma.SupplierQuotationSelect;
 
 export type QuotationListRow = Prisma.SupplierQuotationGetPayload<{

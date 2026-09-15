@@ -5,35 +5,35 @@ export const UNIT_LABELS: Record<StockUnit, string> = {
   GRAM: "g",
   LITRE: "L",
   ML: "ml",
-  PIECE: "pc",
-  PACK: "pack",
-  BOTTLE: "bottle",
-  DOZEN: "dozen",
+  PIECE: "pièce",
+  PACK: "paquet",
+  BOTTLE: "bouteille",
+  DOZEN: "douzaine",
 };
 
 export const STOCK_UNIT_OPTIONS: readonly { value: StockUnit; label: string }[] = [
-  { value: "KG", label: "Kilogram (kg)" },
-  { value: "GRAM", label: "Gram (g)" },
+  { value: "KG", label: "Kilogramme (kg)" },
+  { value: "GRAM", label: "Gramme (g)" },
   { value: "LITRE", label: "Litre (L)" },
   { value: "ML", label: "Millilitre (ml)" },
-  { value: "PIECE", label: "Piece (pc)" },
-  { value: "PACK", label: "Pack" },
-  { value: "BOTTLE", label: "Bottle" },
-  { value: "DOZEN", label: "Dozen" },
+  { value: "PIECE", label: "Pièce" },
+  { value: "PACK", label: "Paquet" },
+  { value: "BOTTLE", label: "Bouteille" },
+  { value: "DOZEN", label: "Douzaine" },
 ];
 
 export const WASTE_REASONS: readonly string[] = [
-  "Spoiled",
-  "Expired",
-  "Breakage",
-  "Prep loss",
-  "Over-portion",
-  "Comp / staff meal",
+  "Avarié",
+  "Date dépassée",
+  "Casse",
+  "Perte à la préparation",
+  "Portion trop généreuse",
+  "Offert / repas du personnel",
 ];
 
 export const MOVEMENT_LABELS: Record<StockMovementType, string> = {
-  RECEIVE: "Received",
-  WASTE: "Wasted",
-  CORRECTION: "Count / correction",
-  SALE_DEPLETION: "Sale",
+  RECEIVE: "Entrée",
+  WASTE: "Perte",
+  CORRECTION: "Inventaire / correction",
+  SALE_DEPLETION: "Vente",
 };

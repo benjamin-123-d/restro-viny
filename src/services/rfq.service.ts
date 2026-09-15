@@ -1,3 +1,4 @@
+import { toDocumentDTO } from "@/services/purchase-document.mapper";
 import type {
   CreateOrderFromQuotationInput,
   CreateRfqInput,
@@ -262,6 +263,9 @@ export const mapQuotation = (
   notes: q.notes,
   termsText: q.termsText,
   isExpired: isExpired(q.validUntil, now),
+  supplierReference: q.supplierReference,
+  summaryOnly: q.summaryOnly,
+  documents: q.documents.map(toDocumentDTO),
   items: q.items.map((i) => ({
     id: i.id,
     stockItemId: i.stockItemId,
@@ -412,6 +416,8 @@ export const listSupplierQuotations = async (
     validUntil: iso(q.validUntil),
     grandTotal: num(q.grandTotal),
     isExpired: isExpired(q.validUntil, now),
+    summaryOnly: q.summaryOnly,
+    documentCount: q._count.documents,
   }));
 };
 

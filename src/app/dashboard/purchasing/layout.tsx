@@ -5,14 +5,14 @@ import { TabBar } from "@/components/purchasing/purchasing-ui";
  * an order from quote to payment without going back to a menu each time.
  */
 const TABS = [
-  { href: "/dashboard/purchasing", label: "Overview" },
-  { href: "/dashboard/purchasing/suppliers", label: "Suppliers" },
-  { href: "/dashboard/purchasing/rfq", label: "RFQs" },
-  { href: "/dashboard/purchasing/quotations", label: "Quotations" },
-  { href: "/dashboard/purchasing/orders", label: "Orders" },
-  { href: "/dashboard/purchasing/receipts", label: "Receipts" },
-  { href: "/dashboard/purchasing/invoices", label: "Bills" },
-  { href: "/dashboard/purchasing/payments", label: "Payments" },
+  { href: "/dashboard/purchasing", label: "Vue d'ensemble" },
+  { href: "/dashboard/purchasing/suppliers", label: "Fournisseurs" },
+  { href: "/dashboard/purchasing/rfq", label: "Demandes de devis" },
+  { href: "/dashboard/purchasing/quotations", label: "Devis reçus" },
+  { href: "/dashboard/purchasing/orders", label: "Commandes" },
+  { href: "/dashboard/purchasing/receipts", label: "Réceptions" },
+  { href: "/dashboard/purchasing/invoices", label: "Factures" },
+  { href: "/dashboard/purchasing/payments", label: "Paiements" },
 ] as const;
 
 export default function PurchasingLayout({

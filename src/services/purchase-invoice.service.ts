@@ -14,6 +14,7 @@ import {
   type PurchaseInvoiceFilter,
   type PurchaseInvoiceWithDetail,
 } from "@/repositories/purchase-invoice.repository";
+import { toDocumentDTO } from "@/services/purchase-document.mapper";
 import { computePurchaseTotals } from "@/services/purchase-totals";
 import {
   assertSupplierAccepts,
@@ -65,6 +66,8 @@ const mapInvoice = (invoice: PurchaseInvoiceWithDetail): PurchaseInvoiceDTO => (
   daysOverdue: ["UNPAID", "PARTLY_PAID", "OVERDUE"].includes(invoice.status)
     ? daysLate(invoice.dueDate)
     : 0,
+  summaryOnly: invoice.summaryOnly,
+  documents: invoice.documents.map(toDocumentDTO),
   items: invoice.items.map((item) => ({
     id: item.id,
     stockItemId: item.stockItemId,
@@ -183,6 +186,8 @@ export const listPurchaseInvoices = async (ctx: PurchasingContext, filter: Purch
     postingDate: invoice.postingDate.toISOString(), dueDate: invoice.dueDate.toISOString(),
     grandTotal: num(invoice.grandTotal), outstandingAmount: num(invoice.outstandingAmount),
     daysOverdue: ["UNPAID", "PARTLY_PAID", "OVERDUE"].includes(invoice.status) ? daysLate(invoice.dueDate) : 0,
+    summaryOnly: invoice.summaryOnly,
+    documentCount: invoice._count.documents,
   }));
 };
 
@@ -193,3 +198,6 @@ export const listPayableInvoices = async (ctx: PurchasingContext, supplierId: st
     grandTotal: num(invoice.grandTotal), outstandingAmount: num(invoice.outstandingAmount),
     daysOverdue: daysLate(invoice.dueDate),
   }));
+
+export const getPurchaseInvoice = async (ctx: PurchasingContext, id: string): Promise<PurchaseInvoiceDTO> =>
+  mapInvoice(await loadOwnedInvoice(ctx.restaurantId, id));

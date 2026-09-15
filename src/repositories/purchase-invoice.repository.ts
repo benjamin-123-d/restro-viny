@@ -36,6 +36,7 @@ export interface PurchaseScheduleWriteData {
 }
 
 export interface PurchaseInvoiceWriteData {
+  summaryOnly?: boolean;
   supplierId: string;
   supplierInvoiceNo: string | null;
   purchaseOrderId: string | null;
@@ -57,6 +58,10 @@ export interface PurchaseInvoiceWriteData {
 }
 
 const detail = {
+  documents: {
+    select: { id: true, kind: true, source: true, fileName: true, mimeType: true, sizeBytes: true, createdAt: true },
+    orderBy: { createdAt: "asc" },
+  },
   supplier: { select: { id: true, name: true } },
   purchaseOrder: { select: { id: true, number: true } },
   purchaseReceipt: { select: { id: true, number: true } },
@@ -92,7 +97,9 @@ const listSelect = {
   dueDate: true,
   grandTotal: true,
   outstandingAmount: true,
+  summaryOnly: true,
   supplier: { select: { name: true } },
+  _count: { select: { documents: true } },
 } satisfies Prisma.PurchaseInvoiceSelect;
 
 export type PurchaseInvoiceListRow = Prisma.PurchaseInvoiceGetPayload<{

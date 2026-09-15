@@ -44,8 +44,17 @@ const main = async () => {
         select: { id: true },
       })
     : null;
+  const lastInvoice = route.includes(":lastInvoice")
+    ? await prisma.purchaseInvoice.findFirst({ orderBy: { createdAt: "desc" }, select: { id: true } })
+    : null;
+  const lastQuotation = route.includes(":lastQuotation")
+    ? await prisma.supplierQuotation.findFirst({ orderBy: { createdAt: "desc" }, select: { id: true } })
+    : null;
+  const pagePath = route
+    .replace(":lastOrder", lastOrder?.id ?? "")
+    .replace(":lastInvoice", lastInvoice?.id ?? "")
+    .replace(":lastQuotation", lastQuotation?.id ?? "");
   await prisma.$disconnect();
-  const pagePath = lastOrder ? route.replace(":lastOrder", lastOrder.id) : route;
   if (!restaurant) throw new Error("Aucun restaurant.");
 
   const token = await new SignJWT({})

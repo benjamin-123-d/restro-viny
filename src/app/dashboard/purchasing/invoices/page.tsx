@@ -1,5 +1,12 @@
-import { EmptyState } from "@/components/shared/empty-state";
-import { PageHeader } from "@/components/shared/page-header";
+import { PaperclipIcon } from "lucide-react";
+
+import {
+  cancelPurchaseInvoiceAction,
+  deletePurchaseInvoiceAction,
+  submitPurchaseInvoiceAction,
+} from "@/actions/purchasing.actions";
+import { DocActions, NewButton } from "@/components/forms/doc-actions";
+import { HelpBox } from "@/components/forms/help-box";
 import {
   DocDate,
   DocNumber,
@@ -7,24 +14,21 @@ import {
   Money,
   StatusBadge,
 } from "@/components/purchasing/purchasing-ui";
+import { EmptyState } from "@/components/shared/empty-state";
+import { PageHeader } from "@/components/shared/page-header";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listPurchaseInvoices } from "@/services/purchase-invoice.service";
 
-import { HelpBox } from "@/components/forms/help-box";
-import { DocActions, NewButton } from "@/components/forms/doc-actions";
-import {
-  cancelPurchaseInvoiceAction,
-  deletePurchaseInvoiceAction,
-  submitPurchaseInvoiceAction,
-} from "@/actions/purchasing.actions";
+export const metadata = { title: "Factures fournisseurs" };
+
 export default async function PurchaseInvoicesPage() {
   const ctx = await getManagerContextOrNull();
   if (!ctx) {
     return (
       <div className="p-4 lg:p-6">
         <EmptyState
-          title="No restaurant yet"
-          description="Ask an admin to onboard your restaurant."
+          title="Aucun restaurant"
+          description="Demandez à un administrateur d'associer votre restaurant."
         />
       </div>
     );
@@ -35,66 +39,61 @@ export default async function PurchaseInvoicesPage() {
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
-      <PageHeader
-        title="Supplier bills"
-        description="What you owe, and when it falls due."
-      />
-      <div className="-mt-2 flex justify-end">
-        <NewButton
-          href="/dashboard/purchasing/invoices/new"
-          label="Nouvelle facture fournisseur"
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <PageHeader
+          title="Factures fournisseurs"
+          description="Ce que vous devez à vos fournisseurs, et quand."
         />
+        <NewButton href="/dashboard/purchasing/invoices/new" label="Importer une facture" />
       </div>
       <HelpBox
         defaultOpen={false}
         title="Aide — Factures fournisseurs"
-        intro=""
         steps={[
-          "« + Nouvelle facture fournisseur » pour saisir une facture reçue.",
-          "« Valider » la transforme en dette ; « Outstanding » montre ce qui reste à payer.",
-          "Payez-la depuis l'onglet « Payments ».",
+          "« Importer une facture » : le PDF ou une photo de la facture, puis juste le total.",
+          "« Valider » la transforme en dette ; « Reste à payer » montre ce qui reste dû.",
+          "Payez-la depuis l'onglet « Paiements ».",
         ]}
-        tips={["« +12d » à côté de l'échéance = en retard de 12 jours."]}
+        tips={["« +12 j » à côté de l'échéance = en retard de 12 jours.", "Le trombone indique qu'un document est attaché."]}
       />
       {invoices.length === 0 ? (
         <EmptyState
-          title="No supplier bills yet"
-          description="Bill a goods receipt or a purchase order to open a payable."
+          title="Aucune facture fournisseur"
+          description="Importez la facture reçue d'un fournisseur, ou facturez une réception de marchandises."
         />
       ) : (
         <DocTable
           headers={[
-            { label: "Number" },
-            { label: "Supplier ref" },
-            { label: "Supplier" },
-            { label: "Posted" },
-            { label: "Due" },
-            { label: "Status" },
-            { label: "Total", align: "right" },
-            { label: "Outstanding", align: "right" },
+            { label: "Numéro" },
+            { label: "Réf. fournisseur" },
+            { label: "Fournisseur" },
+            { label: "Date" },
+            { label: "Échéance" },
+            { label: "Statut" },
+            { label: "Total TTC", align: "right" },
+            { label: "Reste à payer", align: "right" },
             { label: "", align: "right" },
           ]}
         >
           {invoices.map((invoice) => (
             <tr key={invoice.id} className="border-b last:border-0">
               <td className="px-3 py-2">
-                <DocNumber number={invoice.number} />
+                <span className="inline-flex items-center gap-1.5">
+                  <DocNumber number={invoice.number} href={`/dashboard/purchasing/invoices/${invoice.id}`} />
+                  {invoice.documentCount > 0 ? (
+                    <PaperclipIcon className="size-3.5 text-muted-foreground" aria-label="Document attaché" />
+                  ) : null}
+                </span>
               </td>
-              <td className="px-3 py-2 text-zinc-600">
-                {invoice.supplierInvoiceNo ?? "—"}
-              </td>
-              <td className="px-3 py-2 font-medium text-zinc-900">
-                {invoice.supplierName}
-              </td>
+              <td className="px-3 py-2 text-muted-foreground">{invoice.supplierInvoiceNo ?? "—"}</td>
+              <td className="px-3 py-2 font-medium">{invoice.supplierName}</td>
               <td className="px-3 py-2">
                 <DocDate iso={invoice.postingDate} />
               </td>
               <td className="px-3 py-2">
                 <DocDate iso={invoice.dueDate} />
                 {invoice.daysOverdue > 0 && (
-                  <span className="ml-1 text-xs font-medium text-red-600">
-                    +{invoice.daysOverdue}d
-                  </span>
+                  <span className="ml-1 text-xs font-medium text-red-600">+{invoice.daysOverdue} j</span>
                 )}
               </td>
               <td className="px-3 py-2">
@@ -106,13 +105,7 @@ export default async function PurchaseInvoicesPage() {
               <td className="px-3 py-2 text-right">
                 <Money
                   value={invoice.outstandingAmount}
-                  tone={
-                    invoice.outstandingAmount === 0
-                      ? "muted"
-                      : invoice.daysOverdue > 0
-                        ? "danger"
-                        : undefined
-                  }
+                  tone={invoice.outstandingAmount === 0 ? "muted" : invoice.daysOverdue > 0 ? "danger" : undefined}
                 />
               </td>
               <td className="px-3 py-2 text-right">
@@ -121,17 +114,8 @@ export default async function PurchaseInvoicesPage() {
                   actions={
                     invoice.status === "DRAFT"
                       ? [
-                          {
-                            label: "Valider",
-                            action: submitPurchaseInvoiceAction,
-                            tone: "primary",
-                          },
-                          {
-                            label: "Supprimer",
-                            action: deletePurchaseInvoiceAction,
-                            tone: "danger",
-                            confirm: "Supprimer ce brouillon ?",
-                          },
+                          { label: "Valider", action: submitPurchaseInvoiceAction, tone: "primary" },
+                          { label: "Supprimer", action: deletePurchaseInvoiceAction, tone: "danger", confirm: "Supprimer ce brouillon ?" },
                         ]
                       : ["UNPAID", "OVERDUE"].includes(invoice.status)
                         ? [
@@ -139,8 +123,7 @@ export default async function PurchaseInvoicesPage() {
                               label: "Annuler",
                               action: cancelPurchaseInvoiceAction,
                               tone: "danger",
-                              confirm:
-                                "Annuler cette facture ? Ses effets seront inversés.",
+                              confirm: "Annuler cette facture ? Ses effets seront inversés.",
                             },
                           ]
                         : []
@@ -149,13 +132,14 @@ export default async function PurchaseInvoicesPage() {
               </td>
             </tr>
           ))}
-          <tr className="bg-zinc-50 font-medium">
+          <tr className="bg-muted/40 font-medium">
             <td className="px-3 py-2" colSpan={7}>
-              Total outstanding
+              Total restant à payer
             </td>
             <td className="px-3 py-2 text-right">
               <Money value={payable} />
             </td>
+            <td />
           </tr>
         </DocTable>
       )}
