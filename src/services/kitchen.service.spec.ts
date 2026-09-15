@@ -90,7 +90,7 @@ describe("listKitchenTickets", () => {
     const [ticket] = await listKitchenTickets("r1");
 
     expect(ticket.status).toBe("WAITING");
-    expect(ticket.advanceLabel).toBe("Start");
+    expect(ticket.advanceLabel).toBe("Commencer");
     expect(ticket.batches).toHaveLength(1);
     expect(ticket.batches[0].isAddOn).toBe(false);
     expect(ticket.batches[0].isSelfOrder).toBe(false);
@@ -118,7 +118,7 @@ describe("listKitchenTickets", () => {
     const [ticket] = await listKitchenTickets("r1");
 
     expect(ticket.status).toBe("PREPARING");
-    expect(ticket.advanceLabel).toBe("Mark ready");
+    expect(ticket.advanceLabel).toBe("Marquer prêt");
   });
 
   it("derives READY with no advance label when all prepared", async () => {
@@ -147,7 +147,7 @@ describe("listKitchenTickets", () => {
     expect(ticket.batches[1].isAddOn).toBe(true);
     expect(ticket.batches[1].lines[0].id).toBe("b");
     // a fired add-on re-triggers Start
-    expect(ticket.advanceLabel).toBe("Start");
+    expect(ticket.advanceLabel).toBe("Commencer");
     expect(ticket.status).toBe("PREPARING");
   });
 

@@ -49,6 +49,14 @@ describe("matchIngredient", () => {
     expect(matchIngredient("huile", stock)?.id).toBe("s3");
   });
 
+  it("prefers the French stock name over an English duplicate", () => {
+    const both = [
+      { id: "en", name: "Fish", unit: "KG" as const },
+      { id: "fr", name: "Poisson frais", unit: "KG" as const },
+    ];
+    expect(matchIngredient("poisson", both)?.id).toBe("fr");
+  });
+
   it("returns null when nothing in stock resembles the ingredient", () => {
     expect(matchIngredient("gingembre", stock)).toBeNull();
   });

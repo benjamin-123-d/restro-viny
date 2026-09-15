@@ -753,9 +753,13 @@ export const getFoodCostOverview = async (
     losses: losses.map((l) => ({ value: num(l.value) })),
   });
 
+  // The test to weigh portions only makes sense for a plate, not a drink.
+  const drinks = new Set(
+    orders.flatMap((o) => o.items.filter((i) => i.vatCategory === "SOFT_DRINK" || i.vatCategory === "ALCOHOL").map((i) => i.menuItemId)),
+  );
   const soldByDish = new Map<string, { name: string; quantity: number }>();
   for (const s of sales) {
-    if (!s.menuItemId || s.foodCost == null) continue;
+    if (!s.menuItemId || s.foodCost == null || drinks.has(s.menuItemId)) continue;
     const row = soldByDish.get(s.menuItemId) ?? { name: s.name, quantity: 0 };
     row.quantity += s.quantity;
     soldByDish.set(s.menuItemId, row);

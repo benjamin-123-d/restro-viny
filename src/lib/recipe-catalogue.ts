@@ -175,7 +175,7 @@ export interface StockCandidate {
 export const matchIngredient = <T extends StockCandidate>(ingredient: string, stock: readonly T[]): T | null => {
   const base = normaliseName(ingredient);
   // The French name outranks its synonyms, so "Tomates" wins over "Tomatoes".
-  const names = [base, ...(SYNONYMS[base] ?? [])].map((n, i) => ({ text: tokens(n).join(" "), weight: i === 0 ? 1 : 0.95 }));
+  const names = [base, ...(SYNONYMS[base] ?? [])].map((n, i) => ({ text: tokens(n).join(" "), weight: i === 0 ? 1 : 0.85 }));
   let best: { item: T; score: number } | null = null;
   for (const item of stock) {
     const itemName = tokens(item.name).join(" ");
@@ -184,7 +184,7 @@ export const matchIngredient = <T extends StockCandidate>(ingredient: string, st
         itemName === name.text
           ? 1
           : itemName.startsWith(`${name.text} `) || name.text.startsWith(`${itemName} `)
-            ? 0.8
+            ? 0.9
             : overlap(tokens(name.text), tokens(itemName));
       const score = raw * name.weight;
       if (!best || score > best.score) best = { item, score };
