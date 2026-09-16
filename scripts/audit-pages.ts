@@ -14,7 +14,10 @@ import { PrismaClient } from "../src/generated/prisma/client";
  *   npx tsx scripts/audit-pages.ts [baseUrl]
  */
 
-const BASE = process.argv[2] ?? "http://localhost:3000";
+// 3100 is where the local deployment runs (scripts/deploy-local.ps1). Pointing
+// at 3000 by default once made this report « 0/72 pages healthy » against a
+// port where nothing was listening — a scare worth not repeating.
+const BASE = process.argv[2] ?? "http://localhost:3100";
 
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL ?? "" }),
@@ -38,6 +41,11 @@ const STATIC_ROUTES = [
   "/dashboard/food-cost/bases",
   "/dashboard/food-cost/reglages",
   "/dashboard/inventory/reappro",
+  "/dashboard/staff",
+  "/dashboard/staff/planning",
+  "/dashboard/staff/planning?semaine=2026-09-14",
+  "/dashboard/staff/calendrier",
+  "/dashboard/staff/heures",
   "/dashboard/purchasing/quotations/request",
   "/dashboard/purchasing/quotations/new",
   "/dashboard/purchasing/receipts/new",
