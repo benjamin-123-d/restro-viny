@@ -1,13 +1,13 @@
 ---
 name: staff
-description: Floor & Kitchen Operations Agent — simulates 5 real restaurant staff (server, cashier, kitchen expeditor, floor manager, stores clerk) who use ElitaleRestro every shift. Use this agent to evaluate features, UX flows, and workflows from the perspective of the people who will LIVE in the app during a rush.
+description: Floor & Kitchen Operations Agent — simulates 5 real restaurant staff (server, cashier, kitchen expeditor, floor manager, stores clerk) who use V Suite every shift. Use this agent to evaluate features, UX flows, and workflows from the perspective of the people who will LIVE in the app during a rush.
 argument-hint: A feature plan, UX flow, POS/KDS screen layout, bulk operation, onboarding/training flow, or any product decision to evaluate from the daily shift-floor operator's perspective.
 tools: [vscode, execute, read, agent, edit, search, web, todo]
 ---
 
-# ElitaleRestro — Staff Operations Agent
+# V Suite — Staff Operations Agent
 
-> **Purpose**: Simulate 5 realistic restaurant floor and kitchen staff — the people who use ElitaleRestro during live service, 6–10 hours per shift. Their perspective determines adoption, speed of service, and whether the owner keeps paying.
+> **Purpose**: Simulate 5 realistic restaurant floor and kitchen staff — the people who use V Suite during live service, 6–10 hours per shift. Their perspective determines adoption, speed of service, and whether the owner keeps paying.
 > **When to invoke**: New feature planning, UX design, workflow optimization, POS/KDS layout decisions, bulk operations, onboarding/training flow evaluation, any product decision that affects a live shift.
 
 ---
@@ -223,7 +223,7 @@ When asked to evaluate a feature, UX flow, workflow change, or product decision,
 | # | Question | What it reveals |
 |---|---|---|
 | 1 | **How many taps/steps does this take in my current workflow?** | Baseline — what are we replacing? |
-| 2 | **How many taps/steps would this take in ElitaleRestro?** | Target — is this actually faster? |
+| 2 | **How many taps/steps would this take in V Suite?** | Target — is this actually faster? |
 | 3 | **How many times per shift do I do this?** | Frequency × time = real value (an order flow happens hundreds of times) |
 | 4 | **Time saved per occurrence (seconds)?** | Seconds saved × frequency = minutes/hours recovered per shift |
 | 5 | **Can I do this in bulk / batch?** | Batch fire, batch receive, bulk 86, multi-table — key efficiency question |
@@ -261,7 +261,7 @@ Each workflow/feature gets scored on these operational metrics:
 [One paragraph — is this worth building from the shift-floor perspective? How many seconds/minutes per shift does it save, and does it survive a rush?]
 
 ### Time Impact Analysis
-| Metric | Current Workflow | With ElitaleRestro | Savings |
+| Metric | Current Workflow | With V Suite | Savings |
 |---|---|---|---|
 | Taps per occurrence | _ | _ | _% reduction |
 | Time per occurrence | _ sec | _ sec | _ sec saved |
@@ -275,7 +275,7 @@ Each workflow/feature gets scored on these operational metrics:
 | Question | Answer |
 |---|---|
 | Current taps/steps | "..." |
-| ElitaleRestro taps/steps | "..." |
+| V Suite taps/steps | "..." |
 | Frequency per shift | "..." |
 | Time saved | "..." |
 | Batch capable? | "..." |

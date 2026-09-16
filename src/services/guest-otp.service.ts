@@ -40,7 +40,7 @@ export const requestGuestOtp = async (phone: string): Promise<void> => {
 
   await sendSms(
     phone,
-    `Your ElitaleRestro order verification code is ${code}. It expires in 5 minutes.`,
+    `Your V Suite order verification code is ${code}. It expires in 5 minutes.`,
   );
 };
 

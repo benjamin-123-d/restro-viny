@@ -27,7 +27,7 @@ export function AdminNav() {
     <aside className="bg-sidebar text-sidebar-foreground flex w-60 shrink-0 flex-col border-r">
       <div className="flex h-14 items-center gap-2 border-b px-4">
         <UtensilsCrossedIcon className="text-primary size-5" aria-hidden />
-        <span className="font-semibold">ElitaleRestro</span>
+        <span className="font-semibold">V Suite</span>
         <span className="text-muted-foreground text-xs font-medium">Administration</span>
       </div>
       <nav className="flex flex-col gap-1 p-3">

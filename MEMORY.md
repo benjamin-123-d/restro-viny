@@ -1,4 +1,4 @@
-# ElitaleRestro — Project Memory
+# V Suite — Project Memory
 
 > Accumulated decisions, completed work, and ongoing context. **Read at the start of every session.** Update at the end of significant sessions. Coding standards live in `AGENTS.md`.
 
@@ -6,7 +6,7 @@
 
 ## Project Snapshot
 
-- **ElitaleRestro** — restaurant management app: **orders + inventory + menu + tables + billing**.
+- **V Suite** — restaurant management app: **orders + inventory + menu + tables + billing**.
 - **Users:** restaurant owners/operators (see `buyer` agent) and floor/kitchen staff (see `staff` agent).
 - **Stage:** early scaffold. Prisma 7 wired up; first domain model (`User` = restaurant manager, **phone-primary**) with Zod validators + repository + service + a Vitest suite. Phone-first login UI in place (OTP backend not wired). Migration pending DB connectivity.
 
@@ -142,7 +142,7 @@ Next 16.2.10 · React 19.2.4 · TypeScript 5 · Tailwind v4 · shadcn/ui + `@bas
 - **Repository:** `repositories/user.repository.ts` — `createUser`, `findUserById/ByPhone/ByEmail`, `updateUser`.
 - **Service:** `services/user.service.ts` — `registerManager` (phone-unique), `getManagerById/ByPhone`, `addEmailToManager` (email-unique). Domain errors: `PHONE_ALREADY_REGISTERED`, `EMAIL_ALREADY_IN_USE`, `USER_NOT_FOUND`.
 - **Tests (Vitest):** added `vitest.config.ts` + `test`/`test:watch` scripts. 29 specs across validators/repo/service. `npm test` ✓, `tsc` ✓, `eslint` ✓.
-- **UI:** added shadcn `login-05` block (`npx shadcn add login-05`) and adapted `components/login-form.tsx` to **phone-first** (ElitaleRestro branding, `tel` input, client-side `phoneSchema` validation, “we’ll text a one-time code”). Removed email/social login. Submit handler has a `TODO` for the request-OTP server action.
+- **UI:** added shadcn `login-05` block (`npx shadcn add login-05`) and adapted `components/login-form.tsx` to **phone-first** (V Suite branding, `tel` input, client-side `phoneSchema` validation, “we’ll text a one-time code”). Removed email/social login. Submit handler has a `TODO` for the request-OTP server action.
 - **Blocked:** `prisma migrate dev` still fails `P1001`; the `users` table is defined + generated but not yet created in the DB.
 
 ### 2026-07-18 — Auth proxy (Next 16 middleware → proxy)
@@ -151,7 +151,7 @@ Next 16.2.10 · React 19.2.4 · TypeScript 5 · Tailwind v4 · shadcn/ui + `@bas
 - Until Auth.js sets the session cookie, **every non-`/login` route redirects to `/login`** (the requested default). `tsc` ✓, `eslint` ✓.
 
 ### 2026-07-18 — Login UI: fonts + phone country selector
-- **Fonts:** Inter (body) + Outfit (headings, auto-applied to `h1`–`h6`) + Geist Mono. Fixed `--font-sans` wiring bug (self-referenced undefined var → serif fallback). Tab title → “ElitaleRestro”.
+- **Fonts:** Inter (body) + Outfit (headings, auto-applied to `h1`–`h6`) + Geist Mono. Fixed `--font-sans` wiring bug (self-referenced undefined var → serif fallback). Tab title → “V Suite”.
 - **`phone-input.tsx`:** reusable phone field — shadcn `select` (Base UI) **country column** (flag + dial code) + national number `Input`, composing **E.164** via `libphonenumber-js`. Country is **auto-detected from the visitor's IP** (GeoJS `get.geojs.io`, client-side so it works in local dev), falling back to browser locale, then `IN`. Emits E.164 to the parent via an effect (so async country changes propagate). Wired into `login-form.tsx`.
 - Added deps: `libphonenumber-js`, shadcn `select`. `tsc` ✓, `eslint` ✓, visually verified (IP → India 🇮🇳 +91).
 

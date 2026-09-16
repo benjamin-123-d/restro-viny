@@ -2,7 +2,7 @@
   "name": "ElitaleRestro",
   "version": "0.1.0",
   "private": true,
-  "description": "ElitaleRestro — an open-source restaurant management platform (POS, KDS, orders, tables, inventory, billing).",
+  "description": "V Suite — an open-source restaurant management platform (POS, KDS, orders, tables, inventory, billing).",
   "license": "AGPL-3.0-only",
   "author": {
     "name": "Dharmendra Shah",

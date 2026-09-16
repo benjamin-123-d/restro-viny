@@ -1,4 +1,4 @@
-# Rebuilds Restro and refreshes the folder the owner actually runs
+# Rebuilds V Suite and refreshes the folder the owner actually runs
 # (C:\Users\HP\Downloads\restaurant), keeping what the build does not carry:
 # the .env, the launcher scripts, the database backups, and the native or
 # worker packages Next's file tracing only copies in part (sharp, Tesseract).
@@ -15,7 +15,7 @@ param(
 $ErrorActionPreference = "Stop"
 $source = Split-Path -Parent $PSScriptRoot
 
-Write-Host "Restro - deploiement local vers $Target" -ForegroundColor Cyan
+Write-Host "V Suite - deploiement local vers $Target" -ForegroundColor Cyan
 
 if (-not $SkipBuild) {
   Write-Host "1/5 Construction de l'application..."

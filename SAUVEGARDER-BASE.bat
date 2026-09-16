@@ -1,11 +1,11 @@
 @echo off
 chcp 65001 >nul
-title Restro - sauvegarde de la base
+title V Suite - sauvegarde de la base
 cd /d "%~dp0"
 setlocal enabledelayedexpansion
 
 echo ===============================================================
-echo    Restro - sauvegarde de la base de donnees
+echo    V Suite - sauvegarde de la base de donnees
 echo ===============================================================
 echo.
 echo    A faire AVANT de copier le dossier sur un autre ordinateur :

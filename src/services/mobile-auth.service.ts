@@ -165,7 +165,7 @@ export const requestMobileOtp = async (
 
   await sendSms(
     phone,
-    `Your ElitaleRestro verification code is ${code}. It expires in 5 minutes.`,
+    `Your V Suite verification code is ${code}. It expires in 5 minutes.`,
   );
 
   return {

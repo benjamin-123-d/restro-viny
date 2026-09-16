@@ -4,7 +4,7 @@
 
 ## Project Identity
 
-- **Name:** ElitaleRestro
+- **Name:** V Suite
 - **Purpose:** Restaurant Management app
 - **Stack:** Next.js 16 (App Router, RSC) · TypeScript 5.9+ · React 19 · Prisma 7 · PostgreSQL · Tailwind v4 · shadcn/ui
 

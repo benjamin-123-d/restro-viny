@@ -1,11 +1,11 @@
 @echo off
 chcp 65001 >nul
-title Restro - restauration de la base
+title V Suite - restauration de la base
 cd /d "%~dp0"
 setlocal enabledelayedexpansion
 
 echo ===============================================================
-echo    Restro - restauration de la base de donnees
+echo    V Suite - restauration de la base de donnees
 echo ===============================================================
 echo.
 echo    A faire sur le NOUVEL ordinateur, une fois PostgreSQL
@@ -65,6 +65,6 @@ if errorlevel 1 (
 )
 
 echo.
-echo Termine. Lancez DEMARRER.bat pour ouvrir Restro.
+echo Termine. Lancez DEMARRER.bat pour ouvrir V Suite.
 echo.
 pause

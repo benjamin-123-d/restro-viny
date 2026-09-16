@@ -74,7 +74,7 @@ export function AppSidebar({
               render={<a href="/dashboard" />}
             >
               <UtensilsCrossedIcon className="size-5!" />
-              <span className="text-base font-semibold">ElitaleRestro</span>
+              <span className="text-base font-semibold">V Suite</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

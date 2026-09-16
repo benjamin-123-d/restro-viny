@@ -1,5 +1,5 @@
-RESTRO — EMPORTER L'APPLICATION SUR UN AUTRE ORDINATEUR
-=======================================================
+V SUITE — EMPORTER L'APPLICATION SUR UN AUTRE ORDINATEUR
+========================================================
 
 L'application tient dans ce dossier, MAIS les données (menu, commandes,
 stock, achats, food cost) sont dans PostgreSQL, qui est installé à part.
@@ -45,7 +45,30 @@ SUR L'ORDINATEUR DE LA MAISON
 
 8. Double-cliquez sur DEMARRER.bat.
    Le navigateur s'ouvre sur http://localhost:3100. Laissez la fenêtre
-   noire ouverte tant que vous utilisez Restro.
+   noire ouverte tant que vous utilisez V Suite.
+
+
+PAR GITHUB PLUTÔT QUE PAR CLÉ USB
+---------------------------------
+
+Le code peut aussi passer par GitHub, ce qui évite de copier un gros dossier.
+Les DONNÉES, elles, ne passent jamais par GitHub : le dépôt est public, et la
+base contient vos clients et vos ventes.
+
+   Sur cet ordinateur :   git push origin main
+   Sur celui de la maison :
+      git clone <adresse du dépôt> V-Suite
+      cd V-Suite
+      npm install          (retélécharge les bibliothèques, ~1 Go, une fois)
+      copier le fichier .env à côté (il n'est pas dans le dépôt)
+      copier le fichier sauvegarde\restro-....dump (435 Ko : une clé USB, un
+      e-mail à soi-même, n'importe quoi fait l'affaire)
+      puis reprendre à l'étape 6 ci-dessus.
+
+Le dossier fait environ 1,2 Go à cause de « node_modules », qui n'est que des
+bibliothèques retéléchargeables. Sans lui, le projet pèse 35 Mo, et ce qui part
+sur GitHub pèse 9 Mo. Vous pouvez donc supprimer « node_modules » avant de
+copier le dossier sur une clé : « npm install » le refabrique à l'arrivée.
 
 
 BON À SAVOIR

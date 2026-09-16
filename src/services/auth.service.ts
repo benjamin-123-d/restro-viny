@@ -50,7 +50,7 @@ export const requestOtp = async (phone: string): Promise<void> => {
 
   await sendSms(
     phone,
-    `Your ElitaleRestro verification code is ${code}. It expires in 5 minutes.`,
+    `Your V Suite verification code is ${code}. It expires in 5 minutes.`,
   );
 };
 

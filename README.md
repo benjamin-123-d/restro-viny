@@ -1,4 +1,4 @@
-# ElitaleRestro
+# V Suite
 
 An open-source **restaurant management platform** — POS, kitchen display (KDS), orders & tables, inventory with recipe-based auto-depletion, GST-aware billing/invoicing, staff management, a manager analytics dashboard, and a public QR self-ordering flow for guests.
 

@@ -116,7 +116,7 @@ export function LoginForm({
         <span className="flex size-10 items-center justify-center rounded-md bg-primary/10 text-primary">
           <UtensilsCrossedIcon className="size-6" />
         </span>
-        <h1 className="text-xl font-bold">Connexion à ElitaleRestro</h1>
+        <h1 className="text-xl font-bold">Connexion à V Suite</h1>
         <FieldDescription>
           Run your restaurant&apos;s orders, inventory, and billing in one place.
         </FieldDescription>

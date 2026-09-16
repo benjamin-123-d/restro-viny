@@ -23,7 +23,7 @@ const fontMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ElitaleRestro",
+  title: "V Suite",
   description:
     "Commandes, stock, facturation et coût matière de votre restaurant, au même endroit.",
 };

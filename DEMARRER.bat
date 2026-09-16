@@ -1,14 +1,14 @@
 @echo off
-title Restro - Restaurant Viny
+title V Suite - Restaurant Viny
 cd /d "%~dp0"
 
 echo ===============================================================
-echo    Restro - demarrage du serveur
+echo    V Suite - demarrage du serveur
 echo ===============================================================
 echo.
 echo    Adresse : http://localhost:3100
 echo.
-echo    Laisse cette fenetre OUVERTE tant que tu utilises Restro.
+echo    Laisse cette fenetre OUVERTE tant que tu utilises V Suite.
 echo    Ctrl+C pour arreter.
 echo ===============================================================
 echo.

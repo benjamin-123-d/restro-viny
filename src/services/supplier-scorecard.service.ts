@@ -14,7 +14,7 @@ import type { SupplierScorecardDTO } from "@/types/purchasing";
 
 /**
  * ERPNext scores suppliers from hand-maintained criteria, variables and
- * weightings. Restro derives the three things a restaurant actually cares about
+ * weightings. V Suite derives the three things a restaurant actually cares about
  * straight from its own purchase history, so a scorecard is never stale and
  * never needs configuring:
  *

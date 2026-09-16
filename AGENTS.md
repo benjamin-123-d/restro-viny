@@ -4,7 +4,7 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-# ElitaleRestro — Agent Guide & Coding Standards
+# V Suite — Agent Guide & Coding Standards
 
 > **Single source of truth** for architecture, conventions, and coding standards. Read this before implementing, reviewing, or modifying code.
 > Also read `MEMORY.md` for current project state, decisions, and completed work.
@@ -14,7 +14,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 1. Project Identity
 
-- **Name:** ElitaleRestro
+- **Name:** V Suite
 - **Purpose:** Restaurant management platform — restaurant owners/operators run their business: **orders, inventory, menu, tables, and billing**.
 - **Users:**
   - **Owners / operators** — see the `buyer` agent in `.github/agents` (6 owner personas).
