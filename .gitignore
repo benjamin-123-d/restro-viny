@@ -52,3 +52,6 @@ restro-dev.log
 
 # local data backups (business data, never committed)
 backups/
+
+# sauvegardes de la base (donnees du restaurant, jamais sur GitHub)
+sauvegarde/
