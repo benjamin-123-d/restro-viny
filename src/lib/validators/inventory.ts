@@ -20,7 +20,7 @@ const optionalCost = z.coerce.number().nonnegative().max(10_000_000).optional();
 const optionalText = (max: number) => z.string().trim().max(max).optional();
 
 export const createStockItemSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(120),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(120),
   unit: stockUnitSchema,
   category: optionalText(60),
   openingOnHand: nonNegQty.default(0),
@@ -35,7 +35,7 @@ export type CreateStockItemInput = z.infer<typeof createStockItemSchema>;
 
 export const updateStockItemSchema = z.object({
   id: idSchema,
-  name: z.string().trim().min(1, "Name is required").max(120),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(120),
   unit: stockUnitSchema,
   category: optionalText(60),
   reorderLevel: optionalQty,
@@ -62,7 +62,7 @@ export type AdjustStockInput = z.infer<typeof adjustStockSchema>;
 export const bulkReceiveSchema = z.object({
   rows: z
     .array(z.object({ stockItemId: idSchema, quantity: positiveQty }))
-    .min(1, "Add at least one item"),
+    .min(1, "Ajoutez au moins un article."),
   note: optionalText(200),
 });
 export type BulkReceiveInput = z.infer<typeof bulkReceiveSchema>;
@@ -70,7 +70,7 @@ export type BulkReceiveInput = z.infer<typeof bulkReceiveSchema>;
 export const countStockSchema = z.object({
   rows: z
     .array(z.object({ stockItemId: idSchema, countedOnHand: nonNegQty }))
-    .min(1, "Nothing to count"),
+    .min(1, "Aucun article à compter."),
   note: optionalText(200),
 });
 export type CountStockInput = z.infer<typeof countStockSchema>;

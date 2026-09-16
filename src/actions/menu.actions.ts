@@ -132,6 +132,6 @@ export const uploadItemImageAction = async (
     });
     return success({ id: image.id, url: image.url });
   } catch (error) {
-    return failure(error instanceof Error ? error.message : "Upload failed");
+    return failure(error instanceof Error ? error.message : "L'envoi du fichier a échoué.");
   }
 };

@@ -139,7 +139,7 @@ export function LoginForm({
                 disabled={start.isPending}
               />
               <FieldDescription>
-                Enter your PIN, or we&apos;ll text you a one-time code.
+                Saisissez votre code PIN, ou recevez un code à usage unique par SMS.
               </FieldDescription>
               {error ? (
                 <FieldDescription className="text-destructive">

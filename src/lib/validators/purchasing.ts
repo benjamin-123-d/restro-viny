@@ -25,7 +25,7 @@ export const supplierPaymentModeSchema = z.enum([
 // -------------------------------------------------------- supplier group ---
 
 export const createSupplierGroupSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(80),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(80),
   defaultPaymentTermsDays: z.coerce.number().int().min(0).max(365).optional(),
   notes: optionalText(300),
 });
@@ -48,7 +48,7 @@ export type DeleteSupplierGroupInput = z.infer<
 // -------------------------------------------------------------- supplier ---
 
 const supplierFields = {
-  name: z.string().trim().min(1, "Name is required").max(140),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(140),
   supplierGroupId: idSchema.optional(),
   taxId: optionalText(40),
   contactPerson: optionalText(120),
@@ -93,7 +93,7 @@ export const setSupplierHoldSchema = z
     releaseDate: optionalDate,
   })
   .refine((v) => !v.onHold || v.holdType !== undefined, {
-    message: "Choose what the hold blocks",
+    message: "Choisissez ce que le blocage empêche.",
     path: ["holdType"],
   });
 export type SetSupplierHoldInput = z.infer<typeof setSupplierHoldSchema>;
@@ -120,8 +120,8 @@ export const createRfqSchema = z.object({
   requiredBy: optionalDate,
   message: optionalText(600),
   termsText: optionalText(2000),
-  items: z.array(rfqLineSchema).min(1, "Add at least one item"),
-  supplierIds: z.array(idSchema).min(1, "Invite at least one supplier"),
+  items: z.array(rfqLineSchema).min(1, "Ajoutez au moins un article."),
+  supplierIds: z.array(idSchema).min(1, "Choisissez au moins un fournisseur."),
 });
 export type CreateRfqInput = z.infer<typeof createRfqSchema>;
 
@@ -158,7 +158,7 @@ export const createSupplierQuotationSchema = z.object({
   discountAmount: money.default(0),
   notes: optionalText(600),
   termsText: optionalText(2000),
-  items: z.array(quotationLineSchema).min(1, "Add at least one item"),
+  items: z.array(quotationLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type CreateSupplierQuotationInput = z.infer<
   typeof createSupplierQuotationSchema
@@ -197,7 +197,7 @@ export const createPurchaseOrderSchema = z.object({
   roundTotal: z.boolean().default(false),
   notes: optionalText(600),
   termsText: optionalText(2000),
-  items: z.array(purchaseOrderLineSchema).min(1, "Add at least one item"),
+  items: z.array(purchaseOrderLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type CreatePurchaseOrderInput = z.infer<
   typeof createPurchaseOrderSchema
@@ -251,10 +251,10 @@ export const createPurchaseReceiptSchema = z
     postingDate: optionalDate,
     supplierDeliveryNote: optionalText(80),
     notes: optionalText(600),
-    items: z.array(receiptLineSchema).min(1, "Add at least one item"),
+    items: z.array(receiptLineSchema).min(1, "Ajoutez au moins un article."),
   })
   .refine((v) => v.items.some((i) => i.quantity > 0 || i.rejectedQuantity > 0), {
-    message: "Record a quantity on at least one line",
+    message: "Saisissez une quantité sur au moins une ligne.",
     path: ["items"],
   });
 export type CreatePurchaseReceiptInput = z.infer<
@@ -276,7 +276,7 @@ export const createPurchaseReturnSchema = z.object({
   purchaseReceiptId: idSchema,
   items: z
     .array(z.object({ purchaseReceiptItemId: idSchema, quantity: positiveQty }))
-    .min(1, "Choose what is going back"),
+    .min(1, "Choisissez ce qui repart."),
   notes: optionalText(600),
 });
 export type CreatePurchaseReturnInput = z.infer<
@@ -316,7 +316,7 @@ export const createPurchaseInvoiceSchema = z
     updateStock: z.boolean().default(false),
     notes: optionalText(600),
     termsText: optionalText(2000),
-    items: z.array(invoiceLineSchema).min(1, "Add at least one item"),
+    items: z.array(invoiceLineSchema).min(1, "Ajoutez au moins un article."),
     schedule: z.array(scheduleLineSchema).optional(),
   })
   .refine(
@@ -326,7 +326,7 @@ export const createPurchaseInvoiceSchema = z
       Math.abs(
         v.schedule.reduce((sum, s) => sum + s.invoicePortion, 0) - 100,
       ) < 0.01,
-    { message: "Instalments must add up to 100%", path: ["schedule"] },
+    { message: "Les échéances doivent faire 100 % au total.", path: ["schedule"] },
   );
 export type CreatePurchaseInvoiceInput = z.infer<
   typeof createPurchaseInvoiceSchema
@@ -364,7 +364,7 @@ export const createSupplierPaymentSchema = z
     (v) =>
       v.allocations.reduce((sum, a) => sum + a.amount, 0) <= v.amount + 0.01,
     {
-      message: "Allocated more than the payment amount",
+      message: "Le montant affecté dépasse le paiement.",
       path: ["allocations"],
     },
   )
@@ -372,7 +372,7 @@ export const createSupplierPaymentSchema = z
     (v) =>
       new Set(v.allocations.map((a) => a.purchaseInvoiceId)).size ===
       v.allocations.length,
-    { message: "The same invoice appears twice", path: ["allocations"] },
+    { message: "La même facture apparaît deux fois.", path: ["allocations"] },
   );
 export type CreateSupplierPaymentInput = z.infer<
   typeof createSupplierPaymentSchema

@@ -85,9 +85,9 @@ export function TableShareDialog({
 
         {!selfOrderEnabled ? (
           <p className="rounded-md bg-amber-50 p-2 text-xs text-amber-800">
-            Guest self-ordering is off. Turn it on in{" "}
+            La commande en ligne est désactivée. Activez-la dans{" "}
             <span className="font-medium">Réglages → Commande en ligne</span>{" "}
-            for this link to work.
+            pour que ce lien fonctionne.
           </p>
         ) : null}
 
@@ -105,7 +105,7 @@ export function TableShareDialog({
             <div className="bg-muted size-[200px] animate-pulse rounded-lg" />
           )}
           <p className="text-muted-foreground text-center text-xs">
-            Guests scan this to order for {table.label}.
+            Les clients scannent ce code pour commander à la {table.label}.
           </p>
         </div>
 

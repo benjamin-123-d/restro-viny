@@ -25,7 +25,7 @@ export const POST = async (req: NextRequest, ctx: Ctx): Promise<Response> => {
     const parsedAction = mobileOrderActionSchema.safeParse(actionId);
     if (!parsedAction.success) {
       return apiError(
-        new HttpError(400, "INVALID_ACTION", "Unknown order action."),
+        new HttpError(400, "INVALID_ACTION", "Action inconnue sur la commande."),
       );
     }
     const body: unknown = await req.json().catch(() => ({}));

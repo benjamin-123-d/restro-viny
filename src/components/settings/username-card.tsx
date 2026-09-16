@@ -86,7 +86,7 @@ export function UsernameCard({ username }: { readonly username: string }) {
             onClick={regenerate}
             disabled={regenerating || save.isPending}
           >
-            {regenerating ? "Generating…" : "Generate new"}
+            {regenerating ? "Génération…" : "En générer une nouvelle"}
           </Button>
         </div>
         <FieldDescription className={valid ? "" : "text-destructive"}>

@@ -38,3 +38,35 @@ export const MOVEMENT_LABELS: Record<StockMovementType, string> = {
   SALE_DEPLETION: "Vente",
   PRODUCTION: "Production",
 };
+
+/**
+ * Movements recorded before the app spoke French kept English reasons in the
+ * database; the history reads them back in French without rewriting history.
+ */
+const LEGACY_REASONS: Readonly<Record<string, string>> = {
+  "Physical count": "Comptage",
+  "Opening stock": "Stock de départ",
+  "Purchase receipt": "Réception",
+  "Purchase return": "Retour fournisseur",
+  "Purchase receipt cancelled": "Réception annulée",
+  "Purchase invoice": "Facture fournisseur",
+  "Purchase invoice cancelled": "Facture fournisseur annulée",
+  "Sales invoice": "Facture client",
+  "Sales invoice cancelled": "Facture client annulée",
+  "Sales return": "Retour client",
+  "Delivery note": "Bon de livraison",
+  "Delivery note cancelled": "Bon de livraison annulé",
+  "Stock reconciliation": "Comptage d'entrepôt",
+  "Stock entry": "Mouvement de stock",
+  "Stock entry cancelled": "Mouvement de stock annulé",
+  "Spoiled": "Avarié",
+  "Spill": "Renversé",
+  "Expired": "Date dépassée",
+  "Breakage": "Casse",
+  "Staff meal": "Repas du personnel",
+  "Order": "Commande",
+  "Order voided": "Commande annulée",
+};
+
+export const movementReasonLabel = (reason: string | null): string | null =>
+  reason == null ? null : (LEGACY_REASONS[reason] ?? reason);

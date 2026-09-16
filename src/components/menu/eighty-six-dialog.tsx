@@ -27,10 +27,10 @@ const REASONS = [
 ] as const
 
 const DURATIONS = [
-  { value: "eod", label: "Until end of day" },
+  { value: "eod", label: "Jusqu'à la fin du service" },
   { value: "2h", label: "For 2 hours" },
-  { value: "tomorrow", label: "Until tomorrow" },
-  { value: "manual", label: "Until I re-enable" },
+  { value: "tomorrow", label: "Jusqu'à demain" },
+  { value: "manual", label: "Jusqu'à ce que je le remette" },
 ] as const
 
 const resumeAtFor = (choice: string): Date | undefined => {
@@ -133,7 +133,7 @@ export function EightySixDialog({
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">For how long</span>
+            <span className="text-sm font-medium">Pendant combien de temps</span>
             <div className="flex flex-wrap gap-2">
               {DURATIONS.map((d) => (
                 <Chip
@@ -152,7 +152,7 @@ export function EightySixDialog({
               id="eightysix-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="e.g. paneer delivery delayed"
+              placeholder="ex. livraison de poisson en retard"
             />
           </Field>
           <DialogFooter>

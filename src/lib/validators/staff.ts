@@ -15,16 +15,16 @@ export const genderSchema = z.enum(["MALE", "FEMALE", "OTHER"]);
 const pinSchema = z
   .string()
   .trim()
-  .regex(/^\d{4,6}$/, "PIN must be 4–6 digits");
+  .regex(/^\d{4,6}$/, "Le code PIN fait 4 à 6 chiffres.");
 
 const optionalText = (max: number) => z.string().trim().max(max).optional();
 
 const profileFields = {
-  employeeCode: z.string().trim().min(1, "Employee ID is required").max(40),
-  name: z.string().trim().min(1, "Name is required").max(120),
+  employeeCode: z.string().trim().min(1, "Le matricule est obligatoire.").max(40),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(120),
   role: staffRoleSchema,
   status: staffStatusSchema.default("ACTIVE"),
-  phone: z.string().trim().min(1, "Phone is required").max(20),
+  phone: z.string().trim().min(1, "Le téléphone est obligatoire.").max(20),
   email: z.string().trim().email("Invalid email").max(160).optional(),
   addressLine1: optionalText(160),
   addressLine2: optionalText(160),
@@ -54,7 +54,7 @@ export type ResetPinInput = z.infer<typeof resetPinSchema>;
 
 export const staffLoginSchema = z.object({
   username: usernameSchema,
-  employeeCode: z.string().trim().min(1, "Employee ID is required").max(40),
+  employeeCode: z.string().trim().min(1, "Le matricule est obligatoire.").max(40),
   pin: pinSchema,
 });
 export type StaffLoginInput = z.infer<typeof staffLoginSchema>;

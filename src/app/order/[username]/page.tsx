@@ -36,7 +36,7 @@ export default async function OrderPage({
     return (
       <GuestNotice
         title={result.restaurantName}
-        message="Self-ordering isn't available here right now. Please ask a server to take your order."
+        message="La commande en ligne n'est pas disponible ici pour le moment. Demandez à un serveur de prendre votre commande."
       />
     );
   }
@@ -44,7 +44,7 @@ export default async function OrderPage({
     return (
       <GuestNotice
         title={result.restaurantName}
-        message="We couldn't find your table. Please scan the QR code on your table again, or ask a server."
+        message="Nous n'avons pas retrouvé votre table. Scannez à nouveau le QR code de la table, ou demandez à un serveur."
       />
     );
   }

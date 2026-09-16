@@ -119,7 +119,7 @@ export const createStockItem = async (
       stockItemId: item.id,
       type: "CORRECTION",
       delta: input.openingOnHand,
-      reason: "Opening stock",
+      reason: "Stock de départ",
       note: null,
       orderId: null,
       createdById: ctx.userId,

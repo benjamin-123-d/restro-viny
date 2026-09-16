@@ -42,7 +42,7 @@ export function useServerAction<TInput, TOutput>(
         }
       } else {
         options.onError?.(
-          result.error ?? "Something went wrong",
+          result.error ?? "Une erreur est survenue.",
           result.fieldErrors,
         );
       }

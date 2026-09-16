@@ -40,7 +40,7 @@ export const apiError = (err: unknown): NextResponse => {
   // Unknown error — log server-side, return generic 500.
   console.error("[api] Unhandled error:", err);
   return NextResponse.json(
-    { error: "Something went wrong", code: "INTERNAL" },
+    { error: "Une erreur est survenue.", code: "INTERNAL" },
     { status: 500 },
   );
 };

@@ -269,8 +269,8 @@ export const InvoiceDocument = ({
         {issuer.footerNote && <p className="mt-2">{issuer.footerNote}</p>}
         {isReprint && (
           <p className="mt-3 font-medium text-red-700">
-            This is a {meta.label.toLowerCase()} of invoice {invoice.number}. It
-            is not a second charge.
+            Ceci est un {meta.label.toLowerCase()} de la facture {invoice.number}.
+            Ce n&apos;est pas une seconde facturation.
           </p>
         )}
       </footer>

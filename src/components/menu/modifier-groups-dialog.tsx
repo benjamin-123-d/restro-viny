@@ -123,7 +123,7 @@ export function ModifierGroupsDialog({
               className="self-start"
               onClick={() => setEditing("new")}
             >
-              <PlusIcon className="size-4" /> New group
+              <PlusIcon className="size-4" /> Nouveau groupe
             </Button>
           </div>
         )}
@@ -260,7 +260,7 @@ function GroupForm({
             setMods((prev) => [...prev, { name: "", priceDelta: "" }])
           }
         >
-          <PlusIcon className="size-4" /> Add option
+          <PlusIcon className="size-4" /> Ajouter une option
         </Button>
       </div>
       <div className="flex justify-end gap-2">

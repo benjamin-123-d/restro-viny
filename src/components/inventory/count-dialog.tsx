@@ -58,11 +58,12 @@ export function CountDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="flex h-[85vh] max-h-[85vh] w-[95vw] flex-col sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Physical count</DialogTitle>
+          <DialogTitle>Comptage physique</DialogTitle>
         </DialogHeader>
         <p className="text-muted-foreground text-xs">
-          Enter what&apos;s actually on the shelf. Only changed rows are saved as
-          corrections.
+          Saisissez ce qu&apos;il y a vraiment sur l&apos;étagère. Seules les lignes
+          modifiées sont enregistrées comme corrections. Pour l&apos;écart de food cost,
+          comptez plutôt dans Food cost → Inventaire.
         </p>
         <Input
           value={search}
@@ -75,7 +76,7 @@ export function CountDialog({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{item.name}</p>
                 <p className="text-muted-foreground text-xs">
-                  System {item.onHand} {UNIT_LABELS[item.unit]}
+                  Théorique : {item.onHand} {UNIT_LABELS[item.unit]}
                 </p>
               </div>
               <Input

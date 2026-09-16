@@ -121,7 +121,7 @@ export function WaiterHome({
 
       <Button size="lg" className="h-14 w-full text-base" render={<Link href={`/u/${username}/order/new`} />}>
         <PlusIcon className="size-5" />
-        New order
+        Nouvelle commande
       </Button>
 
       <div className="flex flex-col gap-2">
@@ -130,7 +130,7 @@ export function WaiterHome({
         </h2>
         {openOrders.length === 0 ? (
           <p className="text-muted-foreground rounded-xl border border-dashed p-6 text-center text-sm">
-            No open orders. Tap “New order” to start one.
+            Aucune commande en cours. Touchez « Nouvelle commande » pour en ouvrir une.
           </p>
         ) : (
           <ul className="flex flex-col gap-2">

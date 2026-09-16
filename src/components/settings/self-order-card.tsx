@@ -61,9 +61,9 @@ export function SelfOrderCard({
           />
         </div>
         <FieldDescription>
-          Each table&apos;s QR links to{" "}
-          <span className="font-mono">/order/{username}?table=…</span>. Guests
-          verify their phone with a one-time code before their first order.
+          Le QR code de chaque table mène à{" "}
+          <span className="font-mono">/order/{username}?table=…</span>. Le client
+          confirme son numéro de téléphone par un code avant sa première commande.
         </FieldDescription>
       </CardContent>
     </Card>

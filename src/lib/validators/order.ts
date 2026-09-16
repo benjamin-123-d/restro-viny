@@ -37,13 +37,13 @@ export const createOrderSchema = z.object({
   customerAddress: z.string().trim().max(300).optional(),
   note: z.string().trim().max(300).optional(),
   idempotencyKey: z.string().trim().min(8).max(100),
-  items: z.array(cartLineSchema).min(1, "Add at least one item"),
+  items: z.array(cartLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
 
 export const addItemsSchema = z.object({
   orderId: idSchema,
-  items: z.array(cartLineSchema).min(1, "Add at least one item"),
+  items: z.array(cartLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type AddItemsInput = z.infer<typeof addItemsSchema>;
 
@@ -60,13 +60,13 @@ export type ServeLineInput = z.infer<typeof serveLineSchema>;
 export const voidLineSchema = z.object({
   orderId: idSchema,
   itemId: idSchema,
-  reason: z.string().trim().min(1, "Reason is required").max(200),
+  reason: z.string().trim().min(1, "Le motif est obligatoire.").max(200),
 });
 export type VoidLineInput = z.infer<typeof voidLineSchema>;
 
 export const voidOrderSchema = z.object({
   orderId: idSchema,
-  reason: z.string().trim().min(1, "Reason is required").max(200),
+  reason: z.string().trim().min(1, "Le motif est obligatoire.").max(200),
 });
 export type VoidOrderInput = z.infer<typeof voidOrderSchema>;
 
@@ -84,16 +84,16 @@ export const settleSchema = z
     discountType: discountTypeSchema.default("NONE"),
     discountValue: z.coerce.number().min(0).max(1_000_000).default(0),
     discountReason: z.string().trim().max(200).optional(),
-    payments: z.array(paymentSchema).min(1, "Add at least one payment"),
+    payments: z.array(paymentSchema).min(1, "Ajoutez au moins un paiement."),
   })
   .refine((s) => s.discountType === "NONE" || s.discountValue > 0, {
-    message: "Enter a discount value",
+    message: "Indiquez la remise.",
     path: ["discountValue"],
   });
 export type SettleInput = z.infer<typeof settleSchema>;
 
 export const settleTableSchema = z.object({
-  orderIds: z.array(idSchema).min(1, "Select at least one order"),
-  payments: z.array(paymentSchema).min(1, "Add at least one payment"),
+  orderIds: z.array(idSchema).min(1, "Choisissez au moins une commande."),
+  payments: z.array(paymentSchema).min(1, "Ajoutez au moins un paiement."),
 });
 export type SettleTableInput = z.infer<typeof settleTableSchema>;

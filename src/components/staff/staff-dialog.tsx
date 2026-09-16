@@ -228,7 +228,7 @@ export function StaffDialog({
                   type="email"
                   value={form.email}
                   onChange={set("email")}
-                  placeholder="Optional"
+                  placeholder="Facultatif"
                 />
               </Field>
               <Field className="col-span-2">

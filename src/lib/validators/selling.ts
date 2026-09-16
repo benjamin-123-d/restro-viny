@@ -22,7 +22,7 @@ export const salesPaymentModeSchema = z.enum([
 // ------------------------------------------------- customer group / territory ---
 
 export const createCustomerGroupSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(80),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(80),
   defaultPaymentTermsDays: z.coerce.number().int().min(0).max(365).optional(),
   defaultDiscountPercent: percent.optional(),
   notes: optionalText(300),
@@ -39,7 +39,7 @@ export type UpdateCustomerGroupInput = z.infer<
 >;
 
 export const createTerritorySchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(80),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(80),
   notes: optionalText(300),
 });
 export type CreateTerritoryInput = z.infer<typeof createTerritorySchema>;
@@ -55,7 +55,7 @@ export type EntityIdInput = z.infer<typeof entityIdSchema>;
 // -------------------------------------------------------------- customer ---
 
 const customerFields = {
-  name: z.string().trim().min(1, "Name is required").max(140),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(140),
   customerGroupId: idSchema.optional(),
   territoryId: idSchema.optional(),
   taxId: optionalText(40),
@@ -114,7 +114,7 @@ export const createSalesQuotationSchema = z.object({
   roundTotal: z.boolean().default(false),
   notes: optionalText(600),
   termsText: optionalText(2000),
-  items: z.array(salesLineSchema).min(1, "Add at least one item"),
+  items: z.array(salesLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type CreateSalesQuotationInput = z.infer<
   typeof createSalesQuotationSchema
@@ -129,7 +129,7 @@ export type UpdateSalesQuotationInput = z.infer<
 
 export const markQuotationLostSchema = z.object({
   id: idSchema,
-  lostReason: z.string().trim().min(1, "Say why it was lost").max(300),
+  lostReason: z.string().trim().min(1, "Indiquez le motif de la perte.").max(300),
 });
 export type MarkQuotationLostInput = z.infer<typeof markQuotationLostSchema>;
 
@@ -145,7 +145,7 @@ export const createSalesOrderSchema = z.object({
   roundTotal: z.boolean().default(false),
   notes: optionalText(600),
   termsText: optionalText(2000),
-  items: z.array(salesLineSchema).min(1, "Add at least one item"),
+  items: z.array(salesLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type CreateSalesOrderInput = z.infer<typeof createSalesOrderSchema>;
 
@@ -189,7 +189,7 @@ export const createDeliveryNoteSchema = z.object({
   driverName: optionalText(120),
   vehicleNo: optionalText(24),
   notes: optionalText(600),
-  items: z.array(deliveryLineSchema).min(1, "Add at least one item"),
+  items: z.array(deliveryLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type CreateDeliveryNoteInput = z.infer<typeof createDeliveryNoteSchema>;
 
@@ -202,7 +202,7 @@ export const createSalesReturnSchema = z.object({
   deliveryNoteId: idSchema,
   items: z
     .array(z.object({ deliveryNoteItemId: idSchema, quantity: positiveQty }))
-    .min(1, "Choose what is coming back"),
+    .min(1, "Choisissez ce qui revient."),
   notes: optionalText(600),
 });
 export type CreateSalesReturnInput = z.infer<typeof createSalesReturnSchema>;
@@ -241,7 +241,7 @@ export const createSalesInvoiceSchema = z
     updateStock: z.boolean().default(false),
     notes: optionalText(600),
     termsText: optionalText(2000),
-    items: z.array(invoiceLineSchema).min(1, "Add at least one item"),
+    items: z.array(invoiceLineSchema).min(1, "Ajoutez au moins un article."),
     schedule: z.array(scheduleLineSchema).optional(),
   })
   .refine(
@@ -251,7 +251,7 @@ export const createSalesInvoiceSchema = z
       Math.abs(
         v.schedule.reduce((sum, s) => sum + s.invoicePortion, 0) - 100,
       ) < 0.01,
-    { message: "Instalments must add up to 100%", path: ["schedule"] },
+    { message: "Les échéances doivent faire 100 % au total.", path: ["schedule"] },
   );
 export type CreateSalesInvoiceInput = z.infer<typeof createSalesInvoiceSchema>;
 
@@ -280,13 +280,13 @@ export const createCustomerPaymentSchema = z
   .refine(
     (v) =>
       v.allocations.reduce((sum, a) => sum + a.amount, 0) <= v.amount + 0.01,
-    { message: "Allocated more than the payment", path: ["allocations"] },
+    { message: "Le montant affecté dépasse le paiement.", path: ["allocations"] },
   )
   .refine(
     (v) =>
       new Set(v.allocations.map((a) => a.salesInvoiceId)).size ===
       v.allocations.length,
-    { message: "The same invoice appears twice", path: ["allocations"] },
+    { message: "La même facture apparaît deux fois.", path: ["allocations"] },
   );
 export type CreateCustomerPaymentInput = z.infer<
   typeof createCustomerPaymentSchema

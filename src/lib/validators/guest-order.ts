@@ -10,7 +10,7 @@ const usernameSchema = z.string().trim().min(1).max(40);
 const otpCodeSchema = z
   .string()
   .trim()
-  .regex(/^\d{6}$/, "Enter the 6-digit code");
+  .regex(/^\d{6}$/, "Saisissez le code à 6 chiffres.");
 
 export const guestRequestOtpSchema = z.object({
   username: usernameSchema,
@@ -32,6 +32,6 @@ export const guestPlaceOrderSchema = z.object({
   tableId: idSchema,
   idempotencyKey: z.string().trim().min(8).max(100),
   note: z.string().trim().max(300).optional(),
-  items: z.array(cartLineSchema).min(1, "Add at least one item"),
+  items: z.array(cartLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type GuestPlaceOrderInput = z.infer<typeof guestPlaceOrderSchema>;

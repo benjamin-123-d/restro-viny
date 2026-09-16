@@ -87,7 +87,7 @@ export const regenerateUsernameAction = async (): Promise<
     return success(await regenerateUsername(ctx.restaurantId));
   } catch (error) {
     return failure<string>(
-      error instanceof Error ? error.message : "Something went wrong",
+      error instanceof Error ? error.message : "Une erreur est survenue.",
     );
   }
 };
@@ -129,7 +129,7 @@ const runFileUpload = async <R>(
       }),
     );
   } catch (error) {
-    return failure<R>(error instanceof Error ? error.message : "Upload failed");
+    return failure<R>(error instanceof Error ? error.message : "L'envoi du fichier a échoué.");
   }
 };
 
@@ -145,7 +145,7 @@ const runOwned = async (
     return success(undefined);
   } catch (error) {
     return failure(
-      error instanceof Error ? error.message : "Something went wrong",
+      error instanceof Error ? error.message : "Une erreur est survenue.",
     );
   }
 };
@@ -185,7 +185,7 @@ export const uploadVideoAction = async (
     );
     return success(undefined);
   } catch (error) {
-    return failure(error instanceof Error ? error.message : "Upload failed");
+    return failure(error instanceof Error ? error.message : "L'envoi du fichier a échoué.");
   }
 };
 

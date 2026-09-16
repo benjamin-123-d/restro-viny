@@ -62,7 +62,7 @@ export const uploadStaffPhotoAction = async (
       }),
     );
   } catch (error) {
-    return failure(error instanceof Error ? error.message : "Upload failed");
+    return failure(error instanceof Error ? error.message : "L'envoi du fichier a échoué.");
   }
 };
 
@@ -78,7 +78,7 @@ export const removeStaffPhotoAction = async (
     return success(undefined);
   } catch (error) {
     return failure(
-      error instanceof Error ? error.message : "Something went wrong",
+      error instanceof Error ? error.message : "Une erreur est survenue.",
     );
   }
 };

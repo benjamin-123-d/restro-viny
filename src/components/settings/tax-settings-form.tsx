@@ -143,14 +143,14 @@ export function TaxSettingsForm({ profile }: { profile: TaxProfileDTO }) {
                 </div>
                 {type === "COMPOSITION" ? (
                   <p className="text-muted-foreground text-xs">
-                    Composition scheme: GST isn&apos;t charged separately on the
-                    bill — prices are treated as inclusive.
+                    Régime au forfait : la GST n&apos;est pas facturée à part sur
+                    l&apos;addition — les prix sont considérés comme toutes taxes comprises.
                   </p>
                 ) : null}
               </>
             ) : (
               <p className="text-muted-foreground text-sm">
-                No GST will be charged. Menu items show &quot;No GST&quot;.
+                Aucune GST ne sera facturée. Les plats affichent « Sans GST ».
               </p>
             )}
 

@@ -19,7 +19,7 @@ export function LogoUploader({ logoUrl }: { readonly logoUrl: string | null }) {
   const remove = async () => {
     const result = await removeLogoAction();
     if (result.success) {
-      toast.success("Logo removed");
+      toast.success("Logo retiré");
       router.refresh();
     } else {
       toast.error(result.error ?? "Échec");

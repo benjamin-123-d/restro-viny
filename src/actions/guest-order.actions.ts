@@ -87,7 +87,7 @@ export const guestMyOrdersAction = async (): Promise<
     );
   } catch (error) {
     return failure<GuestOrderSummaryDTO[]>(
-      error instanceof Error ? error.message : "Something went wrong",
+      error instanceof Error ? error.message : "Une erreur est survenue.",
     );
   }
 };

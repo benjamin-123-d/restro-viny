@@ -40,7 +40,7 @@ export function ReasonDialog({
             id="reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="Why?"
+            placeholder="Pourquoi ?"
             rows={2}
             autoFocus
           />

@@ -186,7 +186,7 @@ export function StockItemDialog({
               id="s-supplier"
               value={supplier}
               onChange={(e) => setSupplier(e.target.value)}
-              placeholder="Optional"
+              placeholder="Facultatif"
             />
           </Field>
           <Field>

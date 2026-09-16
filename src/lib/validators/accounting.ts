@@ -37,10 +37,10 @@ const accountFields = {
   code: z
     .string()
     .trim()
-    .min(1, "Give the account a code")
+    .min(1, "Donnez un code au compte.")
     .max(20)
-    .regex(/^[A-Za-z0-9.-]+$/, "Use letters, digits, dots or dashes"),
-  name: z.string().trim().min(1, "Give the account a name").max(120),
+    .regex(/^[A-Za-z0-9.-]+$/, "Utilisez des lettres, des chiffres, des points ou des tirets."),
+  name: z.string().trim().min(1, "Donnez un nom au compte.").max(120),
   rootType: accountRootTypeSchema,
   accountType: accountSubTypeSchema.default("OTHER"),
   parentId: idSchema.optional(),
@@ -70,11 +70,11 @@ const journalLineSchema = z
     description: optionalText(200),
   })
   .refine((l) => !(l.debit > 0 && l.credit > 0), {
-    message: "A line cannot be both a debit and a credit",
+    message: "Une ligne ne peut pas être au débit et au crédit à la fois.",
     path: ["credit"],
   })
   .refine((l) => l.debit > 0 || l.credit > 0, {
-    message: "Enter an amount",
+    message: "Indiquez un montant.",
     path: ["debit"],
   });
 
@@ -83,7 +83,7 @@ export const createJournalSchema = z
     postingDate: z.coerce.date().optional(),
     reference: optionalText(80),
     narration: optionalText(600),
-    lines: z.array(journalLineSchema).min(2, "A journal needs at least two lines"),
+    lines: z.array(journalLineSchema).min(2, "Une écriture demande au moins deux lignes."),
   })
   .refine(
     (v) => {
@@ -91,7 +91,7 @@ export const createJournalSchema = z
       const credit = v.lines.reduce((s, l) => s + l.credit, 0);
       return Math.abs(debit - credit) < 0.005;
     },
-    { message: "Debits and credits must be equal", path: ["lines"] },
+    { message: "Le total des débits doit être égal à celui des crédits.", path: ["lines"] },
   );
 export type CreateJournalInput = z.infer<typeof createJournalSchema>;
 

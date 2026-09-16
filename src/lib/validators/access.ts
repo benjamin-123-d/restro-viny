@@ -19,7 +19,7 @@ const permissionRowSchema = z.object({
 });
 
 const roleFields = {
-  name: z.string().trim().min(1, "Give the role a name").max(60),
+  name: z.string().trim().min(1, "Donnez un nom au rôle.").max(60),
   /** Hex colour for the member badge. */
   color: z
     .string()
@@ -55,11 +55,11 @@ export const inviteMemberSchema = z.object({
   handle: z
     .string()
     .trim()
-    .min(3, "Enter a phone number or email")
+    .min(3, "Indiquez un téléphone ou un e-mail.")
     .max(160)
     .refine(
       (v) => /^\+[1-9]\d{7,14}$/.test(v) || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v),
-      { message: "Enter a phone in international format, or an email" },
+      { message: "Indiquez un téléphone au format international, ou un e-mail." },
     ),
   displayName: optionalText(80),
   roleIds: z.array(idSchema).max(20).optional(),

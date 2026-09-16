@@ -125,19 +125,19 @@ export function MenuManager({
         />
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => setGroupsOpen(true)}>
-            <SlidersHorizontalIcon className="size-4" /> Add-ons
+            <SlidersHorizontalIcon className="size-4" /> Suppléments
           </Button>
           <Button
             variant="outline"
             onClick={() => setCategoryDialog({ open: true, category: null })}
           >
-            <FolderPlusIcon className="size-4" /> New category
+            <FolderPlusIcon className="size-4" /> Nouvelle catégorie
           </Button>
           <Button
             onClick={() => setItemDialog({ open: true, item: null })}
             disabled={menu.categories.length === 0}
           >
-            <PlusIcon className="size-4" /> New item
+            <PlusIcon className="size-4" /> Nouveau plat
           </Button>
         </div>
       </div>
@@ -318,7 +318,7 @@ function ItemCard({
           <div className="mt-1 flex flex-wrap gap-1">
             {item.available ? (
               <Badge variant="outline" className="gap-1 text-green-700">
-                <BadgeCheckIcon className="size-3" /> Available
+                <BadgeCheckIcon className="size-3" /> Disponible
               </Badge>
             ) : (
               <Badge variant="destructive">

@@ -5,8 +5,8 @@ import { idSchema, nameSchema } from "@/lib/validators/shared";
 /** Money value from a form field (coerced from string), 2-decimal rupees. */
 const priceSchema = z.coerce
   .number()
-  .nonnegative("Price must be 0 or more")
-  .max(1_000_000, "Price is too large");
+  .nonnegative("Le prix ne peut pas être négatif.")
+  .max(1_000_000, "Ce prix est trop élevé.");
 
 /** GST percentage (0–100). */
 const gstRateSchema = z.coerce
@@ -98,7 +98,7 @@ const modifierGroupShape = {
   maxSelect: z.coerce.number().int().min(1).default(1),
   isRequired: z.boolean().default(false),
   sortOrder: sortOrderSchema,
-  modifiers: z.array(modifierSchema).min(1, "Add at least one option").max(50),
+  modifiers: z.array(modifierSchema).min(1, "Ajoutez au moins une option.").max(50),
 };
 
 const maxAtLeastMin = (g: { minSelect: number; maxSelect: number }): boolean =>
@@ -108,9 +108,9 @@ const maxWithinOptions = (g: {
   modifiers: readonly unknown[];
 }): boolean => g.maxSelect <= g.modifiers.length;
 
-const MIN_MAX_MSG = { message: "Max select must be ≥ min select", path: ["maxSelect"] };
+const MIN_MAX_MSG = { message: "Le maximum doit être supérieur ou égal au minimum.", path: ["maxSelect"] };
 const MAX_OPTIONS_MSG = {
-  message: "Max select can't exceed the number of options",
+  message: "Le maximum ne peut pas dépasser le nombre d'options.",
   path: ["maxSelect"],
 };
 
@@ -136,7 +136,7 @@ export const disableItemSchema = z.object({
   itemId: idSchema,
   reason: disable86ReasonSchema,
   note: z.string().trim().max(200).optional(),
-  /** When the item should auto-return; omit for "until I turn it back on". */
+  /** When the item should auto-return; omit for "jusqu'à ce que je le remette". */
   resumeAt: z.coerce.date().optional(),
 });
 export type DisableItemInput = z.infer<typeof disableItemSchema>;

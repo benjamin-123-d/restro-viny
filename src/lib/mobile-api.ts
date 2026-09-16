@@ -41,78 +41,78 @@ const errorMap: Record<
   [MOBILE_USER_NOT_FOUND]: {
     status: 404,
     code: "USER_NOT_FOUND",
-    message: "No account is registered on this number.",
+    message: "Aucun compte n'est enregistré sur ce numéro.",
   },
   [MOBILE_MULTI_RESTAURANT_UNSUPPORTED]: {
     status: 409,
     code: "MULTI_RESTAURANT_UNSUPPORTED",
     message:
-      "This phone works at more than one restaurant. Please contact your manager.",
+      "Ce téléphone est rattaché à plusieurs restaurants. Contactez votre responsable.",
   },
   [MOBILE_OTP_RATE_LIMITED]: {
     status: 429,
     code: "RATE_LIMITED",
-    message: "Please wait a moment before requesting another code.",
+    message: "Patientez un instant avant de demander un nouveau code.",
   },
   [MOBILE_OTP_EXPIRED]: {
     status: 410,
     code: "OTP_EXPIRED",
-    message: "That code expired. Send a new one.",
+    message: "Ce code a expiré. Demandez-en un nouveau.",
   },
   [MOBILE_OTP_INVALID]: {
     status: 400,
     code: "INVALID_CODE",
-    message: "Wrong code. Try again.",
+    message: "Code incorrect. Réessayez.",
   },
   [MOBILE_OTP_LOCKED]: {
     status: 429,
     code: "OTP_LOCKED",
-    message: "Too many attempts. Please try again later.",
+    message: "Trop de tentatives. Réessayez plus tard.",
   },
   [MOBILE_PIN_INVALID]: {
     status: 400,
     code: "INVALID_PIN",
-    message: "Wrong PIN. Try again.",
+    message: "Code PIN incorrect. Réessayez.",
   },
   [MOBILE_PIN_LOCKED]: {
     status: 423,
     code: "PIN_LOCKED",
-    message: "PIN locked. Sign in with a code or ask your manager.",
+    message: "Code PIN bloqué. Connectez-vous avec un code reçu par SMS, ou demandez à votre responsable.",
   },
   [MOBILE_PIN_NOT_SET]: {
     status: 403,
     code: "PIN_NOT_SET",
-    message: "This account has no PIN yet. Sign in with a code.",
+    message: "Ce compte n'a pas encore de code PIN. Connectez-vous avec un code reçu par SMS.",
   },
   [MOBILE_ORDER_NOT_FOUND]: {
     status: 404,
     code: "ORDER_NOT_FOUND",
-    message: "That order does not exist.",
+    message: "Cette commande n'existe pas.",
   },
   [MOBILE_ORDER_NOT_ALLOWED]: {
     status: 403,
     code: "NOT_ALLOWED",
-    message: "You cannot access this order.",
+    message: "Vous n'avez pas accès à cette commande.",
   },
   [MOBILE_ORDER_INVALID_TRANSITION]: {
     status: 409,
     code: "INVALID_TRANSITION",
-    message: "The order is not in a state that allows this action.",
+    message: "Cette commande n'est pas dans un état qui permet cette action.",
   },
   [MOBILE_ORDER_NO_RESTAURANT]: {
     status: 403,
     code: "NO_RESTAURANT",
-    message: "No restaurant is linked to your account.",
+    message: "Aucun restaurant n'est associé à votre compte.",
   },
   [MOBILE_ORDER_DEDUPE]: {
     status: 200,
     code: "DEDUPE_COLLISION",
-    message: "This request was already applied.",
+    message: "Cette demande a déjà été prise en compte.",
   },
   [MOBILE_ORDER_FORBIDDEN_ROLE]: {
     status: 403,
     code: "FORBIDDEN_ROLE",
-    message: "Your role cannot perform this action. Ask a manager.",
+    message: "Votre rôle ne permet pas cette action. Demandez à un responsable.",
   },
 };
 
@@ -124,7 +124,7 @@ export const toMobileHttpError = (err: unknown): HttpError => {
       return new HttpError(entry.status, entry.code, entry.message);
     }
   }
-  return new HttpError(500, "INTERNAL", "Something went wrong.");
+  return new HttpError(500, "INTERNAL", "Une erreur est survenue.");
 };
 const toHttpError = toMobileHttpError;
 

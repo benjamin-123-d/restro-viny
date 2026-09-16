@@ -33,7 +33,7 @@ export function useImageUpload(
       toast.success(successMessage);
       router.refresh();
     } else {
-      toast.error(result.error ?? "Upload failed");
+      toast.error(result.error ?? "L'envoi du fichier a échoué.");
     }
   };
 

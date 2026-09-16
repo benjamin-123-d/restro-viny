@@ -83,7 +83,7 @@ export function VideosManager({
                       rel="noreferrer"
                       className="bg-muted/40 text-muted-foreground flex aspect-video w-full items-center justify-center gap-2 text-sm"
                     >
-                      <PlayIcon className="size-5" /> Open video
+                      <PlayIcon className="size-5" /> Voir la vidéo
                     </a>
                   )}
                   <button
@@ -133,7 +133,7 @@ export function VideosManager({
               }
               disabled={!url.trim() || addLink.isPending}
             >
-              <LinkIcon className="size-4" /> Add link
+              <LinkIcon className="size-4" /> Ajouter un lien
             </Button>
           </div>
           <div>

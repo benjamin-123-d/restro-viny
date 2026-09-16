@@ -14,7 +14,7 @@ export type StockDocIdInput = z.infer<typeof stockDocIdSchema>;
 // ------------------------------------------------------------ warehouse ---
 
 const warehouseFields = {
-  name: z.string().trim().min(1, "Name is required").max(120),
+  name: z.string().trim().min(1, "Le nom est obligatoire.").max(120),
   code: optionalText(20),
   parentId: idSchema.optional(),
   isGroup: z.boolean().default(false),
@@ -39,7 +39,7 @@ export type UpdateWarehouseInput = z.infer<typeof updateWarehouseSchema>;
 export const createBatchSchema = z.object({
   stockItemId: idSchema,
   warehouseId: idSchema.optional(),
-  batchNo: z.string().trim().min(1, "Batch number is required").max(60),
+  batchNo: z.string().trim().min(1, "Le numéro de lot est obligatoire.").max(60),
   expiryDate: optionalDate,
   manufactureDate: optionalDate,
   quantity: nonNegQty.default(0),
@@ -72,7 +72,7 @@ export const createMaterialRequestSchema = z.object({
   transactionDate: optionalDate,
   requiredBy: optionalDate,
   notes: optionalText(600),
-  items: z.array(materialRequestLineSchema).min(1, "Add at least one item"),
+  items: z.array(materialRequestLineSchema).min(1, "Ajoutez au moins un article."),
 });
 export type CreateMaterialRequestInput = z.infer<
   typeof createMaterialRequestSchema
@@ -125,7 +125,7 @@ export const createStockEntrySchema = z
     postingDate: optionalDate,
     reason: optionalText(120),
     notes: optionalText(600),
-    items: z.array(stockEntryLineSchema).min(1, "Add at least one item"),
+    items: z.array(stockEntryLineSchema).min(1, "Ajoutez au moins un article."),
   })
   .superRefine((v, ctx) => {
     v.items.forEach((item, index) => {
@@ -155,7 +155,7 @@ export const createStockEntrySchema = z
       ) {
         ctx.addIssue({
           code: "custom",
-          message: "A transfer must move between two different warehouses",
+          message: "Un transfert doit aller d'un entrepôt vers un autre.",
           path: ["items", index, "toWarehouseId"],
         });
       }
@@ -176,7 +176,7 @@ export const createStockReconciliationSchema = z.object({
   postingDate: optionalDate,
   reason: optionalText(120),
   notes: optionalText(600),
-  items: z.array(reconciliationLineSchema).min(1, "Nothing to count"),
+  items: z.array(reconciliationLineSchema).min(1, "Aucun article à compter."),
 });
 export type CreateStockReconciliationInput = z.infer<
   typeof createStockReconciliationSchema

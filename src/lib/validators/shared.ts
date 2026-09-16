@@ -6,7 +6,7 @@ export const phoneSchema = z
   .trim()
   .regex(
     /^\+[1-9]\d{7,14}$/,
-    "Enter phone in international format, e.g. +919876543210",
+    "Indiquez le téléphone au format international, par exemple +33612345678.",
   );
 
 /** Normalised (trimmed + lowercased) email address. */
@@ -14,7 +14,7 @@ export const emailSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .pipe(z.email("Enter a valid email address"));
+  .pipe(z.email("Indiquez une adresse e-mail valide."));
 
 /** Non-empty identifier. */
 export const idSchema = z.string().min(1, "Invalid id");
@@ -23,5 +23,5 @@ export const idSchema = z.string().min(1, "Invalid id");
 export const nameSchema = z
   .string()
   .trim()
-  .min(1, "Name is required")
-  .max(120, "Name must be 120 characters or fewer");
+  .min(1, "Le nom est obligatoire.")
+  .max(120, "Le nom fait 120 caractères au maximum.");

@@ -37,7 +37,7 @@ import { ImageManager } from "./image-manager"
 type VariantRow = { name: string; price: string }
 
 const DIETARY = [
-  { value: "NONE", label: "Not set" },
+  { value: "NONE", label: "Non précisé" },
   { value: "VEG", label: "Végétarien" },
   { value: "NON_VEG", label: "Viande / poisson" },
   { value: "EGG", label: "Contient des œufs" },
@@ -313,7 +313,7 @@ export function ItemDialog({
                 setVariants((prev) => [...prev, { name: "", price: "" }])
               }
             >
-              <PlusIcon className="size-4" /> Add size
+              <PlusIcon className="size-4" /> Ajouter une taille
             </Button>
           </div>
 

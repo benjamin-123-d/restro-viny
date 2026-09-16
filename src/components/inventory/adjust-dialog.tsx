@@ -109,7 +109,7 @@ export function AdjustDialog({
               id="adj-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Optional"
+              placeholder="Facultatif"
             />
           </Field>
         </div>

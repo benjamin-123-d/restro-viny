@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { idSchema } from "@/lib/validators/shared";
 
-const labelSchema = z.string().trim().min(1, "Label is required").max(40);
+const labelSchema = z.string().trim().min(1, "Le libellé est obligatoire.").max(40);
 const seatsSchema = z.coerce.number().int().min(1).max(99).optional();
 const sectionSchema = z.string().trim().max(40).optional();
 

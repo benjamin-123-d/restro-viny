@@ -86,7 +86,7 @@ describe("createStockItem", () => {
     } as never);
 
     expect(applyMovement).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "CORRECTION", delta: 8, reason: "Opening stock" }),
+      expect.objectContaining({ type: "CORRECTION", delta: 8, reason: "Stock de départ" }),
     );
   });
 
@@ -131,7 +131,7 @@ describe("adjust / bulk / count", () => {
       stockItemId: "s1",
       type: "WASTE",
       quantity: 3,
-      reason: "Spoiled",
+      reason: "Avarié",
     });
 
     expect(applyMovement).toHaveBeenCalledWith(

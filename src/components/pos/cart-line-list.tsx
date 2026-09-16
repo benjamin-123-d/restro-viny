@@ -90,7 +90,7 @@ export function CartLineList({
               className="text-destructive h-7 px-2 text-xs"
               onClick={() => onRemove(line.key)}
             >
-              Remove
+              Retirer
             </Button>
           </div>
         </li>

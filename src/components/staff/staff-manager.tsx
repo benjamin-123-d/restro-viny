@@ -195,11 +195,11 @@ export function StaffManager({ staff }: { readonly staff: StaffDTO[] }) {
         <Dialog open onOpenChange={(open) => !open && setDeleteTarget(null)}>
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
-              <DialogTitle>Remove {deleteTarget.name}?</DialogTitle>
+              <DialogTitle>Retirer {deleteTarget.name} ?</DialogTitle>
             </DialogHeader>
             <p className="text-muted-foreground text-sm">
-              They&apos;ll no longer appear in the staff list. You can re-add them
-              later with the same employee ID.
+              Cette personne n&apos;apparaîtra plus dans la liste du personnel. Vous
+              pourrez la réinscrire plus tard avec le même matricule.
             </p>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setDeleteTarget(null)}>

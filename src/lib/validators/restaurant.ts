@@ -24,7 +24,7 @@ export const updateTaxProfileSchema = z
       .string()
       .trim()
       .toUpperCase()
-      .regex(/^[0-9A-Z]{15}$/, "GSTIN must be 15 characters")
+      .regex(/^[0-9A-Z]{15}$/, "Le GSTIN compte 15 caractères.")
       .optional(),
     sacCode: z.string().trim().max(10).optional(),
   })
@@ -32,7 +32,7 @@ export const updateTaxProfileSchema = z
     (v) =>
       v.gstRegistrationType === "UNREGISTERED" ||
       (v.serviceGstRate != null && v.serviceGstRate > 0),
-    { message: "Enter the GST rate (e.g. 5)", path: ["serviceGstRate"] },
+    { message: "Indiquez le taux de GST (par exemple 5).", path: ["serviceGstRate"] },
   );
 
 export type UpdateTaxProfileInput = z.infer<typeof updateTaxProfileSchema>;
@@ -122,7 +122,7 @@ const optionalText = (max: number) => z.string().trim().max(max).optional();
 
 export const updateProfileSchema = z
   .object({
-    name: z.string().trim().min(1, "Name is required").max(120),
+    name: z.string().trim().min(1, "Le nom est obligatoire.").max(120),
     legalName: optionalText(160),
     tagline: optionalText(120),
     brandColor: z
@@ -147,7 +147,7 @@ export const updateProfileSchema = z
     fssaiLicense: z
       .string()
       .trim()
-      .regex(/^\d{14}$/, "FSSAI licence is 14 digits")
+      .regex(/^\d{14}$/, "La licence FSSAI compte 14 chiffres.")
       .optional(),
     fssaiExpiry: z.coerce.date().optional(),
     panNumber: z
@@ -164,7 +164,7 @@ export const updateProfileSchema = z
   })
   .refine(
     (v) => v.serviceDineIn || v.serviceTakeaway || v.serviceDelivery,
-    { message: "Enable at least one service option", path: ["serviceDineIn"] },
+    { message: "Activez au moins un mode de service.", path: ["serviceDineIn"] },
   )
   .refine(
     (v) =>
@@ -174,7 +174,7 @@ export const updateProfileSchema = z
         DELIVERY: v.serviceDelivery,
       })[v.defaultOrderType],
     {
-      message: "The default must be an enabled service option",
+      message: "Le mode par défaut doit faire partie des modes activés.",
       path: ["defaultOrderType"],
     },
   );
@@ -185,7 +185,7 @@ export const removeGalleryImageSchema = z.object({ imageId: idSchema });
 export type RemoveGalleryImageInput = z.infer<typeof removeGalleryImageSchema>;
 
 export const addVideoLinkSchema = z.object({
-  url: z.string().trim().url("Enter a valid video link").max(500),
+  url: z.string().trim().url("Indiquez un lien vidéo valide.").max(500),
   caption: optionalText(120),
 });
 export type AddVideoLinkInput = z.infer<typeof addVideoLinkSchema>;

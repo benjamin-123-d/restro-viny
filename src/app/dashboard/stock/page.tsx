@@ -1,3 +1,4 @@
+import { HelpBox } from "@/components/forms/help-box";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { formatCurrency } from "@/lib/format";
@@ -81,6 +82,20 @@ export default async function StockPage() {
       <PageHeader
         title="Stock"
         description="Entrepôts et emplacements, lots et dates limites, demandes d'articles, mouvements et comptages."
+      />
+
+      <HelpBox
+        defaultOpen={warehouses.length === 0}
+        title="À quoi sert ce module, et quand l'utiliser"
+        steps={[
+          "Stock sert quand la marchandise est rangée à plusieurs endroits : réserve, cave, deuxième établissement — ou quand vous suivez des lots et des dates limites.",
+          "Inventaire (menu de gauche) suffit si tout est rangé au même endroit : les quantités, les alertes et le réassort.",
+          "Food cost → Inventaire est le comptage qui calcule votre écart en euros. C'est celui à faire en fin de mois.",
+        ]}
+        tips={[
+          "Les trois écrans travaillent sur les mêmes articles et le même stock : un article créé ici existe partout.",
+          "Choisissez une seule façon de compter : soit par entrepôt ici, soit globalement dans Food cost. Mélanger les deux fait diverger le détail par entrepôt et le total.",
+        ]}
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">

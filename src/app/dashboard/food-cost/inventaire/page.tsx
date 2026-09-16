@@ -43,6 +43,7 @@ export default async function FoodInventoriesPage() {
         defaultOpen={inventories.length < 2}
         title="Faire un inventaire"
         steps={[
+          "C'est le comptage de référence : c'est lui qui calcule votre écart en euros. Comptez ici plutôt que dans Inventaire ou Stock.",
           "Lancez l'inventaire avant de descendre en réserve, réseau disponible : la liste se charge sur votre téléphone.",
           "Comptez lieu par lieu, dans l'ordre affiché. Chaque chiffre est gardé sur l'appareil, même sans réseau.",
           "L'écart s'affiche ligne par ligne pendant la saisie.",

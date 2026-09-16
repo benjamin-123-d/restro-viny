@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/lib/format";
-import { MOVEMENT_LABELS, UNIT_LABELS } from "@/lib/inventory";
+import { MOVEMENT_LABELS, UNIT_LABELS, movementReasonLabel } from "@/lib/inventory";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { cn } from "@/lib/utils";
 import { getStockItem, listMovements } from "@/services/stock.service";
@@ -49,7 +49,7 @@ export default async function StockHistoryPage({
               <div className="min-w-0">
                 <p className="text-sm font-medium">{MOVEMENT_LABELS[m.type]}</p>
                 <p className="text-muted-foreground text-xs">
-                  {m.reason ? `${m.reason} · ` : ""}
+                  {movementReasonLabel(m.reason) ? `${movementReasonLabel(m.reason)} · ` : ""}
                   {formatDateTime(m.createdAt)}
                   {m.note ? ` · ${m.note}` : ""}
                 </p>

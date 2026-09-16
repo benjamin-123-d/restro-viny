@@ -215,7 +215,7 @@ const countInTx = async (
       stockItemId: input.stockItemId,
       type: "CORRECTION",
       delta,
-      reason: "Physical count",
+      reason: "Comptage",
       note: input.note,
       orderId: null,
       createdById: input.createdById,
