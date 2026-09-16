@@ -117,7 +117,7 @@ export function OrdersBoard({
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <PageHeader title="Commandes" description="Les commandes en cours et les encaissements du jour." />
+        <PageHeader title="Service" description="Les commandes en cours et les encaissements du jour." />
         <div className="flex items-center gap-2">
           <SoundToggle
             supported={supported}

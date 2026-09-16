@@ -35,21 +35,10 @@ import {
 import type { OrderWithRelations } from "@/repositories/order.repository";
 import { computeBill } from "@/services/billing";
 import { orderToBillLines } from "@/services/order.service";
+import { PERIODS, type PeriodKey } from "@/lib/sales-periods";
 import type { PurchasingContext } from "@/services/supplier.service";
 
-export const PERIODS = [
-  { key: "jour", label: "Aujourd'hui" },
-  { key: "7j", label: "7 derniers jours" },
-  { key: "30j", label: "30 derniers jours" },
-  { key: "mois", label: "Ce mois-ci" },
-  { key: "mois-dernier", label: "Mois dernier" },
-  { key: "annee", label: "Cette année" },
-] as const;
-
-export type PeriodKey = (typeof PERIODS)[number]["key"];
-
-export const isPeriodKey = (value: string | undefined): value is PeriodKey =>
-  PERIODS.some((p) => p.key === value);
+export { PERIODS, isPeriodKey, type PeriodKey } from "@/lib/sales-periods";
 
 const DAY_MS = 86_400_000;
 
@@ -164,6 +153,8 @@ export const toTicket = (
     lines: sold.map((item, index) => ({
       name: item.name,
       quantity: item.quantity,
+      menuItemId: item.menuItemId,
+      foodCost: item.foodCost == null ? null : Number(item.foodCost),
       vatCategory:
         item.vatCategory ??
         (item.menuItemId ? categories.get(item.menuItemId) : undefined) ??

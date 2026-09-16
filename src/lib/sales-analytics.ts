@@ -19,6 +19,10 @@ import { TIME_ZONE } from "@/lib/format";
 export interface TicketLine {
   readonly name: string;
   readonly quantity: number;
+  /** Null for a free-text line typed at the till. */
+  readonly menuItemId?: string | null;
+  /** Material cost of one unit, frozen when the sale was recorded. */
+  readonly foodCost?: number | null;
   readonly vatCategory: VatCategory;
   readonly taxRate: number;
   /** HT after discount. */

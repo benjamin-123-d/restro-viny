@@ -21,6 +21,12 @@ const prisma = new PrismaClient({
 });
 
 const STATIC_ROUTES = [
+  "/dashboard/statistics/ventes",
+  "/dashboard/statistics/achats",
+  "/dashboard/statistics/benefices",
+  "/dashboard/orders",
+  "/dashboard/orders/factures",
+  "/dashboard/orders/factures?from=2026-01-01&service=DINE_IN&remise=1&tri=montant",
   "/dashboard/purchasing/direct",
   "/dashboard/purchasing/direct/new",
   "/dashboard/food-cost",

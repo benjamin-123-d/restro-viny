@@ -11,7 +11,7 @@ export default async function OrdersPage() {
     return (
       <div className="flex flex-col gap-6 p-4 lg:p-6">
         <PageHeader
-          title="Commandes"
+          title="Ventes"
           description="Les commandes en cours et les encaissements du jour."
         />
         <EmptyState

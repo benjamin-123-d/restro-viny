@@ -38,8 +38,7 @@ import {
 const navMain = [
   { title: "Tableau de bord", url: "/dashboard", icon: <LayoutDashboardIcon /> },
   { title: "Caisse", url: "/dashboard/pos", icon: <CalculatorIcon /> },
-  { title: "Commandes", url: "/dashboard/orders", icon: <ReceiptTextIcon /> },
-  { title: "Ventes", url: "/dashboard/sales", icon: <ChartNoAxesCombinedIcon /> },
+  { title: "Ventes", url: "/dashboard/orders", icon: <ReceiptTextIcon /> },
   { title: "Carte", url: "/dashboard/menu", icon: <BookOpenIcon /> },
   { title: "Tables", url: "/dashboard/tables", icon: <ArmchairIcon /> },
   { title: "Inventaire", url: "/dashboard/inventory", icon: <BoxesIcon /> },

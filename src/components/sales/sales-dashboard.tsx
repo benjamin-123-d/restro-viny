@@ -8,11 +8,12 @@ import {
 import Link from "next/link";
 
 import { PrintButton } from "@/components/orders/print-button";
+import { PeriodFilter } from "@/components/sales/period-filter";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { formatVatRate } from "@/lib/french-vat";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { PERIODS, type SalesDashboardDTO } from "@/services/sales-analytics.service";
+import type { SalesDashboardDTO } from "@/services/sales-analytics.service";
 
 import {
   FoodDrinkByServiceChart,
@@ -93,28 +94,6 @@ function Kpi({
       ) : null}
       {sub ? <p className="text-xs text-muted-foreground">{sub}</p> : null}
     </div>
-  );
-}
-
-function PeriodFilter({ active }: { readonly active: string }) {
-  return (
-    <nav aria-label="Période" className="flex flex-wrap gap-1.5 print:hidden">
-      {PERIODS.map((p) => (
-        <Link
-          key={p.key}
-          href={`/dashboard/sales?periode=${p.key}`}
-          aria-current={p.key === active ? "page" : undefined}
-          className={cn(
-            "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
-            p.key === active
-              ? "border-foreground bg-foreground text-background"
-              : "bg-card text-muted-foreground hover:text-foreground",
-          )}
-        >
-          {p.label}
-        </Link>
-      ))}
-    </nav>
   );
 }
 
@@ -363,7 +342,7 @@ export function SalesDashboard({ data }: { readonly data: SalesDashboardDTO }) {
           <PrintButton label="Imprimer le récapitulatif" />
         </div>
 
-        <PeriodFilter active={data.period.key} />
+        <PeriodFilter active={data.period.key} basePath="/dashboard/statistics/ventes" />
 
         {/* The one number first, then what makes it up. */}
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,3fr)]">

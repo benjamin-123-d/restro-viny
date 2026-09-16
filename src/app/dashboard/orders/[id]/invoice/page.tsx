@@ -247,7 +247,7 @@ export default async function InvoicePage({
       </div>
       <Receipt r={receipt} />
       <p className="mx-auto max-w-[340px] text-center text-xs text-muted-foreground print:hidden">
-        <Link href="/dashboard/sales" className="underline underline-offset-2">
+        <Link href="/dashboard/statistics/ventes" className="underline underline-offset-2">
           Toutes les factures de vente
         </Link>
       </p>
