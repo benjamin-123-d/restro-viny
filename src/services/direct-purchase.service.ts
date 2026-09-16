@@ -32,6 +32,7 @@ import {
   type ExpenseLineWriteData,
 } from "@/repositories/purchase-invoice.repository";
 import { recordPurchase } from "@/services/food-cost.service";
+import { rememberLines } from "@/services/purchase-memory.service";
 import { submitPurchaseInvoice } from "@/services/purchase-invoice.service";
 import { attachPurchaseDocument, type IncomingDocument } from "@/services/supplier-documents.service";
 import { createSupplierPayment } from "@/services/supplier-payment.service";
@@ -188,6 +189,12 @@ export const recordDirectPurchase = async (
       source: input.source ?? "PHOTO",
       file: document,
     });
+  }
+
+  // Only now — once the owner has validated the purchase — is what they decided
+  // worth learning, so the next ticket from this shop arrives already classed.
+  if (input.learnLines && input.learnLines.length > 0) {
+    await rememberLines(ctx.restaurantId, input.learnLines);
   }
 
   return { id: invoice.id, number: invoice.number };

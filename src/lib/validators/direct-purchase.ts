@@ -62,6 +62,18 @@ export const directPurchaseSchema = z
     ingredientLines: z.array(ingredientLineSchema).max(80).default([]),
     notes: text(400),
     source: z.enum(["FILE", "PHOTO"]).optional(),
+    /** What the owner decided line by line, so the next ticket classes itself. */
+    learnLines: z
+      .array(
+        z.object({
+          label: z.string().trim().min(1).max(160),
+          code: text(40),
+          category: purchaseCategorySchema,
+          stockItemId: idSchema.optional(),
+        }),
+      )
+      .max(200)
+      .optional(),
   })
   .refine((v) => Boolean(v.supplierId || v.supplierName), {
     message: "Indiquez le magasin ou le fournisseur.",

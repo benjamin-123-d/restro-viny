@@ -12,7 +12,15 @@ import { createWorker, PSM, type Worker } from "tesseract.js";
 import { extractText, getDocumentProxy, renderPageAsImage } from "unpdf";
 
 import { parseReceiptText, type ReceiptReading } from "@/lib/receipt-parser";
-import { cellsFromPdfItems, cellsFromWords, rowsFromCells, rowsToText, type TextCell } from "@/lib/receipt-rows";
+import {
+  cellsFromPdfItems,
+  cellsFromWords,
+  rowsFromCells,
+  rowsToText,
+  toleranceFromWords,
+  type TextCell,
+} from "@/lib/receipt-rows";
+import { readReceiptTable } from "@/lib/receipt-table";
 import type { IncomingDocument } from "@/services/supplier-documents.service";
 
 export const RECEIPT_UNREADABLE = "RECEIPT_UNREADABLE";
@@ -58,10 +66,32 @@ const serially = <T>(job: () => Promise<T>): Promise<T> => {
   return run;
 };
 
+/**
+ * A scanner, or a phone app, leaves the ticket in the middle of a whole blank
+ * page. Reduced to 2 000 px, its print becomes too small to read — which is
+ * why a scanned till receipt used to come back empty. Cutting the empty border
+ * first is the whole difference between reading the ticket and reading nothing.
+ */
+const cropToContent = async (buffer: Buffer): Promise<Buffer> => {
+  try {
+    const upright = await sharp(buffer, { failOn: "none" }).rotate().toBuffer();
+    const page = await sharp(upright).metadata();
+    const cropped = await sharp(upright).trim({ threshold: 20 }).toBuffer({ resolveWithObject: true });
+    // Refuse a crop that kept almost nothing: on a picture that is one flat
+    // colour, trimming can eat the ticket itself.
+    const enough =
+      cropped.info.width >= 200 &&
+      cropped.info.height >= 200 &&
+      cropped.info.width * cropped.info.height >= (page.width ?? 0) * (page.height ?? 0) * 0.02;
+    return enough ? cropped.data : upright;
+  } catch {
+    return buffer;
+  }
+};
+
 /** Upright, grey, contrasted and about 2 000 px wide: what Tesseract reads best. */
 export const prepareForOcr = async (buffer: Buffer): Promise<Buffer> =>
-  sharp(buffer, { failOn: "none" })
-    .rotate()
+  sharp(await cropToContent(buffer), { failOn: "none" })
     .resize({ width: 2000, fit: "inside", withoutEnlargement: false })
     .grayscale()
     .normalize()
@@ -87,7 +117,10 @@ const readWith = async (image: Buffer, mode: PSM): Promise<Pass> => {
     .flatMap((line) => line.words ?? [])
     .filter((word) => word.text.trim() !== "")
     .map((word) => ({ text: word.text, bbox: word.bbox }));
-  const text = words.length === 0 ? data.text : rowsToText(rowsFromCells(cellsFromWords(words), 8));
+  const text =
+    words.length === 0
+      ? data.text
+      : rowsToText(rowsFromCells(cellsFromWords(words), toleranceFromWords(words)));
   return { text, confidence: data.confidence ?? 0 };
 };
 
@@ -95,9 +128,17 @@ const readWith = async (image: Buffer, mode: PSM): Promise<Pass> => {
 const CONFIDENT_ENOUGH = 82;
 
 /**
+ * How much of a reading looks like a ticket. Tesseract's own confidence says
+ * how sure it is of the letters it saw, which is not the same question: on a
+ * crumpled receipt the pass it trusts most is often the one that lost the
+ * table. Counting the lines that parse as purchases answers the real one.
+ */
+const looksLikeATicket = (text: string): number => readReceiptTable(text.split("\n")).lines.length;
+
+/**
  * A crumpled ticket and a scanned invoice do not read the same way: one is a
  * single block of text, the other a page of columns. Rather than guess, read
- * it both ways and keep the attempt Tesseract itself trusts more.
+ * it both ways and keep the attempt that yields the most purchase lines.
  */
 const ocrImage = async (buffer: Buffer): Promise<string> => {
   let prepared: Buffer;
@@ -111,6 +152,8 @@ const ocrImage = async (buffer: Buffer): Promise<string> => {
       const block = await readWith(prepared, PSM.SINGLE_BLOCK);
       if (block.confidence >= CONFIDENT_ENOUGH) return block.text;
       const column = await readWith(prepared, PSM.AUTO);
+      const better = looksLikeATicket(column.text) - looksLikeATicket(block.text);
+      if (better !== 0) return better > 0 ? column.text : block.text;
       return column.confidence > block.confidence ? column.text : block.text;
     } finally {
       scheduleRelease();

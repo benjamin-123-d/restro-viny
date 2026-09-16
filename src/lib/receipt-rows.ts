@@ -43,16 +43,25 @@ export const rowsFromCells = (cells: readonly TextCell[], tolerance = DEFAULT_TO
     (a, b) => (a.page ?? 0) - (b.page ?? 0) || a.y - b.y || a.x - b.x,
   );
 
-  const rows: { page: number; y: number; cells: TextCell[] }[] = [];
+  const rows: { page: number; y: number; mean: number; cells: TextCell[] }[] = [];
   for (const cell of sorted) {
     const page = cell.page ?? 0;
     const last = rows[rows.length - 1];
-    if (last && last.page === page && Math.abs(cell.y - last.y) <= tolerance) {
+    // The row follows the average height of what it already holds: a photo is
+    // never perfectly straight, and a printed line drifts a little from its
+    // left edge to its right. Drift from where the row started stays capped,
+    // so a long row cannot slide onto the next line.
+    if (
+      last &&
+      last.page === page &&
+      Math.abs(cell.y - last.mean) <= tolerance &&
+      Math.abs(cell.y - last.y) <= tolerance * 2.5
+    ) {
       last.cells.push(cell);
-      // The row's height follows its first cell, so a long row cannot drift.
+      last.mean = last.cells.reduce((sum, one) => sum + one.y, 0) / last.cells.length;
       continue;
     }
-    rows.push({ page, y: cell.y, cells: [cell] });
+    rows.push({ page, y: cell.y, mean: cell.y, cells: [cell] });
   }
 
   return rows.map((row) => {
@@ -80,6 +89,24 @@ export const cellsFromWords = (
     y: (word.bbox.y0 + word.bbox.y1) / 2,
     text: word.text,
   }));
+
+/**
+ * How far apart two words may sit and still belong to the same printed line.
+ *
+ * On a photo this cannot be a fixed number of pixels: the same ticket read at
+ * 800 px and at 2 500 px has its lines ten times further apart. Half the height
+ * of a word is the measure that holds at any size.
+ */
+export const toleranceFromWords = (
+  words: readonly { readonly bbox: { readonly y0: number; readonly y1: number } }[],
+): number => {
+  const heights = words
+    .map((word) => word.bbox.y1 - word.bbox.y0)
+    .filter((height) => height > 0)
+    .sort((a, b) => a - b);
+  if (heights.length === 0) return DEFAULT_TOLERANCE;
+  return Math.max(DEFAULT_TOLERANCE, heights[Math.floor(heights.length / 2)] * 0.55);
+};
 
 /**
  * Text items that a PDF gives back. pdf.js reports positions from the *bottom*

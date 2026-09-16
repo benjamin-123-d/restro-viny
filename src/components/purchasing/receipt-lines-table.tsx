@@ -1,6 +1,6 @@
 "use client";
 
-import { EyeOffIcon, PlusIcon, SearchIcon, Undo2Icon } from "lucide-react";
+import { EyeOffIcon, PlusIcon, SearchIcon, SparklesIcon, Trash2Icon, Undo2Icon } from "lucide-react";
 import { useState } from "react";
 
 import { FieldHint } from "@/components/forms/help-box";
@@ -52,16 +52,37 @@ export function ReceiptLinesTable({
   const [search, setSearch] = useState("");
   const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
   const [created, setCreated] = useState<readonly CreatedItem[]>([]);
+  const [confirmClear, setConfirmClear] = useState(false);
 
   const summary = summarise(lines);
   const shown = visibleLines(lines, filter, search);
   const gap = ticketTotal ? Math.round((ticketTotal - summary.total) * 100) / 100 : 0;
 
+  // « Tout cocher » ticks what is on screen: with a filter on, that is exactly
+  // the lines the owner is looking at — the others are not silently included.
+  const learnedCount = lines.filter((line) => line.learned && !line.ignored).length;
+  const allPicked = shown.length > 0 && shown.every((line) => picked.has(line.key));
+  const somePicked = shown.some((line) => picked.has(line.key));
+  const toggleAll = () =>
+    setPicked((current) => {
+      const next = new Set(current);
+      for (const line of shown) {
+        if (allPicked) next.delete(line.key);
+        else next.add(line.key);
+      }
+      return next;
+    });
+
+  // Correcting a line the memory filled in makes it the owner's answer, so the
+  // « appris » mark goes away.
+  const decided = (patch: Partial<ReceiptLineDraft>): Partial<ReceiptLineDraft> =>
+    "category" in patch || "stockItemId" in patch ? { ...patch, learned: false } : patch;
+
   const update = (key: string, patch: Partial<ReceiptLineDraft>) =>
-    onChange(lines.map((line) => (line.key === key ? { ...line, ...patch } : line)));
+    onChange(lines.map((line) => (line.key === key ? { ...line, ...decided(patch) } : line)));
 
   const updateMany = (keys: ReadonlySet<string>, patch: Partial<ReceiptLineDraft>) =>
-    onChange(lines.map((line) => (keys.has(line.key) ? { ...line, ...patch } : line)));
+    onChange(lines.map((line) => (keys.has(line.key) ? { ...line, ...decided(patch) } : line)));
 
   const toggle = (key: string) =>
     setPicked((current) => {
@@ -103,7 +124,53 @@ export function ReceiptLinesTable({
             <PlusIcon className="size-4" aria-hidden />
             Ligne oubliée
           </Button>
+          {confirmClear ? (
+            <span className="flex items-center gap-1.5 rounded-md bg-background px-2 py-1 text-sm">
+              <span>Effacer les {lines.length} lignes ?</span>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  onChange([]);
+                  setPicked(new Set());
+                  setConfirmClear(false);
+                }}
+              >
+                Oui, tout effacer
+              </Button>
+              <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmClear(false)}>
+                Annuler
+              </Button>
+            </span>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-destructive"
+              onClick={() => setConfirmClear(true)}
+              disabled={lines.length === 0}
+            >
+              <Trash2Icon className="size-4" aria-hidden />
+              Tout effacer
+            </Button>
+          )}
         </div>
+
+        <label className="flex w-fit items-center gap-2 text-sm font-medium">
+          <input
+            type="checkbox"
+            checked={allPicked}
+            ref={(element) => {
+              if (element) element.indeterminate = somePicked && !allPicked;
+            }}
+            onChange={toggleAll}
+            disabled={shown.length === 0}
+            className="size-4"
+          />
+          Tout cocher{shown.length > 0 ? ` (${shown.length} ligne${shown.length > 1 ? "s" : ""} affichée${shown.length > 1 ? "s" : ""})` : ""}
+        </label>
 
         <nav aria-label="Filtrer les lignes" className="flex flex-wrap gap-1.5">
           {FILTERS.map((option) => (
@@ -203,7 +270,18 @@ export function ReceiptLinesTable({
                       onChange={(e) => update(line.key, { label: e.target.value })}
                       className="h-9"
                     />
-                    {line.code ? <span className="text-xs text-muted-foreground">réf. {line.code}</span> : null}
+                    <span className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      {line.code ? <span>réf. {line.code}</span> : null}
+                      {line.learned ? (
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 font-medium"
+                          title="Catégorie retenue d'un achat précédent. Corrigez-la si besoin."
+                        >
+                          <SparklesIcon className="size-3" aria-hidden />
+                          appris
+                        </span>
+                      ) : null}
+                    </span>
                   </div>
 
                   <Input
@@ -308,8 +386,15 @@ export function ReceiptLinesTable({
 
       <FieldHint>
         Reliez une ligne à un ingrédient pour qu&apos;elle entre en stock et mette à jour son prix d&apos;achat. Les lignes
-        ignorées ne comptent ni dans les dépenses ni dans le stock.
+        ignorées ne comptent ni dans les dépenses ni dans le stock. À l&apos;enregistrement, l&apos;application retient vos
+        choix : le prochain ticket du même magasin arrivera déjà classé.
       </FieldHint>
+      {learnedCount > 0 ? (
+        <FieldHint>
+          {learnedCount} ligne{learnedCount > 1 ? "s" : ""} classée{learnedCount > 1 ? "s" : ""} automatiquement d&apos;après
+          vos achats précédents (marquées « appris »). Vérifiez-les : une correction remplace ce qui avait été retenu.
+        </FieldHint>
+      ) : null}
       {created.length > 0 ? (
         <FieldHint>
           {created.length} article{created.length > 1 ? "s" : ""} créé{created.length > 1 ? "s" : ""} pendant la saisie.

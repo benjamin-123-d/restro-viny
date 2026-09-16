@@ -22,6 +22,8 @@ export interface ReceiptLineDraft {
   readonly stockItemId: string | null;
   /** Lines the owner does not want to keep — packaging deposits, notes… */
   readonly ignored: boolean;
+  /** Filled in from what the restaurant learned on an earlier ticket. */
+  readonly learned: boolean;
 }
 
 export type LineFilter = "TOUT" | "A_TRAITER" | PurchaseCategory;
@@ -49,6 +51,7 @@ export const emptyLine = (category: PurchaseCategory = "DENREES", vatRate = 5.5)
   vatRate,
   stockItemId: null,
   ignored: false,
+  learned: false,
 });
 
 /** The read lines, turned into rows the owner can correct. */
@@ -65,8 +68,9 @@ export const linesFromReading = (
     family: line.family,
     code: line.code,
     vatRate: line.vatRate ?? defaultVatRate,
-    stockItemId: null,
+    stockItemId: line.stockItemId ?? null,
     ignored: false,
+    learned: line.learned === true,
   }));
 
 export const keptLines = (lines: readonly ReceiptLineDraft[]): ReceiptLineDraft[] =>
@@ -143,6 +147,23 @@ export const expenseLinesFrom = (
         },
   );
 };
+
+/**
+ * What is worth learning from this ticket: the wording, its article code, and
+ * the answer the owner settled on. Sent with the purchase so the next ticket
+ * from the same shop arrives already classed.
+ */
+export const learnLinesFrom = (
+  lines: readonly ReceiptLineDraft[],
+): { label: string; code?: string; category: PurchaseCategory; stockItemId?: string }[] =>
+  keptLines(lines)
+    .filter((line) => line.label.trim().length > 1)
+    .map((line) => ({
+      label: line.label.trim().slice(0, 160),
+      ...(line.code ? { code: line.code } : {}),
+      category: line.category,
+      ...(line.stockItemId ? { stockItemId: line.stockItemId } : {}),
+    }));
 
 /** The ingredient lines: the ones the owner linked to something in stock. */
 export const stockLinesFrom = (

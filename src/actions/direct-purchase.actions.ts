@@ -13,6 +13,7 @@ import { checkDocumentFile } from "@/lib/supplier-documents";
 import { directPurchaseSchema, invoiceBreakdownSchema, purchasingModeSchema } from "@/lib/validators/direct-purchase";
 import type { ReceiptReading } from "@/lib/receipt-parser";
 import { recordDirectPurchase, setInvoiceBreakdown, setPurchasingMode } from "@/services/direct-purchase.service";
+import { applyMemory } from "@/services/purchase-memory.service";
 import { readReceipt } from "@/services/receipt-ocr.service";
 import { failure, success, type ActionResult } from "@/types";
 
@@ -60,7 +61,9 @@ export const readReceiptAction = async (formData: FormData): Promise<ActionResul
   const problem = checkDocumentFile(file);
   if (problem) return failure(humanError(problem));
   try {
-    return success((await readReceipt(file)).reading);
+    const { reading } = await readReceipt(file);
+    // What the restaurant already learned about these wordings comes back filled in.
+    return success({ ...reading, lines: await applyMemory(ctx.restaurantId, reading.lines) });
   } catch (error) {
     return failure(humanError(error instanceof Error ? error.message : undefined));
   }

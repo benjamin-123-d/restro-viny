@@ -4,11 +4,13 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient } from "../src/generated/prisma/client";
 import { recordDirectPurchase } from "../src/services/direct-purchase.service";
+import { applyMemory } from "../src/services/purchase-memory.service";
 
 /**
  * Walks a shop ticket the whole way on the real database: a mixed purchase
  * (food + cleaning + a pan) becomes a paid supplier invoice, its breakdown,
- * and stock plus a new purchase price for the detailed ingredient.
+ * and stock plus a new purchase price for the detailed ingredient — then the
+ * same wordings, read again, come back already classed.
  *
  *   npx tsx scripts/e2e-direct-purchase.ts
  *   npx tsx scripts/e2e-direct-purchase.ts --purge
@@ -43,6 +45,7 @@ const purge = async () => {
   await prisma.purchaseDocument.deleteMany({ where: { invoiceId: { in: ids } } });
   await prisma.purchaseInvoice.deleteMany({ where: { id: { in: ids } } });
   await prisma.supplier.delete({ where: { id: supplier.id } });
+  await prisma.purchaseLineMemory.deleteMany({ where: { key: { contains: "e2e" } } });
   console.log(`Supprimé : ${ids.length} achat(s) de test et le magasin de test.`);
 };
 
@@ -74,7 +77,17 @@ const run = async () => {
     notes: "Achat de test automatique",
     supplierId: undefined,
     source: undefined,
+    learnLines: [
+      { label: "JAVEL 2L E2E", code: "E2E-JAV", category: "ENTRETIEN", stockItemId: undefined },
+      { label: `${ingredient.name} E2E`, code: undefined, category: "DENREES", stockItemId: ingredient.id },
+    ],
   });
+
+  // The same wordings, read on a new ticket: they must come back classed.
+  const recalled = await applyMemory(restaurant.id, [
+    { label: "JAVEL 2L E2E", amount: 9.9, category: "DENREES", vatRate: null, code: null, quantity: null, unitPrice: null, family: null },
+    { label: `${ingredient.name} E2E`, amount: 14, category: "DENREES", vatRate: null, code: null, quantity: null, unitPrice: null, family: null },
+  ]);
 
   const invoice = await prisma.purchaseInvoice.findUniqueOrThrow({
     where: { id: result.id },
@@ -96,6 +109,12 @@ const run = async () => {
     ["Ingrédient entré en stock", Math.abs(Number(after.onHand) - expectedStock) < 0.001, `${Number(after.onHand)}`],
     ["Prix d'achat mis à jour", Number(after.lastPurchasePrice) === 7, euro(Number(after.lastPurchasePrice ?? 0))],
     ["Achat lié à la facture", invoice.ingredientPurchases.length === 1, `${invoice.ingredientPurchases.length}`],
+    ["Apprentissage : catégorie retenue", recalled[0].category === "ENTRETIEN" && recalled[0].learned === true, `${recalled[0].category}`],
+    [
+      "Apprentissage : ingrédient retenu",
+      recalled[1].stockItemId === ingredient.id && recalled[1].learned === true,
+      recalled[1].stockItemId ? ingredient.name : "aucun",
+    ],
   ];
 
   let failed = 0;

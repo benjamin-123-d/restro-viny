@@ -26,6 +26,7 @@ import { CATEGORY_DEFAULT_VAT, CATEGORY_LABEL, breakdownTotals, type PurchaseCat
 import type { ReceiptReading } from "@/lib/receipt-parser";
 import {
   expenseLinesFrom,
+  learnLinesFrom,
   linesFromReading,
   stockLinesFrom,
   type ReceiptLineDraft,
@@ -195,6 +196,9 @@ export function DirectPurchaseForm({
               .map((l) => ({ stockItemId: l.stockItemId, quantity: parseAmount(l.quantity), amount: parseAmount(l.amount) })),
         notes: notes.trim() || undefined,
         source: document?.source,
+        // Once the owner validates, these answers become the memory that
+        // classes the next ticket from the same shop.
+        learnLines: hasTicketLines ? learnLinesFrom(ticketLines) : undefined,
       };
       const data = new FormData();
       data.set("payload", JSON.stringify(payload));

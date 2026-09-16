@@ -27,6 +27,9 @@ export interface ReceiptLine {
   readonly unitPrice: number | null;
   /** « Brasserie », « Crèmerie »… when the invoice groups its lines. */
   readonly family: string | null;
+  /** Filled from what the restaurant learned on earlier tickets. */
+  readonly stockItemId?: string | null;
+  readonly learned?: boolean;
 }
 
 export interface ReceiptReading {

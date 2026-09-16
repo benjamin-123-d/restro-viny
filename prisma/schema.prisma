@@ -241,6 +241,7 @@ model Restaurant {
   purchaseExpenseLines PurchaseExpenseLine[]
   stockChecks          StockCheck[]
   equipmentBreakages   EquipmentBreakage[]
+  purchaseLineMemories PurchaseLineMemory[]
   foodInventories      FoodInventory[]
   foodLosses           FoodLoss[]
   foodProductions      FoodProduction[]
@@ -675,17 +676,18 @@ model StockItem {
   updatedAt         DateTime  @updatedAt
   deletedAt         DateTime?
 
-  restaurant          Restaurant             @relation(fields: [restaurantId], references: [id])
-  defaultSupplier     Supplier?              @relation(fields: [defaultSupplierId], references: [id])
-  movements           StockMovement[]
-  usedIn              RecipeComponent[]
-  preparationLines    PreparationComponent[] @relation("PreparationOutput")
-  usedInPreparations  PreparationComponent[] @relation("PreparationInput")
-  ingredientPurchases IngredientPurchase[]
-  foodInventoryLines  FoodInventoryLine[]
-  stockCheckLines     StockCheckLine[]
-  foodLosses          FoodLoss[]
-  foodProductions     FoodProduction[]
+  restaurant           Restaurant             @relation(fields: [restaurantId], references: [id])
+  defaultSupplier      Supplier?              @relation(fields: [defaultSupplierId], references: [id])
+  movements            StockMovement[]
+  usedIn               RecipeComponent[]
+  preparationLines     PreparationComponent[] @relation("PreparationOutput")
+  usedInPreparations   PreparationComponent[] @relation("PreparationInput")
+  ingredientPurchases  IngredientPurchase[]
+  foodInventoryLines   FoodInventoryLine[]
+  stockCheckLines      StockCheckLine[]
+  purchaseLineMemories PurchaseLineMemory[]
+  foodLosses           FoodLoss[]
+  foodProductions      FoodProduction[]
 
   bins                 Bin[]
   batches              Batch[]
@@ -2769,4 +2771,28 @@ model EquipmentBreakage {
   staff      Staff?     @relation(fields: [staffId], references: [id])
 
   @@index([restaurantId, brokeAt])
+}
+
+/// What the owner decided about a ticket line, so the next ticket from the
+/// same shop classes itself. Learning here is deliberately plain: remember the
+/// wording, remember the answer, propose it again — and let it be corrected.
+model PurchaseLineMemory {
+  id           String           @id @default(cuid())
+  restaurantId String
+  /// The line's wording, folded (no accents, no case, no punctuation).
+  key          String
+  /// The supplier's article code when the ticket prints one — a surer key.
+  code         String?
+  category     PurchaseCategory
+  stockItemId  String?
+  /// How many times the owner confirmed this answer.
+  uses         Int              @default(1)
+  lastUsedAt   DateTime         @default(now())
+  createdAt    DateTime         @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  stockItem  StockItem? @relation(fields: [stockItemId], references: [id])
+
+  @@unique([restaurantId, key])
+  @@index([restaurantId, code])
 }
