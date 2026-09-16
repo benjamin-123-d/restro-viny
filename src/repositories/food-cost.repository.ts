@@ -171,6 +171,7 @@ export const recordIngredientPurchase = (input: {
   netUnitCost: number;
   note: string | null;
   createdById: string;
+  purchaseInvoiceId?: string | null;
 }) =>
   prisma.$transaction(async (tx) => {
     await tx.stockItem.update({
@@ -198,6 +199,7 @@ export const recordIngredientPurchase = (input: {
         usageQuantity: input.usageQuantity,
         note: input.note,
         movementId: movement.id,
+        purchaseInvoiceId: input.purchaseInvoiceId ?? null,
         createdById: input.createdById,
       },
       select: { id: true },

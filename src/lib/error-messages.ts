@@ -57,7 +57,11 @@ const MESSAGES: Readonly<Record<string, string>> = {
   EMAIL_NOT_CONFIGURED: "Aucun service d'envoi d'e-mails n'est configuré.",
 
   FOOD_INGREDIENT_NOT_FOUND: "Ingrédient introuvable.",
-  FOOD_INGREDIENT_NAME_TAKEN: "Un ingrédient porte déjà ce nom.",
+  FOOD_INGREDIENT_NAME_TAKEN: "Un article porte déjà ce nom : cherchez-le dans la liste plutôt que de le recréer.",
+  BREAKDOWN_MISMATCH: "La répartition par catégorie ne correspond pas au total du document.",
+  DIRECT_PURCHASE_ITEM_INVALID: "Un des ingrédients détaillés n'existe plus ou est une base maison : choisissez un ingrédient acheté.",
+  RECEIPT_UNREADABLE: "Le ticket n'a pas pu être lu. Reprenez la photo bien à plat et éclairée, ou saisissez les montants à la main.",
+  RECEIPT_PDF_SCANNED: "Ce PDF est une image scannée : envoyez plutôt une photo du ticket, ou saisissez les montants à la main.",
   FOOD_DISH_NOT_FOUND: "Plat introuvable.",
   FOOD_NO_CATALOGUE_MATCH: "Aucune fiche type ne correspond à ce plat : composez-la ingrédient par ingrédient.",
   FOOD_INVENTORY_NOT_FOUND: "Inventaire introuvable.",

@@ -59,7 +59,7 @@ export function DashboardView({
 
       {/* Today */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-muted-foreground text-sm font-medium">Aujourd'hui</h2>
+        <h2 className="text-muted-foreground text-sm font-medium">Aujourd’hui</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Ventes du jour"
@@ -167,11 +167,11 @@ export function DashboardView({
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Articles les plus vendus aujourd'hui</CardTitle>
+            <CardTitle className="text-base">Articles les plus vendus aujourd’hui</CardTitle>
           </CardHeader>
           <CardContent>
             {data.topItemsToday.length === 0 ? (
-              <p className="text-muted-foreground text-sm">Aucune vente pour l'instant.</p>
+              <p className="text-muted-foreground text-sm">Aucune vente pour l’instant.</p>
             ) : (
               <ul className="flex flex-col gap-1.5">
                 {data.topItemsToday.map((it) => (

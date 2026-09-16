@@ -1,3 +1,5 @@
+import { PurchasingModePicker } from "@/components/purchasing/purchasing-mode-picker";
+import { SpendingBreakdown } from "@/components/purchasing/spending-breakdown";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { formatCurrency } from "@/lib/format";
@@ -5,6 +7,9 @@ import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { listPurchaseInvoices } from "@/services/purchase-invoice.service";
 import { listPurchaseOrders } from "@/services/purchase-order.service";
 import { listPurchaseReceipts } from "@/services/purchase-receipt.service";
+import { can } from "@/lib/permissions";
+import { resolveAccess } from "@/services/access.service";
+import { getPurchasingMode, getSpendingBreakdown } from "@/services/direct-purchase.service";
 import { listSupplierGroups, listSuppliers } from "@/services/supplier.service";
 import type { SupplierSummaryDTO } from "@/types/purchasing";
 
@@ -88,12 +93,17 @@ export default async function PurchasingPage() {
     );
   }
 
-  const [suppliers, groups, orders, receipts, invoices] = await Promise.all([
+  const now = new Date();
+  const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const [suppliers, groups, orders, receipts, invoices, mode, spending, access] = await Promise.all([
     listSuppliers(ctx, { includeDisabled: true }),
     listSupplierGroups(ctx),
     listPurchaseOrders(ctx),
     listPurchaseReceipts(ctx),
     listPurchaseInvoices(ctx),
+    getPurchasingMode(ctx),
+    getSpendingBreakdown(ctx, monthAgo, new Date(now.getTime() + 86_400_000)),
+    resolveAccess(ctx.userId, ctx.restaurantId),
   ]);
 
   const outstanding = suppliers.reduce((s, x) => s + x.outstandingAmount, 0);
@@ -115,6 +125,10 @@ export default async function PurchasingPage() {
         title="Achats"
         description="Fournisseurs, commandes d'achat, réceptions de marchandises et factures fournisseurs."
       />
+
+      <PurchasingModePicker mode={mode} canEdit={Boolean(access && can(access, "PURCHASING", "EDIT"))} />
+
+      <SpendingBreakdown spending={spending} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Fournisseurs" value={String(suppliers.length)} />

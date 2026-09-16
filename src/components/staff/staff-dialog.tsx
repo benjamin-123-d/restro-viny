@@ -211,7 +211,7 @@ export function StaffDialog({
                 placeholder="••••"
               />
               <p className="text-muted-foreground text-xs">
-                Utilisé à la caisse. Ce n'est pas un mot de passe de connexion.
+                Utilisé à la caisse. Ce n’est pas un mot de passe de connexion.
               </p>
             </Field>
           )}

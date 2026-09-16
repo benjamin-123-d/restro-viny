@@ -304,7 +304,7 @@ export function GuestOrderPage({
         <h1 className="text-xl font-semibold">Commande envoyée</h1>
         <p className="text-muted-foreground text-sm">
           Votre commande pour <span className="font-medium">{tableLabel}</span> est
-          partie en cuisine. Un serveur vous l'apportera.
+          partie en cuisine. Un serveur vous l’apportera.
         </p>
         <div className="flex w-full max-w-xs flex-col gap-2">
           <Button
@@ -551,7 +551,7 @@ export function GuestOrderPage({
           </SheetHeader>
           {myOrders.length === 0 ? (
             <p className="text-muted-foreground px-4 pb-6 text-sm">
-              Aucune commande pour l'instant.
+              Aucune commande pour l’instant.
             </p>
           ) : (
             <ul className="flex flex-col gap-3 px-4 pb-6">

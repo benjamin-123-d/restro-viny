@@ -319,7 +319,7 @@ export function ItemDialog({
 
           {groups.length ? (
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium">Groupes d'options</span>
+              <span className="text-sm font-medium">Groupes d’options</span>
               <div className="flex flex-col gap-1.5">
                 {groups.map((g) => (
                   <label
@@ -361,7 +361,7 @@ export function ItemDialog({
             <ImageManager itemId={item.id} images={item.images} />
           ) : (
             <p className="text-muted-foreground text-sm">
-              Enregistrez d'abord l'article pour ajouter des photos.
+              Enregistrez d’abord l’article pour ajouter des photos.
             </p>
           )}
 

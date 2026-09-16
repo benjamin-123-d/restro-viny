@@ -265,7 +265,7 @@ export default async function StatisticsPage() {
         </tr>
         <tr>
           <td className="px-3 py-2 text-zinc-800">
-            Position nette (ce qu'on vous doit − ce que vous devez)
+            Position nette (ce qu’on vous doit − ce que vous devez)
           </td>
           <td className="px-3 py-2 text-right">
             <Money

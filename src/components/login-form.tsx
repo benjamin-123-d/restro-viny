@@ -272,7 +272,7 @@ export function LoginForm({
       ) : null}
 
       <FieldDescription className="px-6 text-center">
-        En continuant, vous acceptez nos <a href="#">conditions d'utilisation</a> et notre{" "}
+        En continuant, vous acceptez nos <a href="#">conditions d’utilisation</a> et notre{" "}
         <a href="#">politique de confidentialité</a>.
       </FieldDescription>
     </div>

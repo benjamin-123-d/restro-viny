@@ -166,7 +166,7 @@ export function OrdersBoard({
       {tab === "COMPLETED" ? (
         completed.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            Aucune commande encaissée aujourd'hui.
+            Aucune commande encaissée aujourd’hui.
           </p>
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

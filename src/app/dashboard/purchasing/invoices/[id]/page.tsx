@@ -8,12 +8,14 @@ import {
 } from "@/actions/purchasing.actions";
 import { DocActions, type DocAction } from "@/components/forms/doc-actions";
 import { DocumentGallery } from "@/components/purchasing/document-gallery";
+import { InvoiceBreakdownPanel } from "@/components/purchasing/invoice-breakdown-panel";
 import { DocDate, DocNumber, Money, StatusBadge } from "@/components/purchasing/purchasing-ui";
 import { formatCurrency } from "@/lib/format";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
 import { can } from "@/lib/permissions";
 import { paymentModeLabel } from "@/lib/payment-labels";
 import { resolveAccess } from "@/services/access.service";
+import { getInvoiceBreakdown } from "@/services/direct-purchase.service";
 import { getPurchaseInvoice } from "@/services/purchase-invoice.service";
 
 export const metadata = { title: "Facture fournisseur" };
@@ -29,9 +31,10 @@ export default async function PurchaseInvoicePage({ params }: { params: Promise<
   const ctx = await getManagerContextOrNull();
   if (!ctx) notFound();
   const { id } = await params;
-  const [invoice, access] = await Promise.all([
+  const [invoice, access, breakdown] = await Promise.all([
     getPurchaseInvoice(ctx, id).catch(() => null),
     resolveAccess(ctx.userId, ctx.restaurantId),
+    getInvoiceBreakdown(ctx, id).catch(() => ({ lines: [], ingredientLines: [] })),
   ]);
   if (!invoice) notFound();
   const canEdit = Boolean(access && can(access, "PURCHASING", "EDIT"));
@@ -154,7 +157,16 @@ export default async function PurchaseInvoicePage({ params }: { params: Promise<
           ) : null}
         </div>
 
-        <DocumentGallery kind="INVOICE" parentId={invoice.id} documents={invoice.documents} canEdit={canEdit} />
+        <div className="flex flex-col gap-6">
+          <InvoiceBreakdownPanel
+            purchaseInvoiceId={invoice.id}
+            totalTTC={invoice.grandTotal}
+            lines={breakdown.lines}
+            ingredientLines={breakdown.ingredientLines}
+            canEdit={canEdit}
+          />
+          <DocumentGallery kind="INVOICE" parentId={invoice.id} documents={invoice.documents} canEdit={canEdit} />
+        </div>
       </div>
     </div>
   );

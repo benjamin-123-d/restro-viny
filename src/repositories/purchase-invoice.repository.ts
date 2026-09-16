@@ -35,8 +35,20 @@ export interface PurchaseScheduleWriteData {
   sortOrder: number;
 }
 
+export interface ExpenseLineWriteData {
+  category: "DENREES" | "BOISSONS" | "ENTRETIEN" | "MATERIEL" | "EMBALLAGES" | "AUTRE";
+  label: string | null;
+  amountHT: number;
+  vatRate: number;
+  vatAmount: number;
+}
+
 export interface PurchaseInvoiceWriteData {
   summaryOnly?: boolean;
+  isDirectPurchase?: boolean;
+  paymentMode?: "CASH" | "UPI" | "CARD" | "OTHER" | "BANK_TRANSFER" | "CHEQUE" | "MOBILE_MONEY" | null;
+  /** What the document was spent on, written with it. */
+  expenseLines?: readonly ExpenseLineWriteData[];
   supplierId: string;
   supplierInvoiceNo: string | null;
   purchaseOrderId: string | null;
@@ -115,12 +127,16 @@ export const createPurchaseInvoice = (
 ): Promise<PurchaseInvoiceWithDetail> =>
   prisma.$transaction(async (tx) => {
     const number = await claimDocumentNumber(restaurantId, "PINV", tx);
+    const { expenseLines = [], ...invoice } = data;
     return tx.purchaseInvoice.create({
       data: {
         restaurantId,
         createdById,
         number,
-        ...data,
+        ...invoice,
+        expenseLines: {
+          create: expenseLines.map((line, sortOrder) => ({ ...line, restaurantId, sortOrder })),
+        },
         items: { create: lines.map((line) => ({ ...line })) },
         schedule: { create: schedule.map((row) => ({ ...row })) },
       },

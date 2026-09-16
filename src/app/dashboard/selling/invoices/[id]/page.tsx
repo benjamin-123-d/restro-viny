@@ -73,7 +73,7 @@ export default async function SalesInvoicePage({
           </Link>
         ))}
         <span className="text-xs text-zinc-500">
-          Imprimez depuis le navigateur (Ctrl+P) : la mention de l'exemplaire est imprimée avec.
+          Imprimez depuis le navigateur (Ctrl+P) : la mention de l’exemplaire est imprimée avec.
         </span>
       </div>
 

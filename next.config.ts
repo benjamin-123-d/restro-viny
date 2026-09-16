@@ -5,6 +5,17 @@ const nextConfig: NextConfig = {
   // Standalone bundles the server and only the files it traced, so the app can
   // be copied somewhere else and run with plain node.
   output: "standalone",
+  // Tesseract and sharp are native/worker packages: keep them required from
+  // node_modules, and carry the French reading model into the standalone copy
+  // so a ticket can be read without internet on any machine.
+  serverExternalPackages: ["tesseract.js", "sharp"],
+  outputFileTracingIncludes: {
+    "/**": [
+      "./node_modules/@tesseract.js-data/fra/4.0.0_best_int/**",
+      "./node_modules/tesseract.js/**",
+      "./node_modules/tesseract.js-core/**",
+    ],
+  },
   reactCompiler: true,
   allowedDevOrigins: ['192.168.1.*'],
   experimental: {

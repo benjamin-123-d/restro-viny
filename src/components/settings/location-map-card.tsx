@@ -240,7 +240,7 @@ export function LocationMapCard({
         {address ? (
           <p className="text-muted-foreground text-sm">
             Adresse : <span className="text-foreground">{address}</span>{" "}
-            <span className="text-xs">(modifiable dans l'onglet Profil)</span>
+            <span className="text-xs">(modifiable dans l’onglet Profil)</span>
           </p>
         ) : null}
 
@@ -293,7 +293,7 @@ export function LocationMapCard({
         </div>
         <FieldDescription>
           La position du navigateur peut varier de 10 à 50 m (davantage en Wi-Fi ou sur ordinateur).
-          Détectez pour vous en approcher, puis déplacez le repère jusqu'à votre entrée et
+          Détectez pour vous en approcher, puis déplacez le repère jusqu’à votre entrée et
           enregistrez.
         </FieldDescription>
 
@@ -397,15 +397,15 @@ export function LocationMapCard({
 
             {accuracy != null && accuracy > 40 ? (
               <p className="text-xs text-amber-700">
-                Position approximative (±{accuracy} m). Ajustez à l'endroit exact, ou
+                Position approximative (±{accuracy} m). Ajustez à l’endroit exact, ou
                 relancez depuis un téléphone avec GPS pour plus de précision.
               </p>
             ) : null}
           </div>
         ) : (
           <p className="text-muted-foreground rounded-lg border border-dashed px-4 py-6 text-center text-sm">
-            Aucun repère pour l'instant. Détectez votre position ou saisissez des coordonnées pour
-            l'afficher ici.
+            Aucun repère pour l’instant. Détectez votre position ou saisissez des coordonnées pour
+            l’afficher ici.
           </p>
         )}
       </CardContent>

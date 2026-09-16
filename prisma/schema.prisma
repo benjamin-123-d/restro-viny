@@ -206,6 +206,11 @@ model Restaurant {
   /// that are produced ahead and stocked, instead of raw ingredients only.
   foodCostSubRecipes Boolean @default(false)
 
+  /// How purchases are recorded: DIRECT (buy, pay, keep the receipt) or FULL
+  /// (quote, order, delivery, invoice, payment). Direct purchases stay
+  /// possible in FULL mode for the exceptional shop run.
+  purchasingMode PurchasingMode @default(FULL)
+
   isActive    Boolean   @default(true)
   onboardedAt DateTime  @default(now())
   createdAt   DateTime  @default(now())
@@ -233,6 +238,7 @@ model Restaurant {
   purchaseDocuments    PurchaseDocument[]
   supplierMessages     SupplierMessage[]
   ingredientPurchases  IngredientPurchase[]
+  purchaseExpenseLines PurchaseExpenseLine[]
   foodInventories      FoodInventory[]
   foodLosses           FoodLoss[]
   foodProductions      FoodProduction[]
@@ -667,16 +673,16 @@ model StockItem {
   updatedAt         DateTime  @updatedAt
   deletedAt         DateTime?
 
-  restaurant      Restaurant        @relation(fields: [restaurantId], references: [id])
-  defaultSupplier Supplier?         @relation(fields: [defaultSupplierId], references: [id])
-  movements       StockMovement[]
-  usedIn          RecipeComponent[]
-  preparationLines     PreparationComponent[] @relation("PreparationOutput")
-  usedInPreparations   PreparationComponent[] @relation("PreparationInput")
-  ingredientPurchases  IngredientPurchase[]
-  foodInventoryLines   FoodInventoryLine[]
-  foodLosses           FoodLoss[]
-  foodProductions      FoodProduction[]
+  restaurant          Restaurant             @relation(fields: [restaurantId], references: [id])
+  defaultSupplier     Supplier?              @relation(fields: [defaultSupplierId], references: [id])
+  movements           StockMovement[]
+  usedIn              RecipeComponent[]
+  preparationLines    PreparationComponent[] @relation("PreparationOutput")
+  usedInPreparations  PreparationComponent[] @relation("PreparationInput")
+  ingredientPurchases IngredientPurchase[]
+  foodInventoryLines  FoodInventoryLine[]
+  foodLosses          FoodLoss[]
+  foodProductions     FoodProduction[]
 
   bins                 Bin[]
   batches              Batch[]
@@ -1061,30 +1067,30 @@ model RfqSupplier {
 /// A supplier's priced answer — standalone, or against an RFQ so quotes can be
 /// compared line by line.
 model SupplierQuotation {
-  id              String                  @id @default(cuid())
-  restaurantId    String
-  number          String
-  supplierId      String
-  rfqId           String?
-  transactionDate DateTime                @default(now())
-  validUntil      DateTime?
-  status          SupplierQuotationStatus @default(DRAFT)
-  currency        String?
-  subtotal        Decimal                 @default(0) @db.Decimal(14, 2)
-  discountAmount  Decimal                 @default(0) @db.Decimal(14, 2)
-  taxTotal        Decimal                 @default(0) @db.Decimal(14, 2)
-  grandTotal      Decimal                 @default(0) @db.Decimal(14, 2)
-  notes           String?
-  termsText       String?
+  id                String                  @id @default(cuid())
+  restaurantId      String
+  number            String
+  supplierId        String
+  rfqId             String?
+  transactionDate   DateTime                @default(now())
+  validUntil        DateTime?
+  status            SupplierQuotationStatus @default(DRAFT)
+  currency          String?
+  subtotal          Decimal                 @default(0) @db.Decimal(14, 2)
+  discountAmount    Decimal                 @default(0) @db.Decimal(14, 2)
+  taxTotal          Decimal                 @default(0) @db.Decimal(14, 2)
+  grandTotal        Decimal                 @default(0) @db.Decimal(14, 2)
+  notes             String?
+  termsText         String?
   /// The supplier's own reference printed on the quote.
   supplierReference String?
   /// Recorded from the document's totals only, without item lines.
-  summaryOnly     Boolean                 @default(false)
-  createdById     String?
-  submittedAt     DateTime?
-  cancelledAt     DateTime?
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
+  summaryOnly       Boolean                 @default(false)
+  createdById       String?
+  submittedAt       DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
 
   restaurant     Restaurant              @relation(fields: [restaurantId], references: [id])
   supplier       Supplier                @relation(fields: [supplierId], references: [id])
@@ -1285,22 +1291,28 @@ model PurchaseInvoice {
   termsText         String?
   /// Recorded from the document's totals only, without item lines.
   summaryOnly       Boolean               @default(false)
+  /// Bought and paid on the spot (shop, market) without the order chain.
+  isDirectPurchase  Boolean               @default(false)
+  /// How a direct purchase was paid, for the list; the payment itself is a SupplierPayment.
+  paymentMode       PaymentMode?
   createdById       String?
   submittedAt       DateTime?
   cancelledAt       DateTime?
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
 
-  documents       PurchaseDocument[]
-  restaurant      Restaurant                  @relation(fields: [restaurantId], references: [id])
-  supplier        Supplier                    @relation(fields: [supplierId], references: [id])
-  purchaseOrder   PurchaseOrder?              @relation(fields: [purchaseOrderId], references: [id])
-  purchaseReceipt PurchaseReceipt?            @relation(fields: [purchaseReceiptId], references: [id])
-  returnAgainst   PurchaseInvoice?            @relation("InvoiceReturn", fields: [returnAgainstId], references: [id])
-  returns         PurchaseInvoice[]           @relation("InvoiceReturn")
-  items           PurchaseInvoiceItem[]
-  schedule        PurchasePaymentSchedule[]
-  allocations     SupplierPaymentAllocation[]
+  documents           PurchaseDocument[]
+  expenseLines        PurchaseExpenseLine[]
+  ingredientPurchases IngredientPurchase[]
+  restaurant          Restaurant                  @relation(fields: [restaurantId], references: [id])
+  supplier            Supplier                    @relation(fields: [supplierId], references: [id])
+  purchaseOrder       PurchaseOrder?              @relation(fields: [purchaseOrderId], references: [id])
+  purchaseReceipt     PurchaseReceipt?            @relation(fields: [purchaseReceiptId], references: [id])
+  returnAgainst       PurchaseInvoice?            @relation("InvoiceReturn", fields: [returnAgainstId], references: [id])
+  returns             PurchaseInvoice[]           @relation("InvoiceReturn")
+  items               PurchaseInvoiceItem[]
+  schedule            PurchasePaymentSchedule[]
+  allocations         SupplierPaymentAllocation[]
 
   @@unique([restaurantId, number])
   @@index([restaurantId, status])
@@ -2422,7 +2434,6 @@ enum VatTerritory {
   MAYOTTE
 }
 
-
 enum PurchaseDocumentKind {
   QUOTATION
   INVOICE
@@ -2491,7 +2502,6 @@ model SupplierMessage {
   @@index([supplierId])
 }
 
-
 // ═══════════════════════════════════════════════════════════════════════════
 //  FOOD COST — ingredients, recipe cards, frozen sale cost, counts, losses
 // ═══════════════════════════════════════════════════════════════════════════
@@ -2540,26 +2550,66 @@ model PreparationComponent {
 
 /// A quick market purchase: so many purchase units for so much, straight into stock.
 model IngredientPurchase {
-  id            String   @id @default(cuid())
-  restaurantId  String
-  stockItemId   String
-  purchasedAt   DateTime @default(now())
+  id                String   @id @default(cuid())
+  restaurantId      String
+  stockItemId       String
+  purchasedAt       DateTime @default(now())
   /// In purchase units ("2" paniers).
-  quantity      Decimal  @db.Decimal(12, 3)
+  quantity          Decimal  @db.Decimal(12, 3)
   /// Amount paid, HT.
-  amount        Decimal  @db.Decimal(12, 2)
+  amount            Decimal  @db.Decimal(12, 2)
   /// Quantity entered into stock, in usage units.
-  usageQuantity Decimal  @db.Decimal(14, 3)
-  note          String?
-  movementId    String?  @unique
-  createdById   String?
-  createdAt     DateTime @default(now())
+  usageQuantity     Decimal  @db.Decimal(14, 3)
+  note              String?
+  movementId        String?  @unique
+  /// The direct purchase ticket this line was detailed from, if any.
+  purchaseInvoiceId String?
+  createdById       String?
+  createdAt         DateTime @default(now())
 
-  restaurant Restaurant     @relation(fields: [restaurantId], references: [id])
-  stockItem  StockItem      @relation(fields: [stockItemId], references: [id])
-  movement   StockMovement? @relation(fields: [movementId], references: [id])
+  restaurant      Restaurant       @relation(fields: [restaurantId], references: [id])
+  stockItem       StockItem        @relation(fields: [stockItemId], references: [id])
+  movement        StockMovement?   @relation(fields: [movementId], references: [id])
+  purchaseInvoice PurchaseInvoice? @relation(fields: [purchaseInvoiceId], references: [id], onDelete: SetNull)
 
   @@index([restaurantId, purchasedAt])
+  @@index([purchaseInvoiceId])
+}
+
+enum PurchasingMode {
+  DIRECT
+  FULL
+}
+
+/// What a purchase was spent on. Only food and drinks feed the food cost;
+/// the rest is what the restaurant costs to run.
+enum PurchaseCategory {
+  DENREES
+  BOISSONS
+  ENTRETIEN
+  MATERIEL
+  EMBALLAGES
+  AUTRE
+}
+
+/// One share of a supplier invoice or shop ticket, by what it was spent on.
+model PurchaseExpenseLine {
+  id                String           @id @default(cuid())
+  restaurantId      String
+  purchaseInvoiceId String
+  category          PurchaseCategory
+  label             String?
+  amountHT          Decimal          @db.Decimal(14, 2)
+  vatRate           Decimal          @default(0) @db.Decimal(5, 2)
+  vatAmount         Decimal          @default(0) @db.Decimal(14, 2)
+  sortOrder         Int              @default(0)
+  createdAt         DateTime         @default(now())
+
+  restaurant      Restaurant      @relation(fields: [restaurantId], references: [id])
+  purchaseInvoice PurchaseInvoice @relation(fields: [purchaseInvoiceId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId, category])
+  @@index([purchaseInvoiceId])
 }
 
 enum FoodInventoryStatus {
@@ -2587,18 +2637,18 @@ model FoodInventory {
 }
 
 model FoodInventoryLine {
-  id             String    @id @default(cuid())
+  id             String   @id @default(cuid())
   inventoryId    String
   stockItemId    String
   location       String?
-  sortOrder      Int       @default(0)
+  sortOrder      Int      @default(0)
   /// What the system believed when the count was opened.
-  theoreticalQty Decimal   @db.Decimal(14, 3)
-  countedQty     Decimal?  @db.Decimal(14, 3)
+  theoreticalQty Decimal  @db.Decimal(14, 3)
+  countedQty     Decimal? @db.Decimal(14, 3)
   /// Net cost of one unit, frozen at validation.
-  unitCost       Decimal   @default(0) @db.Decimal(16, 6)
-  varianceQty    Decimal?  @db.Decimal(14, 3)
-  varianceValue  Decimal?  @db.Decimal(12, 2)
+  unitCost       Decimal  @default(0) @db.Decimal(16, 6)
+  varianceQty    Decimal? @db.Decimal(14, 3)
+  varianceValue  Decimal? @db.Decimal(12, 2)
 
   inventory FoodInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
   stockItem StockItem     @relation(fields: [stockItemId], references: [id])

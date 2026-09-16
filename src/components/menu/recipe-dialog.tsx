@@ -112,7 +112,7 @@ export function RecipeDialog({
 
         {stockItems.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            Créez d'abord les ingrédients dans Inventaire ou Food cost, puis reliez-les ici.
+            Créez d’abord les ingrédients dans Inventaire ou Food cost, puis reliez-les ici.
           </p>
         ) : (
           <div className="flex items-end gap-2">

@@ -60,7 +60,7 @@ export function UsernameCard({ username }: { readonly username: string }) {
       <CardHeader>
         <CardTitle>Identifiant</CardTitle>
         <CardDescription>
-          L'identifiant unique de votre restaurant, créé automatiquement. Choisissez-en
+          L’identifiant unique de votre restaurant, créé automatiquement. Choisissez-en
           un facile à retenir.
         </CardDescription>
       </CardHeader>

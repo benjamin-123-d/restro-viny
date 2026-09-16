@@ -9,9 +9,9 @@
 import type { ZodType } from "zod";
 
 import { withPermission } from "@/actions/helpers";
+import { editContext as editContextFor, fieldsOf, fileOf, parseWith } from "@/actions/upload-helpers";
 import { humanError } from "@/lib/error-messages";
-import { getManagerContextOrNull, type ManagerContext } from "@/lib/manager-auth";
-import { can } from "@/lib/permissions";
+import type { ManagerContext } from "@/lib/manager-auth";
 import { checkDocumentFile } from "@/lib/supplier-documents";
 import {
   documentSourceSchema,
@@ -20,55 +20,18 @@ import {
   quickQuotationSchema,
   quoteRequestSchema,
 } from "@/lib/validators/purchasing";
-import { resolveAccess } from "@/services/access.service";
 import {
   attachPurchaseDocument,
   recordInvoiceFromDocument,
   recordQuotationFromDocument,
   removePurchaseDocument,
   sendQuoteRequests,
-  type IncomingDocument,
 } from "@/services/supplier-documents.service";
 import { failure, success, type ActionResult } from "@/types";
 import type { PurchaseDocumentKind } from "@/types/purchasing";
 
-const editContext = async (): Promise<ManagerContext | string> => {
-  const ctx = await getManagerContextOrNull();
-  if (!ctx) return "NO_RESTAURANT";
-  const access = await resolveAccess(ctx.userId, ctx.restaurantId);
-  if (!access || !can(access, "PURCHASING", "EDIT")) return "FORBIDDEN";
-  return ctx;
-};
-
-/** The typed fields of a form, without its files. */
-const fieldsOf = (formData: FormData): Record<string, string> => {
-  const fields: Record<string, string> = {};
-  formData.forEach((value, key) => {
-    if (typeof value === "string" && key !== "file") fields[key] = value;
-  });
-  return fields;
-};
-
-const fileOf = async (formData: FormData): Promise<IncomingDocument | null> => {
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) return null;
-  return {
-    buffer: Buffer.from(await file.arrayBuffer()),
-    type: file.type,
-    size: file.size,
-    name: file.name,
-  };
-};
-
-const parse = <T>(schema: ZodType<T>, raw: unknown) => {
-  const parsed = schema.safeParse(raw);
-  if (parsed.success) return { data: parsed.data, fieldErrors: null };
-  const fieldErrors: Record<string, string[]> = {};
-  for (const issue of parsed.error.issues) {
-    (fieldErrors[issue.path.map(String).join(".") || "form"] ??= []).push(issue.message);
-  }
-  return { data: null, fieldErrors };
-};
+const editContext = () => editContextFor("PURCHASING");
+const parse = parseWith;
 
 const recordWithDocument = async <TInput extends { source?: "FILE" | "PHOTO" | "EMAIL" }>(
   formData: FormData,

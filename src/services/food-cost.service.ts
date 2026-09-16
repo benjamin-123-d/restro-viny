@@ -355,7 +355,11 @@ export const applyRecipeProposal = async (ctx: FoodCostContext, input: ApplyProp
 // ------------------------------------------------------------ purchases ---
 
 /** « 2 paniers pour 7 € » : stock + 16 000 g, price of a basket 3,50 €. */
-export const recordPurchase = async (ctx: FoodCostContext, input: RecordPurchaseInput): Promise<{ id: string }> => {
+export const recordPurchase = async (
+  ctx: FoodCostContext,
+  input: RecordPurchaseInput,
+  link: { readonly purchaseInvoiceId?: string } = {},
+): Promise<{ id: string }> => {
   const { byId } = await ownedIngredients(ctx.restaurantId);
   const item = byId.get(input.stockItemId);
   if (!item || item.isPreparation) throw new Error(FOOD_INGREDIENT_NOT_FOUND);
@@ -374,6 +378,7 @@ export const recordPurchase = async (ctx: FoodCostContext, input: RecordPurchase
     netUnitCost: round6(netFromGross(gross, num(item.yieldPercent)) ?? gross),
     note: input.note ?? null,
     createdById: ctx.userId,
+    purchaseInvoiceId: link.purchaseInvoiceId ?? null,
   });
 };
 

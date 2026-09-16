@@ -1,0 +1,59 @@
+RESTRO — EMPORTER L'APPLICATION SUR UN AUTRE ORDINATEUR
+=======================================================
+
+L'application tient dans ce dossier, MAIS les données (menu, commandes,
+stock, achats, food cost) sont dans PostgreSQL, qui est installé à part.
+Copier le dossier ne copie donc pas les données : il faut les sauvegarder
+avant, et les restaurer après.
+
+
+SUR L'ORDINATEUR ACTUEL
+-----------------------
+
+1. Double-cliquez sur SAUVEGARDER-BASE.bat
+   Un fichier est créé dans le dossier « sauvegarde »
+   (exemple : sauvegarde\restro-2026-09-16_09-30.dump).
+
+2. Copiez tout le dossier (celui-ci) sur une clé USB ou un disque externe.
+   La sauvegarde part avec lui.
+
+
+SUR L'ORDINATEUR DE LA MAISON
+-----------------------------
+
+3. Installez ces deux logiciels (une seule fois) :
+   - Node.js 22 ou plus     https://nodejs.org
+   - PostgreSQL 17 ou plus  https://www.postgresql.org/download/windows/
+     Pendant l'installation de PostgreSQL, notez le mot de passe choisi.
+
+4. Collez le dossier où vous voulez (par exemple dans Téléchargements).
+
+5. Ouvrez le fichier .env avec le Bloc-notes et vérifiez la ligne
+   DATABASE_URL : elle contient l'utilisateur, le mot de passe et le nom de
+   la base. Elle ressemble à ceci :
+
+       DATABASE_URL="postgresql://UTILISATEUR:MOTDEPASSE@localhost:5432/restro"
+
+   Remplacez UTILISATEUR et MOTDEPASSE par ceux de l'étape 3 si besoin.
+
+6. Créez la base vide « restro » : ouvrez pgAdmin (installé avec
+   PostgreSQL), clic droit sur « Databases » → « Create » → « Database… »,
+   nom : restro.
+
+7. Double-cliquez sur RESTAURER-BASE.bat et tapez OUI.
+   Les données de la sauvegarde sont remises en place.
+
+8. Double-cliquez sur DEMARRER.bat.
+   Le navigateur s'ouvre sur http://localhost:3100. Laissez la fenêtre
+   noire ouverte tant que vous utilisez Restro.
+
+
+BON À SAVOIR
+------------
+
+- La lecture des tickets par photo fonctionne sans internet : le modèle de
+  lecture français est déjà dans le dossier.
+- Chaque ordinateur a ses propres données. Pour repartir des mêmes, refaites
+  une sauvegarde puis une restauration.
+- Faites une sauvegarde de temps en temps : c'est le seul moyen de retrouver
+  vos données si l'ordinateur tombe en panne.

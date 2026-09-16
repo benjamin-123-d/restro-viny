@@ -139,7 +139,7 @@ export function RestaurantProfileForm({
         <CardHeader>
           <CardTitle>Identité</CardTitle>
           <CardDescription>
-            L'enseigne s'affiche en caisse et en tête de facture ; la raison sociale
+            L’enseigne s’affiche en caisse et en tête de facture ; la raison sociale
             figure sur les factures (voir aussi TVA et facturation).
           </CardDescription>
         </CardHeader>
@@ -210,7 +210,7 @@ export function RestaurantProfileForm({
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="p-addr2">Complément d'adresse</FieldLabel>
+            <FieldLabel htmlFor="p-addr2">Complément d’adresse</FieldLabel>
             <Input
               id="p-addr2"
               value={form.addressLine2}
@@ -307,14 +307,14 @@ export function RestaurantProfileForm({
         <CardHeader>
           <CardTitle>Licences hors France (Inde)</CardTitle>
           <CardDescription>
-            Uniquement pour un établissement en Inde : la licence FSSAI s'imprime sur la note, le PAN reste
+            Uniquement pour un établissement en Inde : la licence FSSAI s’imprime sur la note, le PAN reste
             interne. En France, renseignez SIRET et TVA dans « TVA et facturation ».
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {profile.fssaiStatus === "expired" ? (
             <p className="rounded-md bg-red-100 px-3 py-2 text-sm text-red-800">
-              Votre licence FSSAI a expiré : renouvelez-la avant d'imprimer d'autres notes.
+              Votre licence FSSAI a expiré : renouvelez-la avant d’imprimer d’autres notes.
             </p>
           ) : profile.fssaiStatus === "expiring" ? (
             <p className="rounded-md bg-amber-100 px-3 py-2 text-sm text-amber-800">
@@ -366,7 +366,7 @@ export function RestaurantProfileForm({
             <ServiceOptionsField value={services} onChange={setServices} />
           </div>
           <div>
-            <p className="mb-2 text-sm font-medium">Horaires d'ouverture</p>
+            <p className="mb-2 text-sm font-medium">Horaires d’ouverture</p>
             <BusinessHoursField value={hours} onChange={setHours} />
           </div>
         </CardContent>
@@ -381,7 +381,7 @@ export function RestaurantProfileForm({
         <CardContent className="flex flex-col gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field>
-              <FieldLabel htmlFor="p-format">Type d'établissement</FieldLabel>
+              <FieldLabel htmlFor="p-format">Type d’établissement</FieldLabel>
               <Select
                 value={restaurantFormat || undefined}
                 onValueChange={(v) => setRestaurantFormat((v ?? "") as RestaurantFormat | "")}
