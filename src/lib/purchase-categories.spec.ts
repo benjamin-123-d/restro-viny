@@ -87,3 +87,20 @@ describe("isFoodCategory", () => {
     expect(isFoodCategory("MATERIEL")).toBe(false);
   });
 });
+
+describe("suggestCategory — libellés de facture de grossiste", () => {
+  it("classe les cabas et les papiers en emballages", () => {
+    expect(suggestCategory("50 CABAS PAPIER BRUN 26X14X33")).toBe("EMBALLAGES");
+    expect(suggestCategory("ROULEAU PAPIER ALU 30M")).toBe("EMBALLAGES");
+  });
+
+  it("classe le petit matériel de cuisine en matériel", () => {
+    expect(suggestCategory("COUPE PATE SOUPLE")).toBe("MATERIEL");
+  });
+
+  it("laisse les vraies denrées tranquilles", () => {
+    expect(suggestCategory("5KG FARINE POUR PIZZA NO3")).toBe("DENREES");
+    expect(suggestCategory("1KG EGRENE 70%VDE 15%MG VBF")).toBe("DENREES");
+    expect(suggestCategory("180G BUCHE LAIT VACHE/CHEVRE")).toBe("DENREES");
+  });
+});

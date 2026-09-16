@@ -24,11 +24,18 @@ import { formatCurrency } from "@/lib/format";
 import { UNIT_LABELS } from "@/lib/inventory";
 import { CATEGORY_DEFAULT_VAT, CATEGORY_LABEL, breakdownTotals, type PurchaseCategory } from "@/lib/purchase-categories";
 import type { ReceiptReading } from "@/lib/receipt-parser";
+import {
+  expenseLinesFrom,
+  linesFromReading,
+  stockLinesFrom,
+  type ReceiptLineDraft,
+} from "@/lib/receipt-lines-state";
 import { cn } from "@/lib/utils";
 import type { IngredientDTO } from "@/types/food-cost";
 
 import { DocumentPicker, type PickedDocument } from "./document-picker";
 import { ExpenseBreakdownEditor, newBreakdownRow } from "./expense-breakdown-editor";
+import { ReceiptLinesTable } from "./receipt-lines-table";
 
 const PAYMENT_OPTIONS = [
   { value: "CARD", label: "Carte bancaire" },
@@ -107,6 +114,8 @@ export function DirectPurchaseForm({
   const [alreadyPaid, setAlreadyPaid] = useState(true);
   const [total, setTotal] = useState("");
   const [breakdown, setBreakdown] = useState<BreakdownState>(emptyBreakdown);
+  const [ticketLines, setTicketLines] = useState<readonly ReceiptLineDraft[]>([]);
+  const [amountsAre, setAmountsAre] = useState<"HT" | "TTC">("TTC");
   const [lines, setLines] = useState<readonly IngredientLine[]>([]);
   const [created, setCreated] = useState<readonly CreatedItem[]>([]);
   const [notes, setNotes] = useState("");
@@ -115,7 +124,10 @@ export function DirectPurchaseForm({
   const [saving, startSaving] = useTransition();
 
   const totalTTC = parseAmount(total) || undefined;
-  const expenseLines = toExpenseLines(breakdown, totalTTC);
+  // With a detailed ticket the lines are the truth: the category breakdown and
+  // the stock entries are read off them rather than typed twice.
+  const hasTicketLines = ticketLines.length > 0;
+  const expenseLines = hasTicketLines ? expenseLinesFrom(ticketLines, amountsAre) : toExpenseLines(breakdown, totalTTC);
   const foodHT = breakdownTotals(expenseLines).foodHT;
   const detailedHT = lines.reduce((s, l) => s + parseAmount(l.amount), 0);
 
@@ -145,7 +157,9 @@ export function DirectPurchaseForm({
       if (r.ticketNumber) setTicketNumber(r.ticketNumber);
       if (r.totalTTC != null) setTotal(amountText(r.totalTTC));
       if (r.paymentMode) setPaymentMode(r.paymentMode);
-      setBreakdown(breakdownFromReading(r));
+      setAmountsAre(r.amountsAre);
+      if (r.lines.length > 0) setTicketLines(linesFromReading(r.lines));
+      else setBreakdown(breakdownFromReading(r));
       setReadFields(
         new Set([
           ...markRead("supplierName", !supplierName ? r.shopName : null),
@@ -174,9 +188,11 @@ export function DirectPurchaseForm({
         alreadyPaid,
         totalTTC: totalTTC ?? 0,
         expenseLines,
-        ingredientLines: lines
-          .filter((l) => l.stockItemId || l.quantity || l.amount)
-          .map((l) => ({ stockItemId: l.stockItemId, quantity: parseAmount(l.quantity), amount: parseAmount(l.amount) })),
+        ingredientLines: hasTicketLines
+          ? stockLinesFrom(ticketLines, amountsAre)
+          : lines
+              .filter((l) => l.stockItemId || l.quantity || l.amount)
+              .map((l) => ({ stockItemId: l.stockItemId, quantity: parseAmount(l.quantity), amount: parseAmount(l.amount) })),
         notes: notes.trim() || undefined,
         source: document?.source,
       };
@@ -321,10 +337,27 @@ export function DirectPurchaseForm({
 
       <section className={section}>
         {stepTitle(3, "Qu'avez-vous acheté ?")}
-        <ExpenseBreakdownEditor value={breakdown} onChange={setBreakdown} totalTTC={totalTTC} error={fieldErrors.expenseLines} />
+        {hasTicketLines ? (
+          <>
+            <FieldHint>
+              Les {ticketLines.length} lignes lues sur le ticket. Corrigez ce qui ne va pas, donnez sa catégorie à chacune, et
+              reliez à un ingrédient celles qui doivent entrer en stock. La répartition des dépenses en découle.
+            </FieldHint>
+            <ReceiptLinesTable
+              lines={ticketLines}
+              onChange={setTicketLines}
+              ingredients={ingredients}
+              amountsAre={amountsAre}
+              ticketTotal={amountsAre === "TTC" ? totalTTC : undefined}
+            />
+            {fieldErrors.expenseLines ? <p className="text-sm text-destructive">{fieldErrors.expenseLines}</p> : null}
+          </>
+        ) : (
+          <ExpenseBreakdownEditor value={breakdown} onChange={setBreakdown} totalTTC={totalTTC} error={fieldErrors.expenseLines} />
+        )}
       </section>
 
-      <section className={section}>
+      <section className={section} hidden={hasTicketLines}>
         {stepTitle(4, "Mettre des ingrédients en stock (facultatif)")}
         <FieldHint>
           Pour que le stock et le prix d&apos;achat suivent, détaillez les denrées : l&apos;ingrédient, la quantité dans

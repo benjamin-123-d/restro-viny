@@ -8,12 +8,13 @@ const nextConfig: NextConfig = {
   // Tesseract and sharp are native/worker packages: keep them required from
   // node_modules, and carry the French reading model into the standalone copy
   // so a ticket can be read without internet on any machine.
-  serverExternalPackages: ["tesseract.js", "sharp"],
+  serverExternalPackages: ["tesseract.js", "sharp", "@napi-rs/canvas", "unpdf"],
   outputFileTracingIncludes: {
     "/**": [
       "./node_modules/@tesseract.js-data/fra/4.0.0_best_int/**",
       "./node_modules/tesseract.js/**",
       "./node_modules/tesseract.js-core/**",
+      "./node_modules/@napi-rs/canvas/**",
     ],
   },
   reactCompiler: true,

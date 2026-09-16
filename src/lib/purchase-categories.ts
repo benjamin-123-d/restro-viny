@@ -65,14 +65,15 @@ const KEYWORDS: readonly (readonly [PurchaseCategory, readonly string[]])[] = [
       "casserole", "poele", "couteau", "fouet", "louche", "spatule", "planche", "bac gastro", "gastro", "passoire",
       "saladier", "plat four", "moule", "thermometre", "balance", "mixeur", "blender", "robot", "friteuse",
       "ustensile", "assiette", "verre", "tasse", "couvert", "fourchette", "cuillere", "plateau", "ampoule",
-      "rallonge", "multiprise", "tablier", "torchon",
+      "rallonge", "multiprise", "tablier", "torchon", "coupe pate", "corne", "rouleau patisserie", "pince",
     ],
   ],
   [
     "EMBALLAGES",
     [
       "barquette", "boite", "emporter", "film", "alu", "aluminium", "sachet", "sac kraft", "papier cuisson",
-      "gobelet", "paille", "serviette", "couvercle", "pot sauce", "etiquette",
+      "gobelet", "paille", "serviette", "couvercle", "pot sauce", "etiquette", "cabas", "papier brun", "poche",
+      "carton", "rouleau caisse", "papier alu",
     ],
   ],
   [

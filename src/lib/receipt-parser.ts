@@ -6,6 +6,7 @@
 
 import { foldText } from "./search-text";
 import { suggestCategory, type PurchaseCategory } from "./purchase-categories";
+import { readReceiptTable } from "./receipt-table";
 
 export interface ReceiptVatRow {
   readonly code: string | null;
@@ -20,6 +21,12 @@ export interface ReceiptLine {
   readonly amount: number;
   readonly category: PurchaseCategory;
   readonly vatRate: number | null;
+  /** The supplier's article code, when the table prints one. */
+  readonly code: string | null;
+  readonly quantity: number | null;
+  readonly unitPrice: number | null;
+  /** « Brasserie », « Crèmerie »… when the invoice groups its lines. */
+  readonly family: string | null;
 }
 
 export interface ReceiptReading {
@@ -33,6 +40,9 @@ export interface ReceiptReading {
   readonly vat: readonly ReceiptVatRow[];
   readonly lines: readonly ReceiptLine[];
   readonly paymentMode: "CARD" | "CASH" | "CHEQUE" | null;
+  /** Whether the line amounts are before or after VAT. */
+  readonly amountsAre: "HT" | "TTC";
+  readonly families: readonly string[];
   readonly confidence: "high" | "medium" | "low";
 }
 
@@ -140,20 +150,31 @@ const findSiret = (text: string): string | null => {
   return digits && digits.length === 14 ? digits : null;
 };
 
+const looksLikeDate = (value: string): boolean => /^\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}$/.test(value);
+
+/** « N° Facture : 294501 » first, then looser wordings — and never a date. */
 const findTicketNumber = (lines: readonly string[]): string | null => {
-  for (const line of lines) {
-    const match =
-      /\b(?:facture|ticket|bon|transaction|trans\.?)\s*(?:n[°o]\.?|no\.?|num(?:ero)?\.?)?\s*:?\s*([A-Z0-9][A-Z0-9/-]{2,})/i.exec(line) ??
-      /\bn[°o]\s*:?\s*([A-Z0-9][A-Z0-9/-]{2,})/i.exec(line);
-    if (match && /\d/.test(match[1])) return match[1];
+  const patterns = [
+    /\bn[°o]\s*(?:de\s*)?(?:facture|ticket|bon|pi[èe]ce)\s*:?\s*([A-Z0-9][A-Z0-9/-]{2,})/i,
+    /\b(?:facture|ticket|bon|transaction|trans\.?)\s*(?:n[°o]\.?|no\.?|num(?:ero)?\.?)\s*:?\s*([A-Z0-9][A-Z0-9/-]{2,})/i,
+    /\bn[°o]\s*:?\s*([A-Z0-9][A-Z0-9/-]{2,})/i,
+    // A till simply prints « TICKET 0452 ».
+    /\b(?:facture|ticket|bon)\s*:?\s*([A-Z0-9][A-Z0-9/-]{2,})/i,
+  ];
+  for (const pattern of patterns) {
+    for (const line of lines) {
+      const value = pattern.exec(line)?.[1];
+      if (value && /\d/.test(value) && !looksLikeDate(value)) return value;
+    }
   }
   return null;
 };
 
 const findShop = (lines: readonly string[]): string | null => {
-  const head = lines.slice(0, 8).map(foldText).join(" \n ");
+  // A wholesaler often names itself only in the small print at the bottom.
+  const whole = lines.map(foldText).join(" \n ");
   for (const [needle, name] of KNOWN_SHOPS) {
-    if (new RegExp(`(^|\\s)${needle}(\\s|$)`).test(head)) return name;
+    if (new RegExp(`(^|\\s)${needle}(\\s|$)`).test(whole)) return name;
   }
   const first = lines.find((line) => {
     const letters = line.replace(/[^A-Za-zÀ-ÿ]/g, "").length;
@@ -199,6 +220,20 @@ export const cleanOcrLine = (line: string): string =>
     .replace(/\s[ÀÁÂÄ]\s*$/, " A")
     .trim();
 
+/** Which printed total the sum of the lines lands on, when either is known. */
+const amountsMatch = (
+  lines: readonly ReceiptLine[],
+  totalHT: number | null,
+  totalTTC: number | null,
+): "HT" | "TTC" | null => {
+  const sum = round2(lines.reduce((total, line) => total + line.amount, 0));
+  if (sum <= 0) return null;
+  const toHT = totalHT == null ? Infinity : Math.abs(sum - totalHT);
+  const toTTC = totalTTC == null ? Infinity : Math.abs(sum - totalTTC);
+  if (Math.min(toHT, toTTC) > 0.05) return null;
+  return toTTC <= toHT ? "TTC" : "HT";
+};
+
 export const parseReceiptText = (text: string): ReceiptReading => {
   const lines = text
     .split(/\r?\n/)
@@ -234,25 +269,24 @@ export const parseReceiptText = (text: string): ReceiptReading => {
   }
   const rateByCode = new Map(vat.filter((v) => v.code).map((v) => [v.code as string, v.rate]));
 
+  // The table reader handles both shapes: a wholesaler's columns and a till's
+  // « label … amount » lines. It also knows which rows are not things bought.
+  const table = readReceiptTable(lines);
   const itemLines: ReceiptLine[] = [];
-  const end = totalLineIndex >= 0 ? totalLineIndex : lines.length;
-  for (const line of lines.slice(0, end)) {
-    const f = foldText(line);
-    if (SKIP_LINE.test(f) || /%\s*\S*\s*\d+[.,]\d{2}\s+\d+[.,]\d{2}/.test(line)) continue;
-    const tail = trailingAmount(line);
-    if (!tail) continue;
-    const label = tail.head.replace(/\s+\d+\s*[xX*]\s*$/, "").trim();
-    if (label.replace(/[^A-Za-zÀ-ÿ]/g, "").length < 3) continue;
-    if (/^\d+\s*[xX*]\s*[\d.,]+$/.test(label)) continue;
+  for (const line of table.lines) {
     // A discount without telling words belongs with the line it discounts.
-    const own = suggestCategory(label);
+    const own = suggestCategory(line.label);
     const previous = itemLines[itemLines.length - 1];
-    const category = tail.amount < 0 && own === "DENREES" && previous ? previous.category : own;
+    const category = line.amount < 0 && own === "DENREES" && previous ? previous.category : own;
     itemLines.push({
-      label,
-      amount: tail.amount,
+      label: line.label,
+      amount: line.amount,
       category,
-      vatRate: tail.code ? (rateByCode.get(tail.code) ?? null) : null,
+      vatRate: line.vatRate ?? (line.vatCode ? (rateByCode.get(line.vatCode) ?? null) : null),
+      code: line.code,
+      quantity: line.quantity,
+      unitPrice: line.unitPrice,
+      family: line.family,
     });
   }
 
@@ -272,6 +306,10 @@ export const parseReceiptText = (text: string): ReceiptReading => {
     vat,
     lines: itemLines,
     paymentMode: findPayment(folded),
+    // The header can lie — « P.U. HT » beside a « Montant TTC » column — so
+    // the totals decide: the lines belong to whichever one they add up to.
+    amountsAre: amountsMatch(itemLines, totalHT, totalTTC) ?? table.amountsAre,
+    families: table.families,
     confidence: consistent ? "high" : totalTTC != null ? "medium" : "low",
   };
 };

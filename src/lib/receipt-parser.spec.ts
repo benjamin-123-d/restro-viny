@@ -86,13 +86,13 @@ describe("parseReceiptText — wholesaler invoice", () => {
   });
 
   it("lists the item lines with a suggested category and their VAT rate", () => {
-    expect(reading.lines).toEqual([
-      { label: "TOMATE GRAPPE CAT1 5KG", amount: 12.9, category: "DENREES", vatRate: 5.5 },
-      { label: "CREME FRAICHE EPAISSE 35% 1L", amount: 6.45, category: "DENREES", vatRate: 5.5 },
-      { label: "OIGNON JAUNE 10KG", amount: 9.8, category: "DENREES", vatRate: 5.5 },
-      { label: "JAVEL LA CROIX 5L", amount: 8.4, category: "ENTRETIEN", vatRate: 20 },
-      { label: "LIQUIDE VAISSELLE 5L", amount: 11.5, category: "ENTRETIEN", vatRate: 20 },
-      { label: "POELE INOX 28CM", amount: 24.9, category: "MATERIEL", vatRate: 20 },
+    expect(reading.lines.map((l) => [l.label, l.amount, l.category, l.vatRate])).toEqual([
+      ["TOMATE GRAPPE CAT1 5KG", 12.9, "DENREES", 5.5],
+      ["CREME FRAICHE EPAISSE 35% 1L", 6.45, "DENREES", 5.5],
+      ["OIGNON JAUNE 10KG", 9.8, "DENREES", 5.5],
+      ["JAVEL LA CROIX 5L", 8.4, "ENTRETIEN", 20],
+      ["LIQUIDE VAISSELLE 5L", 11.5, "ENTRETIEN", 20],
+      ["POELE INOX 28CM", 24.9, "MATERIEL", 20],
     ]);
   });
 
@@ -160,7 +160,7 @@ describe("cleanOcrLine", () => {
       "METRO NANTERRE\nTOMATE GRAPPE 5KG        12,90 À\nJAVEL LA CROIX 51,         8,40 B\nA 5,50$%   27,63   1,32\nB 20,00%   37, 33   7,47\nTOTAL TTC                73,95\nCB                      73,95",
     );
     expect(reading.totalTTC).toBe(73.95);
-    expect(reading.lines.map((l) => l.label)).toEqual(["TOMATE GRAPPE 5KG", "JAVEL LA CROIX 51,"]);
+    expect(reading.lines.map((l) => l.label)).toEqual(["TOMATE GRAPPE 5KG", "JAVEL LA CROIX"]);
     expect(reading.vat.map((v) => v.rate)).toEqual([5.5, 20]);
   });
 });

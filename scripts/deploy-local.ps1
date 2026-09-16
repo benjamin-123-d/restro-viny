@@ -42,7 +42,7 @@ Write-Host "4/5 Copie des modules que la construction ne recopie qu'en partie...
 $packages = @(
   "@img", "sharp", "detect-libc", "semver", "color", "color-string",
   "color-convert", "color-name", "simple-swizzle", "is-arrayish",
-  "tesseract.js", "tesseract.js-core", "@tesseract.js-data",
+  "tesseract.js", "tesseract.js-core", "@tesseract.js-data", "@napi-rs", "unpdf", "pdfjs-dist",
   "bmp-js", "idb-keyval", "is-url", "node-fetch", "wasm-feature-detect", "zlibjs"
 )
 foreach ($package in $packages) {

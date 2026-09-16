@@ -9,9 +9,10 @@ import path from "node:path";
 
 import sharp from "sharp";
 import { createWorker, PSM, type Worker } from "tesseract.js";
-import { extractText, getDocumentProxy } from "unpdf";
+import { extractText, getDocumentProxy, renderPageAsImage } from "unpdf";
 
 import { parseReceiptText, type ReceiptReading } from "@/lib/receipt-parser";
+import { cellsFromPdfItems, cellsFromWords, rowsFromCells, rowsToText, type TextCell } from "@/lib/receipt-rows";
 import type { IncomingDocument } from "@/services/supplier-documents.service";
 
 export const RECEIPT_UNREADABLE = "RECEIPT_UNREADABLE";
@@ -31,7 +32,7 @@ let queue: Promise<unknown> = Promise.resolve();
 const getWorker = (): Promise<Worker> => {
   worker ??= (async () => {
     const w = await createWorker("fra", 1, { langPath: LANG_PATH, cacheMethod: "none", gzip: true });
-    await w.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_BLOCK, preserve_interword_spaces: "1" });
+    await w.setParameters({ preserve_interword_spaces: "1" });
     return w;
   })().catch((error) => {
     worker = null;
@@ -68,6 +69,36 @@ export const prepareForOcr = async (buffer: Buffer): Promise<Buffer> =>
     .png()
     .toBuffer();
 
+interface Pass {
+  readonly text: string;
+  readonly confidence: number;
+}
+
+/** One reading of a picture with one page layout setting. */
+const readWith = async (image: Buffer, mode: PSM): Promise<Pass> => {
+  const w = await getWorker();
+  await w.setParameters({ tessedit_pageseg_mode: mode });
+  const { data } = await w.recognize(image, {}, { text: true, blocks: true });
+  // Words come back with their boxes: rebuilding rows from those keeps a
+  // right-aligned amount on the line of its label, which plain text loses.
+  const words = (data.blocks ?? [])
+    .flatMap((block) => block.paragraphs ?? [])
+    .flatMap((paragraph) => paragraph.lines ?? [])
+    .flatMap((line) => line.words ?? [])
+    .filter((word) => word.text.trim() !== "")
+    .map((word) => ({ text: word.text, bbox: word.bbox }));
+  const text = words.length === 0 ? data.text : rowsToText(rowsFromCells(cellsFromWords(words), 8));
+  return { text, confidence: data.confidence ?? 0 };
+};
+
+/** Tesseract is sure enough that a second attempt would only cost time. */
+const CONFIDENT_ENOUGH = 82;
+
+/**
+ * A crumpled ticket and a scanned invoice do not read the same way: one is a
+ * single block of text, the other a page of columns. Rather than guess, read
+ * it both ways and keep the attempt Tesseract itself trusts more.
+ */
 const ocrImage = async (buffer: Buffer): Promise<string> => {
   let prepared: Buffer;
   try {
@@ -76,18 +107,41 @@ const ocrImage = async (buffer: Buffer): Promise<string> => {
     throw new Error(RECEIPT_UNREADABLE);
   }
   return serially(async () => {
-    const w = await getWorker();
     try {
-      const { data } = await w.recognize(prepared);
-      return data.text;
+      const block = await readWith(prepared, PSM.SINGLE_BLOCK);
+      if (block.confidence >= CONFIDENT_ENOUGH) return block.text;
+      const column = await readWith(prepared, PSM.AUTO);
+      return column.confidence > block.confidence ? column.text : block.text;
     } finally {
       scheduleRelease();
     }
   });
 };
 
+/**
+ * A PDF stores its text in the order it happens to draw it, so on a columned
+ * invoice a label and its amount come out far apart. Each piece does carry its
+ * position, though: same height means same printed line. Rebuilding the rows
+ * that way is the difference between reading the invoice and reading nothing.
+ */
 const pdfText = async (buffer: Buffer): Promise<string> => {
   const pdf = await getDocumentProxy(new Uint8Array(buffer));
+  const cells: TextCell[] = [];
+  for (let page = 1; page <= pdf.numPages; page += 1) {
+    const rendered = await pdf.getPage(page);
+    const height = rendered.getViewport({ scale: 1 }).height;
+    const content = await rendered.getTextContent();
+    cells.push(
+      ...cellsFromPdfItems(
+        content.items as { str: string; transform: number[] }[],
+        page,
+        height,
+      ),
+    );
+  }
+  if (cells.length > 0) return rowsToText(rowsFromCells(cells));
+
+  // A PDF with no positioned text at all: fall back to plain extraction.
   const { text } = await extractText(pdf, { mergePages: true });
   return Array.isArray(text) ? text.join("\n") : text;
 };
@@ -96,6 +150,20 @@ export interface ReceiptScan {
   readonly reading: ReceiptReading;
   readonly text: string;
 }
+
+/**
+ * A PDF that is only a photograph of paper — what a scanner or a phone app
+ * produces. Each page is drawn at 200 dpi and read like any other picture.
+ */
+const scannedPdfText = async (buffer: Buffer): Promise<string> => {
+  const pdf = await getDocumentProxy(new Uint8Array(buffer));
+  const pages: string[] = [];
+  for (let page = 1; page <= Math.min(pdf.numPages, 8); page += 1) {
+    const image = await renderPageAsImage(new Uint8Array(buffer), page, { scale: 3.4, canvasImport: () => import("@napi-rs/canvas") });
+    pages.push(await ocrImage(Buffer.from(image)));
+  }
+  return pages.join("\n");
+};
 
 export const readReceipt = async (file: IncomingDocument): Promise<ReceiptScan> => {
   const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
@@ -106,7 +174,14 @@ export const readReceipt = async (file: IncomingDocument): Promise<ReceiptScan> 
     } catch {
       throw new Error(RECEIPT_UNREADABLE);
     }
-    if (text.replace(/\s/g, "").length < 20) throw new Error(RECEIPT_PDF_SCANNED);
+    // No text in the file: it is a scan, so read the pages as pictures.
+    if (text.replace(/\s/g, "").length < 20) {
+      try {
+        text = await scannedPdfText(file.buffer);
+      } catch {
+        throw new Error(RECEIPT_PDF_SCANNED);
+      }
+    }
   } else {
     text = await ocrImage(file.buffer);
   }
