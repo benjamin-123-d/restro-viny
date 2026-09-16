@@ -20,6 +20,7 @@ export function ChartCard({
   title,
   description,
   legend,
+  story,
   chart,
   table,
   className,
@@ -27,6 +28,8 @@ export function ChartCard({
   readonly title: string;
   readonly description?: string;
   readonly legend?: readonly LegendEntry[];
+  /** The live sentence that reads the chart out loud, above the marks. */
+  readonly story?: ReactNode;
   readonly chart: ReactNode;
   readonly table: ReactNode;
   readonly className?: string;
@@ -87,6 +90,8 @@ export function ChartCard({
           ))}
         </ul>
       ) : null}
+
+      {story && view === "chart" ? <div className="min-w-0">{story}</div> : null}
 
       <div className="min-w-0">{view === "chart" ? chart : table}</div>
     </section>

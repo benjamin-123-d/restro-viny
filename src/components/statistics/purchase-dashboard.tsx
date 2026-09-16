@@ -1,24 +1,16 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import Link from "next/link";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 
 import { PrintButton } from "@/components/orders/print-button";
 import { ChartCard, DataTable } from "@/components/sales/chart-card";
+import { PurchaseDailyChart } from "@/components/statistics/purchase-daily-chart";
 import { PeriodFilter } from "@/components/sales/period-filter";
-import { formatEuroShort, formatPercent } from "@/components/sales/sales-labels";
-import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
-import { formatCurrency, formatDate, TIME_ZONE } from "@/lib/format";
+import { formatPercent } from "@/components/sales/sales-labels";
+import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { PurchaseDashboardDTO } from "@/services/purchase-analytics.service";
-
-const config = {
-  amountHT: { label: "Achats HT", color: "var(--sales-takeaway)" },
-} satisfies ChartConfig;
-
-const fmtDay = (day: string, options: Intl.DateTimeFormatOptions) =>
-  new Date(`${day}T12:00:00Z`).toLocaleDateString("fr-FR", { timeZone: TIME_ZONE, ...options });
 
 const Figure = ({
   label,
@@ -54,11 +46,6 @@ const Figure = ({
 export function PurchaseDashboard({ data }: { readonly data: PurchaseDashboardDTO }) {
   const t = data.totals;
   const lastDay = formatDate(new Date(new Date(data.period.to).getTime() - 1).toISOString());
-  const points = data.daily.map((d) => ({
-    ...d,
-    label: data.daily.length <= 14 ? fmtDay(d.day, { weekday: "short", day: "numeric" }) : fmtDay(d.day, { day: "2-digit", month: "2-digit" }),
-    title: fmtDay(d.day, { weekday: "long", day: "numeric", month: "long" }),
-  }));
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
@@ -109,42 +96,7 @@ export function PurchaseDashboard({ data }: { readonly data: PurchaseDashboardDT
         </p>
       ) : null}
 
-      <ChartCard
-        title="Achats jour par jour"
-        description="Ce qui a été facturé chaque jour, HT. Les achats arrivent par à-coups : ce sont les livraisons."
-        legend={[{ label: "Achats HT", swatch: "bg-sales-takeaway" }]}
-        chart={
-          points.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">Aucun achat sur la période.</p>
-          ) : (
-            <ChartContainer config={config} className="h-[260px] w-full">
-              <BarChart data={points} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
-                <CartesianGrid vertical={false} strokeOpacity={0.35} />
-                <XAxis dataKey="label" tickLine={false} axisLine={false} interval="preserveStartEnd" minTickGap={16} />
-                <YAxis tickFormatter={formatEuroShort} tickLine={false} axisLine={false} width={64} />
-                <ChartTooltip
-                  content={({ active, payload }) =>
-                    active && payload?.length ? (
-                      <div className="rounded-lg border bg-popover p-2 text-sm shadow-md">
-                        <p className="font-medium">{payload[0].payload.title}</p>
-                        <p className="tabular-nums">{formatCurrency(payload[0].payload.amountHT)} HT</p>
-                      </div>
-                    ) : null
-                  }
-                />
-                <Bar dataKey="amountHT" fill="var(--color-amountHT)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ChartContainer>
-          )
-        }
-        table={
-          <DataTable
-            headers={[{ label: "Jour" }, { label: "Acheté HT", numeric: true }]}
-            rows={points.map((p) => [p.title, formatCurrency(p.amountHT)])}
-            footer={["Total", formatCurrency(t.amountHT)]}
-          />
-        }
-      />
+      <PurchaseDailyChart daily={data.daily} totalHT={t.amountHT} documents={t.documents} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <ChartCard

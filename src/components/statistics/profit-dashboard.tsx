@@ -1,26 +1,17 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import Link from "next/link";
 import { TriangleAlertIcon } from "lucide-react";
 
 import { PrintButton } from "@/components/orders/print-button";
 import { ChartCard, DataTable } from "@/components/sales/chart-card";
+import { MarginDailyChart } from "@/components/statistics/margin-daily-chart";
 import { PeriodFilter } from "@/components/sales/period-filter";
-import { formatEuroShort, formatPercent } from "@/components/sales/sales-labels";
-import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
-import { formatCurrency, formatDate, TIME_ZONE } from "@/lib/format";
+import { formatPercent } from "@/components/sales/sales-labels";
+import { formatCurrency, formatDate } from "@/lib/format";
 import { marginSentence } from "@/lib/profit";
 import { cn } from "@/lib/utils";
 import type { ProfitDashboardDTO } from "@/services/profit.service";
-
-const config = {
-  margin: { label: "Marge", color: "var(--sales-delivery)" },
-  materialCost: { label: "Coût matière", color: "var(--sales-takeaway)" },
-} satisfies ChartConfig;
-
-const fmtDay = (day: string, options: Intl.DateTimeFormatOptions) =>
-  new Date(`${day}T12:00:00Z`).toLocaleDateString("fr-FR", { timeZone: TIME_ZONE, ...options });
 
 /**
  * What the period left, read two ways: the margin on the food actually sold —
@@ -31,11 +22,6 @@ export function ProfitDashboard({ data }: { readonly data: ProfitDashboardDTO })
   const m = data.margin;
   const p = data.purchases;
   const lastDay = formatDate(new Date(new Date(data.period.to).getTime() - 1).toISOString());
-  const points = data.daily.map((d) => ({
-    ...d,
-    label: data.daily.length <= 14 ? fmtDay(d.day, { weekday: "short", day: "numeric" }) : fmtDay(d.day, { day: "2-digit", month: "2-digit" }),
-    title: fmtDay(d.day, { weekday: "long", day: "numeric", month: "long" }),
-  }));
   const best = data.dishes.filter((d) => d.hasCost).slice(0, 8);
 
   return (
@@ -60,7 +46,7 @@ export function ProfitDashboard({ data }: { readonly data: ProfitDashboardDTO })
             Ce que vous avez vendu, moins le coût des ingrédients de ces plats — le coût figé au moment de chaque vente.
           </p>
         </div>
-        <p className="text-3xl font-semibold tabular-nums">{formatCurrency(m.margin)}</p>
+        <p className="text-5xl font-semibold tracking-tight">{formatCurrency(m.margin)}</p>
         <p className="text-sm text-muted-foreground">{marginSentence(m, formatCurrency)}</p>
 
         <div className="grid gap-3 sm:grid-cols-3">
@@ -93,48 +79,7 @@ export function ProfitDashboard({ data }: { readonly data: ProfitDashboardDTO })
         ) : null}
       </section>
 
-      <ChartCard
-        title="Jour par jour"
-        description="Pour chaque jour : ce qu'il vous reste après la matière, et ce que la matière a coûté."
-        legend={[
-          { label: "Marge", swatch: "bg-sales-delivery" },
-          { label: "Coût matière", swatch: "bg-sales-takeaway" },
-        ]}
-        chart={
-          points.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">Aucune vente sur la période.</p>
-          ) : (
-            <ChartContainer config={config} className="h-[260px] w-full">
-              <BarChart data={points} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
-                <CartesianGrid vertical={false} strokeOpacity={0.35} />
-                <XAxis dataKey="label" tickLine={false} axisLine={false} interval="preserveStartEnd" minTickGap={16} />
-                <YAxis tickFormatter={formatEuroShort} tickLine={false} axisLine={false} width={64} />
-                <ChartTooltip
-                  content={({ active, payload }) =>
-                    active && payload?.length ? (
-                      <div className="rounded-lg border bg-popover p-2 text-sm shadow-md">
-                        <p className="font-medium">{payload[0].payload.title}</p>
-                        <p className="tabular-nums">Vendu {formatCurrency(payload[0].payload.revenueHT)} HT</p>
-                        <p className="tabular-nums">Matière {formatCurrency(payload[0].payload.materialCost)}</p>
-                        <p className="font-medium tabular-nums">Marge {formatCurrency(payload[0].payload.margin)}</p>
-                      </div>
-                    ) : null
-                  }
-                />
-                <Bar dataKey="materialCost" stackId="j" fill="var(--color-materialCost)" radius={[0, 0, 0, 0]} />
-                <Bar dataKey="margin" stackId="j" fill="var(--color-margin)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ChartContainer>
-          )
-        }
-        table={
-          <DataTable
-            headers={[{ label: "Jour" }, { label: "Vendu HT", numeric: true }, { label: "Matière", numeric: true }, { label: "Marge", numeric: true }]}
-            rows={points.map((d) => [d.title, formatCurrency(d.revenueHT), formatCurrency(d.materialCost), formatCurrency(d.margin)])}
-            footer={["Total", formatCurrency(m.revenueHT), formatCurrency(m.materialCost), formatCurrency(m.margin)]}
-          />
-        }
-      />
+      <MarginDailyChart daily={data.daily} totals={m} />
 
       <ChartCard
         title="Ce qui vous rapporte le plus"
@@ -204,7 +149,7 @@ export function ProfitDashboard({ data }: { readonly data: ProfitDashboardDTO })
             aussi entretien, matériel et emballages.
           </p>
         </div>
-        <p className={cn("text-3xl font-semibold tabular-nums", p.result < 0 && "text-destructive")}>{formatCurrency(p.result)}</p>
+        <p className={cn("text-4xl font-semibold tracking-tight", p.result < 0 && "text-destructive")}>{formatCurrency(p.result)}</p>
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-lg bg-muted/50 p-3">
             <p className="text-xs text-muted-foreground">Vendu HT</p>

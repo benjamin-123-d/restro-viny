@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatCurrency } from "@/lib/format";
@@ -8,6 +8,7 @@ import type { Heatmap, ItemRow, PaymentRow, ServiceRow } from "@/lib/sales-analy
 import { cn } from "@/lib/utils";
 
 import { ChartCard, DataTable } from "./chart-card";
+import { ChartStory } from "./chart-story";
 import {
   formatEuroShort,
   formatPercent,
@@ -25,17 +26,37 @@ function Tip({
   style,
   children,
   label,
+  onMouseEnter,
+  onMouseLeave,
+  onFocus,
+  onBlur,
 }: {
   readonly content: ReactNode;
   readonly className?: string;
   readonly style?: React.CSSProperties;
   readonly children?: ReactNode;
   readonly label: string;
+  readonly onMouseEnter?: () => void;
+  readonly onMouseLeave?: () => void;
+  readonly onFocus?: () => void;
+  readonly onBlur?: () => void;
 }) {
   return (
     <Tooltip>
       <TooltipTrigger
-        render={<div role="img" aria-label={label} tabIndex={0} className={className} style={style} />}
+        render={
+          <div
+            role="img"
+            aria-label={label}
+            tabIndex={0}
+            className={className}
+            style={style}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onFocus={onFocus}
+            onBlur={onBlur}
+          />
+        }
       >
         {children}
       </TooltipTrigger>
@@ -231,11 +252,53 @@ export function HourHeatmap({ heatmap }: { readonly heatmap: Heatmap }) {
   const last = Math.max(heatmap.lastHour, 22);
   const hours = Array.from({ length: last - first + 1 }, (_, i) => first + i);
   const stepValue = heatmap.max / 5;
+  const [slot, setSlot] = useState<{ day: number; hour: number; value: number } | null>(null);
+
+  // The busiest hour of the week, and the whole week's takings, for the line
+  // the reader gets before touching anything.
+  let bestDay = 0;
+  let bestHour = heatmap.firstHour;
+  let total = 0;
+  heatmap.cells.forEach((row, day) =>
+    row.forEach((value, hour) => {
+      total += value;
+      if (value > (heatmap.cells[bestDay]?.[bestHour] ?? 0)) {
+        bestDay = day;
+        bestHour = hour;
+      }
+    }),
+  );
 
   return (
     <ChartCard
       title="Affluence par jour et par heure"
       description="Cumul du chiffre d'affaires TTC sur la période : plus la case est foncée, plus le créneau rapporte."
+      story={
+        heatmap.max > 0 ? (
+          <ChartStory
+            lead={
+              slot
+                ? `${WEEKDAY_LONG[slot.day]}, ${slot.hour} h – ${slot.hour + 1} h`
+                : `Créneau le plus fort : ${WEEKDAY_LONG[bestDay]}, ${bestHour} h`
+            }
+            parts={
+              slot
+                ? [
+                    { label: "sur la période", value: slot.value > 0 ? formatCurrency(slot.value) : "aucune vente" },
+                    ...(slot.value > 0 && total > 0
+                      ? [{ label: "du chiffre d'affaires", value: formatPercent((slot.value / total) * 100, 1) }]
+                      : []),
+                  ]
+                : [
+                    { label: "sur ce créneau", value: formatCurrency(heatmap.max) },
+                    { label: "sur toute la période", value: formatCurrency(total) },
+                  ]
+            }
+            note={slot ? undefined : "Passez sur une case pour lire son créneau."}
+            interactive={false}
+          />
+        ) : null
+      }
       chart={
         heatmap.max === 0 ? (
           <p className="py-10 text-center text-sm text-muted-foreground">Aucune vente sur la période.</p>
@@ -260,6 +323,10 @@ export function HourHeatmap({ heatmap }: { readonly heatmap: Heatmap }) {
                       return (
                         <Tip
                           key={h}
+                          onMouseEnter={() => setSlot({ day, hour: h, value })}
+                          onMouseLeave={() => setSlot(null)}
+                          onFocus={() => setSlot({ day, hour: h, value })}
+                          onBlur={() => setSlot(null)}
                           label={`${WEEKDAY_LONG[day]} ${h} h : ${formatCurrency(value)}`}
                           className={cn(
                             "h-7 rounded-[3px] outline-offset-1",

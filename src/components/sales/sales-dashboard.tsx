@@ -349,7 +349,7 @@ export function SalesDashboard({ data }: { readonly data: SalesDashboardDTO }) {
           <div className="flex flex-col justify-between gap-3 rounded-xl bg-card p-5 shadow-xs ring-1 ring-foreground/10">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Chiffre d&apos;affaires TTC</p>
-              <p className="mt-1 text-4xl font-semibold tracking-tight tabular-nums">
+              <p className="mt-1 text-5xl font-semibold tracking-tight">
                 {formatCurrency(k.revenueTTC)}
               </p>
               <div className="mt-1.5">
