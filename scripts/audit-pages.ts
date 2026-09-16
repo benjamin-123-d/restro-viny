@@ -21,6 +21,8 @@ const prisma = new PrismaClient({
 });
 
 const STATIC_ROUTES = [
+  "/dashboard/purchasing/direct",
+  "/dashboard/purchasing/direct/new",
   "/dashboard/food-cost",
   "/dashboard/food-cost/ingredients",
   "/dashboard/food-cost/fiches",
