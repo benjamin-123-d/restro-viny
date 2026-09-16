@@ -12,7 +12,7 @@ type Tone = "neutral" | "info" | "warn" | "good" | "danger";
 
 const TONE_CLASS: Readonly<Record<Tone, string>> = {
   neutral: "bg-zinc-100 text-zinc-700",
-  info: "bg-blue-100 text-blue-700",
+  info: "bg-accent text-accent-foreground",
   warn: "bg-amber-100 text-amber-800",
   good: "bg-green-100 text-green-700",
   danger: "bg-red-100 text-red-700",
@@ -112,7 +112,7 @@ export const Progress = ({ percent }: { percent: number }) => (
     <div className="h-1.5 w-16 overflow-hidden rounded-full bg-zinc-200">
       <div
         className={`h-full rounded-full ${
-          percent >= 100 ? "bg-green-500" : "bg-blue-500"
+          percent >= 100 ? "bg-green-500" : "bg-primary"
         }`}
         style={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
       />
@@ -194,7 +194,7 @@ export const DocNumber = ({
   href ? (
     <Link
       href={href}
-      className="font-mono text-xs font-medium text-blue-700 hover:underline"
+      className="font-mono text-xs font-medium text-primary hover:underline"
     >
       {number}
     </Link>

@@ -218,7 +218,7 @@ export function DirectPurchaseForm({
 
   const readBadge = (field: string) =>
     readFields.has(field) ? (
-      <span className="ml-1.5 inline-flex items-center gap-0.5 rounded-full bg-sky-100 px-1.5 py-0.5 text-[11px] font-medium text-sky-800 dark:bg-sky-950 dark:text-sky-200">
+      <span className="ml-1.5 inline-flex items-center gap-0.5 rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-medium text-accent-foreground">
         <SparklesIcon className="size-3" aria-hidden />
         lu sur le ticket
       </span>

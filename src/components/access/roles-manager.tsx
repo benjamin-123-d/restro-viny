@@ -26,7 +26,7 @@ const LEVELS: readonly { value: PermissionLevel; label: string }[] = [
 
 const LEVEL_CLASS: Readonly<Record<PermissionLevel, string>> = {
   NONE: "bg-zinc-100 text-zinc-500",
-  READ: "bg-blue-100 text-blue-700",
+  READ: "bg-accent text-accent-foreground",
   EDIT: "bg-green-100 text-green-700",
 };
 
@@ -71,7 +71,7 @@ const newDraft = (): Draft => ({
 const RoleChips = ({ member }: { member: MemberDTO }) => (
   <div className="flex flex-wrap gap-1">
     {member.isOwner && (
-      <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
+      <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
         Propriétaire
       </span>
     )}
@@ -478,7 +478,7 @@ export const RolesManager = ({
                     {role.name}
                   </span>
                   {role.isAdmin && (
-                    <span className="ml-2 rounded bg-violet-100 px-1.5 py-0.5 text-xs font-medium text-violet-700">
+                    <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-xs font-medium text-accent-foreground">
                       admin
                     </span>
                   )}
@@ -521,7 +521,7 @@ export const RolesManager = ({
                   <button
                     type="button"
                     onClick={() => setDraft(draftFrom(role))}
-                    className="text-xs font-medium text-blue-700 hover:underline"
+                    className="text-xs font-medium text-primary hover:underline"
                   >
                     Modifier
                   </button>

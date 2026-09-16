@@ -90,7 +90,7 @@ const toPayload = (
 };
 
 const inputClass =
-  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-red-100";
+  "w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-red-100";
 
 export const EntityForm = ({
   sections,
@@ -190,7 +190,7 @@ export const EntityForm = ({
                       type="checkbox"
                       checked={Boolean(values[field.name])}
                       onChange={(e) => set(field.name, e.target.checked)}
-                      className="mt-0.5 h-4 w-4 accent-blue-600"
+                      className="mt-0.5 h-4 w-4 accent-primary"
                     />
                     <span>
                       <span className="block text-sm font-medium text-zinc-800">

@@ -11,7 +11,7 @@ const STYLE: Readonly<Record<RecipeReliability, { label: string; className: stri
   },
   ADJUSTED: {
     label: "Ajustée",
-    className: "bg-blue-100 text-blue-900 ring-blue-300 dark:bg-blue-950 dark:text-blue-200 dark:ring-blue-800",
+    className: "bg-accent text-accent-foreground ring-border",
     Icon: PencilIcon,
   },
   VERIFIED: {

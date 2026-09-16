@@ -31,7 +31,7 @@ const STATE_BADGE: Record<
 > = {
   UNSENT: { label: LINE_STATE_LABEL.UNSENT, className: "bg-muted text-muted-foreground" },
   FIRED: { label: LINE_STATE_LABEL.FIRED, className: "bg-amber-100 text-amber-800" },
-  PREPARING: { label: LINE_STATE_LABEL.PREPARING, className: "bg-sky-100 text-sky-800" },
+  PREPARING: { label: LINE_STATE_LABEL.PREPARING, className: "bg-accent text-accent-foreground" },
   PREPARED: { label: LINE_STATE_LABEL.PREPARED, className: "bg-emerald-100 text-emerald-800" },
   SERVED: { label: LINE_STATE_LABEL.SERVED, className: "bg-green-100 text-green-800" },
   VOID: { label: LINE_STATE_LABEL.VOID, className: "bg-red-100 text-red-800" },

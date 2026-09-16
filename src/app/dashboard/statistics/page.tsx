@@ -57,7 +57,7 @@ const MonthlyBars = ({ months }: { months: readonly SeriesPoint[] }) => {
         </p>
         <div className="flex items-center gap-4 text-xs text-zinc-600">
           <span className="flex items-center gap-1.5">
-            <span className="inline-block h-2 w-3 rounded-sm bg-blue-500" />
+            <span className="inline-block h-2 w-3 rounded-sm bg-primary" />
             Ventes
           </span>
           <span className="flex items-center gap-1.5">
@@ -75,7 +75,7 @@ const MonthlyBars = ({ months }: { months: readonly SeriesPoint[] }) => {
           >
             <div className="flex h-40 w-full items-end justify-center gap-1">
               <div
-                className="w-1/3 rounded-t bg-blue-500"
+                className="w-1/3 rounded-t bg-primary"
                 style={{ height: `${(month.sales / peak) * 100}%` }}
                 title={`Ventes ${formatCurrency(month.sales)}`}
               />

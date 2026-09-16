@@ -51,7 +51,7 @@ const toNumber = (v: string): number => {
 };
 
 const inputClass =
-  "w-full rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
+  "w-full rounded-md border border-input bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export interface DocumentFormConfig {
   /** Name of the party field sent to the action: "supplierId" / "customerId". */
@@ -471,7 +471,7 @@ export const DocumentForm = ({
               value={documentDiscount}
               onChange={(e) => setDocumentDiscount(e.target.value)}
               placeholder="0"
-              className="w-32 rounded-md border border-zinc-300 bg-white px-2 py-1 text-right text-sm"
+              className="w-32 rounded-md border border-input bg-white px-2 py-1 text-right text-sm"
             />
           </div>
           <div className="flex justify-between text-sm">

@@ -74,7 +74,7 @@ const orderStatus = (
     case "WAITING":
       return { label: "En attente", className: "bg-amber-100 text-amber-900" };
     case "PREPARING":
-      return { label: "En préparation", className: "bg-sky-100 text-sky-900" };
+      return { label: "En préparation", className: "bg-accent text-accent-foreground" };
     case "READY":
       return { label: "Prête", className: "bg-emerald-100 text-emerald-900" };
     default:

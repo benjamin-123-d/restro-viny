@@ -6,7 +6,7 @@ import {
 
 const STATUS_STYLE: Record<KitchenStatus, string> = {
   WAITING: "bg-amber-100 text-amber-900",
-  PREPARING: "bg-sky-100 text-sky-900",
+  PREPARING: "bg-accent text-accent-foreground",
   READY: "bg-emerald-100 text-emerald-900",
 };
 

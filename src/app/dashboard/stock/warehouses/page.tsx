@@ -70,7 +70,7 @@ export default async function WarehousesPage() {
                   </span>
                 )}
                 {row.isDefault && (
-                  <span className="ml-2 rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700">
+                  <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-xs font-medium text-accent-foreground">
                     default
                   </span>
                 )}
