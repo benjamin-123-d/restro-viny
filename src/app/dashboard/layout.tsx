@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar"
+import { RecommendationLampLoader } from "@/components/shared/recommendation-lamp-loader"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { requireUserId } from "@/lib/auth-helpers"
@@ -37,6 +38,7 @@ export default async function DashboardLayout({
       <SidebarInset>
         <SiteHeader staffLoginUsername={share?.username ?? null} />
         {children}
+        {ctx ? <RecommendationLampLoader /> : null}
       </SidebarInset>
     </SidebarProvider>
   )
