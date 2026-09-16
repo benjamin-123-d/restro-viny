@@ -5,34 +5,39 @@ import type {
   StaffStatus,
 } from "@/types/staff";
 
+/**
+ * How the team is named on screen. The trades are named after the job as it is
+ * said in a French kitchen — « salle » and « cuisine », not « waiter » and
+ * « kitchen ».
+ */
 export const STAFF_ROLE_OPTIONS: readonly { value: StaffRole; label: string }[] = [
-  { value: "WAITER", label: "Waiter" },
-  { value: "KITCHEN", label: "Kitchen" },
-  { value: "MANAGEMENT", label: "Management" },
+  { value: "WAITER", label: "Salle" },
+  { value: "KITCHEN", label: "Cuisine" },
+  { value: "MANAGEMENT", label: "Encadrement" },
 ];
 
 export const STAFF_STATUS_OPTIONS: readonly {
   value: StaffStatus;
   label: string;
 }[] = [
-  { value: "ACTIVE", label: "Active" },
-  { value: "ON_LEAVE", label: "On leave" },
-  { value: "INACTIVE", label: "Inactive" },
+  { value: "ACTIVE", label: "En poste" },
+  { value: "ON_LEAVE", label: "En congé" },
+  { value: "INACTIVE", label: "Parti" },
 ];
 
 export const EMPLOYMENT_TYPE_OPTIONS: readonly {
   value: EmploymentType;
   label: string;
 }[] = [
-  { value: "FULL_TIME", label: "Full-time" },
-  { value: "PART_TIME", label: "Part-time" },
-  { value: "CONTRACT", label: "Contract" },
+  { value: "FULL_TIME", label: "Temps plein" },
+  { value: "PART_TIME", label: "Temps partiel" },
+  { value: "CONTRACT", label: "Extra / contrat" },
 ];
 
 export const GENDER_OPTIONS: readonly { value: Gender; label: string }[] = [
-  { value: "MALE", label: "Male" },
-  { value: "FEMALE", label: "Female" },
-  { value: "OTHER", label: "Other" },
+  { value: "MALE", label: "Homme" },
+  { value: "FEMALE", label: "Femme" },
+  { value: "OTHER", label: "Autre" },
 ];
 
 export const staffRoleLabel = (role: StaffRole): string =>

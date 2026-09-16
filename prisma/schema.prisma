@@ -242,6 +242,7 @@ model Restaurant {
   stockChecks          StockCheck[]
   equipmentBreakages   EquipmentBreakage[]
   purchaseLineMemories PurchaseLineMemory[]
+  shifts               Shift[]
   foodInventories      FoodInventory[]
   foodLosses           FoodLoss[]
   foodProductions      FoodProduction[]
@@ -814,6 +815,8 @@ model Staff {
   pinHash               String
   /// Screens this person may open in the staff app. Empty = the trade's default.
   screens               String[]        @default([])
+  /// Contracted hours per week, to weigh the rota against. Null = not agreed.
+  weeklyHours           Int?
   loginFailedAttempts   Int             @default(0)
   loginLockedUntil      DateTime?
   createdAt             DateTime        @default(now())
@@ -823,9 +826,51 @@ model Staff {
   restaurant         Restaurant          @relation(fields: [restaurantId], references: [id])
   stockChecks        StockCheck[]
   equipmentBreakages EquipmentBreakage[]
+  shifts             Shift[]
 
   @@unique([restaurantId, employeeCode])
   @@index([restaurantId])
+}
+
+/// Why someone is — or is not — on the rota that day.
+enum ShiftKind {
+  TRAVAIL
+  FORMATION
+  REPOS
+  CONGE
+  MALADIE
+  ABSENCE
+}
+
+/// One line of the rota: this person, this day, these hours.
+///
+/// The day is stored as « YYYY-MM-DD » rather than a timestamp. A rota is read
+/// in calendar days, and a timestamp drifts by an hour twice a year — the rota
+/// for Sunday 25 October must not become Saturday's.
+///
+/// There is deliberately no unique constraint on (staff, day): a split shift —
+/// lunch service then dinner service — is two rows, and that is normal in a
+/// French restaurant.
+model Shift {
+  id           String    @id @default(cuid())
+  restaurantId String
+  staffId      String
+  day          String
+  kind         ShiftKind @default(TRAVAIL)
+  /// Minutes after midnight. Null on a whole-day absence.
+  startMinute  Int?
+  endMinute    Int?
+  /// Unpaid break, deducted from the hours worked.
+  breakMinutes Int       @default(0)
+  note         String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  staff      Staff      @relation(fields: [staffId], references: [id])
+
+  @@index([restaurantId, day])
+  @@index([staffId, day])
 }
 
 /// A registered Expo push token for a mobile client device. One row per
@@ -921,7 +966,7 @@ enum PurchaseInvoiceStatus {
   CANCELLED
 }
 
-/// Scorecard banding — ERPNext ships these as editable "standings"; Restro
+/// Scorecard banding — ERPNext ships these as editable "standings"; V Suite
 /// computes them from real purchase history instead of manual criteria.
 enum ScorecardStanding {
   EXCELLENT

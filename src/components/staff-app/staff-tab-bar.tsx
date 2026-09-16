@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   BookOpenIcon,
+  CalendarDaysIcon,
   ClipboardListIcon,
   CookingPotIcon,
   ReceiptTextIcon,
@@ -14,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 export const SCREEN_ICONS: Readonly<Record<StaffScreen, LucideIcon>> = {
   COMMANDES: ReceiptTextIcon,
+  PLANNING: CalendarDaysIcon,
   STOCK: ClipboardListIcon,
   PERTES: Trash2Icon,
   CASSE: WineIcon,
@@ -44,7 +46,14 @@ export function StaffTabBar({
       aria-label="Écrans"
       className="fixed inset-x-0 bottom-0 z-30 border-t bg-card/95 px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur"
     >
-      <ul className="mx-auto flex max-w-2xl items-stretch justify-around gap-1">
+      {/* Past five tabs the targets would get too narrow to hit with a thumb,
+          so the bar scrolls sideways instead of squeezing. */}
+      <ul
+        className={cn(
+          "mx-auto flex max-w-2xl items-stretch gap-1",
+          tabs.length > 5 ? "snap-x overflow-x-auto [&>li]:min-w-20" : "justify-around",
+        )}
+      >
         {tabs.map((tab) => {
           const Icon = SCREEN_ICONS[tab.id];
           const active = tab.id === current;

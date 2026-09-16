@@ -75,6 +75,7 @@ function StaffRow({
           <p className="text-muted-foreground text-xs">
             {member.employeeCode} · {member.phone}
             {member.hasPin ? " · code PIN défini" : " · sans code PIN"}
+            {member.weeklyHours ? ` · ${member.weeklyHours} h/semaine` : ""}
           </p>
         </div>
       </div>

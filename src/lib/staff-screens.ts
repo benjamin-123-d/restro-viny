@@ -6,7 +6,7 @@
  * someone's list cannot be reached by typing its address either.
  */
 
-export type StaffScreen = "COMMANDES" | "STOCK" | "PERTES" | "CASSE" | "BASES" | "FICHES";
+export type StaffScreen = "COMMANDES" | "PLANNING" | "STOCK" | "PERTES" | "CASSE" | "BASES" | "FICHES";
 
 export type StaffTrade = "WAITER" | "KITCHEN" | "MANAGEMENT";
 
@@ -27,6 +27,13 @@ export const STAFF_SCREENS: readonly ScreenDefinition[] = [
     purpose: "Les tickets en cours et le service",
     path: "",
     trades: ["WAITER", "KITCHEN"],
+  },
+  {
+    id: "PLANNING",
+    label: "Mon planning",
+    purpose: "Vos horaires de la semaine et vos heures",
+    path: "/planning",
+    trades: ["WAITER", "KITCHEN", "MANAGEMENT"],
   },
   {
     id: "STOCK",

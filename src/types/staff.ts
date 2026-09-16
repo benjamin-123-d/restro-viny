@@ -25,4 +25,8 @@ export interface StaffDTO {
   readonly emergencyContactPhone: string | null;
   readonly notes: string | null;
   readonly hasPin: boolean;
+  /** Contracted hours per week, to weigh the rota against. */
+  readonly weeklyHours: number | null;
+  /** Screens ticked for this person. Empty = the trade's default. */
+  readonly screens: readonly string[];
 }

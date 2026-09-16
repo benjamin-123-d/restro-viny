@@ -41,6 +41,8 @@ const data: StaffWriteData = {
   emergencyContactName: null,
   emergencyContactPhone: null,
   notes: null,
+  weeklyHours: null,
+  screens: [],
 };
 
 describe("staffRepository", () => {

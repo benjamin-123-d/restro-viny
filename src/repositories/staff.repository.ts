@@ -26,6 +26,8 @@ export interface StaffWriteData {
   emergencyContactName: string | null;
   emergencyContactPhone: string | null;
   notes: string | null;
+  weeklyHours: number | null;
+  screens: string[];
 }
 
 export const createStaff = (

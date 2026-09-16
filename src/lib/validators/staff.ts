@@ -38,6 +38,13 @@ const profileFields = {
   emergencyContactName: optionalText(120),
   emergencyContactPhone: optionalText(20),
   notes: optionalText(300),
+  /** Contracted hours per week — 35 h, 39 h, a 20 h student contract… */
+  weeklyHours: z.coerce.number().int().min(1).max(60, "60 heures maximum.").optional(),
+  /** Screens ticked for this person. Empty = the trade's own default. */
+  screens: z
+    .array(z.enum(["COMMANDES", "PLANNING", "STOCK", "PERTES", "CASSE", "BASES", "FICHES"]))
+    .max(7)
+    .optional(),
 };
 
 export const createStaffSchema = z.object({ ...profileFields, pin: pinSchema });

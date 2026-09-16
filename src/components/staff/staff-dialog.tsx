@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { defaultScreens, STAFF_SCREENS, type StaffScreen } from "@/lib/staff-screens";
 import {
   Select,
   SelectContent,
@@ -65,7 +66,13 @@ export function StaffDialog({
     emergencyContactName: staff?.emergencyContactName ?? "",
     emergencyContactPhone: staff?.emergencyContactPhone ?? "",
     notes: staff?.notes ?? "",
+    weeklyHours: staff?.weeklyHours ? String(staff.weeklyHours) : "",
   });
+  // Empty means « whatever the trade gets by default » — the manager only ticks
+  // boxes when this person is an exception.
+  const [screens, setScreens] = useState<readonly StaffScreen[]>(
+    (staff?.screens ?? []).filter((screen): screen is StaffScreen => STAFF_SCREENS.some((s) => s.id === screen)),
+  );
   const [role, setRole] = useState<StaffRole>(staff?.role ?? "WAITER");
   const [status, setStatus] = useState<StaffStatus>(staff?.status ?? "ACTIVE");
   const [gender, setGender] = useState<Gender | "">(staff?.gender ?? "");
@@ -109,6 +116,8 @@ export function StaffDialog({
       emergencyContactName: trimmed(form.emergencyContactName),
       emergencyContactPhone: trimmed(form.emergencyContactPhone),
       notes: trimmed(form.notes),
+      weeklyHours: form.weeklyHours ? Number(form.weeklyHours) : undefined,
+      screens: [...screens],
     };
     save.execute(staff ? { ...base, id: staff.id } : { ...base, pin });
   };
@@ -361,6 +370,73 @@ export function StaffDialog({
                 />
               </Field>
             </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h3 className="text-sm font-semibold">Contrat et accès</h3>
+
+            <Field>
+              <FieldLabel htmlFor="st-hours">Heures par semaine au contrat</FieldLabel>
+              <Input
+                id="st-hours"
+                value={form.weeklyHours}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, weeklyHours: event.target.value.replace(/\D/g, "").slice(0, 2) }))
+                }
+                inputMode="numeric"
+                placeholder="35"
+              />
+              <p className="text-muted-foreground text-xs">
+                Sert à comparer le planning au contrat et à repérer les heures supplémentaires. Laissez vide si rien
+                n&apos;est convenu.
+              </p>
+            </Field>
+
+            <fieldset className="flex flex-col gap-2">
+              <legend className="text-sm font-medium">Écrans autorisés dans l&apos;application du personnel</legend>
+              <p className="text-muted-foreground text-xs">
+                Rien de coché : cette personne voit les écrans habituels de son métier
+                {" ("}
+                {defaultScreens(role)
+                  .map((id) => STAFF_SCREENS.find((screen) => screen.id === id)?.label)
+                  .filter(Boolean)
+                  .join(", ")}
+                {")."} Cochez uniquement pour faire une exception.
+              </p>
+              <div className="grid gap-1.5 sm:grid-cols-2">
+                {STAFF_SCREENS.map((screen) => {
+                  const ticked = screens.includes(screen.id);
+                  return (
+                    <label
+                      key={screen.id}
+                      className="flex cursor-pointer items-start gap-2 rounded-lg border p-2 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={ticked}
+                        onChange={() =>
+                          setScreens((current) =>
+                            current.includes(screen.id)
+                              ? current.filter((id) => id !== screen.id)
+                              : [...current, screen.id],
+                          )
+                        }
+                        className="mt-0.5 size-4"
+                      />
+                      <span>
+                        <span className="block font-medium">{screen.label}</span>
+                        <span className="text-muted-foreground block text-xs">{screen.purpose}</span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+              {screens.length > 0 && !screens.includes("COMMANDES") ? (
+                <p className="text-muted-foreground text-xs">
+                  « Commandes » reste toujours accessible : c&apos;est la raison pour laquelle cette personne se connecte.
+                </p>
+              ) : null}
+            </fieldset>
           </div>
 
           <DialogFooter>

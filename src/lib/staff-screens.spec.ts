@@ -4,18 +4,18 @@ import { canUseScreen, defaultScreens, screensFor, staffTabs } from "./staff-scr
 
 describe("defaultScreens", () => {
   it("gives the kitchen its stock, its losses, its bases and its cards", () => {
-    expect(defaultScreens("KITCHEN")).toEqual(["COMMANDES", "STOCK", "PERTES", "BASES", "FICHES"]);
+    expect(defaultScreens("KITCHEN")).toEqual(["COMMANDES", "PLANNING", "STOCK", "PERTES", "BASES", "FICHES"]);
   });
 
-  it("gives the dining room its service, its losses and its breakages", () => {
-    expect(defaultScreens("WAITER")).toEqual(["COMMANDES", "PERTES", "CASSE"]);
+  it("gives the dining room its service, its rota, its losses and its breakages", () => {
+    expect(defaultScreens("WAITER")).toEqual(["COMMANDES", "PLANNING", "PERTES", "CASSE"]);
   });
 });
 
 describe("screensFor", () => {
   it("falls back to the trade when the manager ticked nothing", () => {
-    expect(screensFor({ role: "WAITER", screens: [] })).toEqual(["COMMANDES", "PERTES", "CASSE"]);
-    expect(screensFor({ role: "WAITER" })).toEqual(["COMMANDES", "PERTES", "CASSE"]);
+    expect(screensFor({ role: "WAITER", screens: [] })).toEqual(["COMMANDES", "PLANNING", "PERTES", "CASSE"]);
+    expect(screensFor({ role: "WAITER" })).toEqual(["COMMANDES", "PLANNING", "PERTES", "CASSE"]);
   });
 
   it("obeys the ticked list, in the order of the tab bar", () => {
@@ -51,6 +51,12 @@ describe("staffTabs", () => {
   it("builds the addresses of the restaurant's own staff app", () => {
     expect(staffTabs({ role: "WAITER" }, "chez-viny")).toEqual([
       { id: "COMMANDES", label: "Commandes", purpose: "Les tickets en cours et le service", href: "/u/chez-viny" },
+      {
+        id: "PLANNING",
+        label: "Mon planning",
+        purpose: "Vos horaires de la semaine et vos heures",
+        href: "/u/chez-viny/planning",
+      },
       { id: "PERTES", label: "Pertes", purpose: "Déclarer ce qui a été jeté, renversé ou refait", href: "/u/chez-viny/pertes" },
       { id: "CASSE", label: "Casse", purpose: "Déclarer un verre, une assiette, un couvert cassé", href: "/u/chez-viny/casse" },
     ]);
