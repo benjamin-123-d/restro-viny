@@ -6,14 +6,17 @@
  * method.
  */
 
+import { z } from "zod";
+
 import { withPermission } from "@/actions/helpers";
 import { editContext, fileOf, parseWith } from "@/actions/upload-helpers";
 import { humanError } from "@/lib/error-messages";
 import { checkDocumentFile } from "@/lib/supplier-documents";
 import { directPurchaseSchema, invoiceBreakdownSchema, purchasingModeSchema } from "@/lib/validators/direct-purchase";
+import { idSchema } from "@/lib/validators/shared";
 import type { ReceiptReading } from "@/lib/receipt-parser";
 import { recordDirectPurchase, setInvoiceBreakdown, setPurchasingMode } from "@/services/direct-purchase.service";
-import { applyMemory } from "@/services/purchase-memory.service";
+import { applyMemory, forgetLine } from "@/services/purchase-memory.service";
 import { readReceipt } from "@/services/receipt-ocr.service";
 import { failure, success, type ActionResult } from "@/types";
 
@@ -68,3 +71,14 @@ export const readReceiptAction = async (formData: FormData): Promise<ActionResul
     return failure(humanError(error instanceof Error ? error.message : undefined));
   }
 };
+
+/** Forget one learned wording, when the application got it wrong for good. */
+export const forgetPurchaseLineAction = withPermission(
+  "PURCHASING",
+  "EDIT",
+  z.object({ id: idSchema }),
+  async (data, ctx) => {
+    await forgetLine(ctx.restaurantId, data.id);
+    return { id: data.id };
+  },
+);

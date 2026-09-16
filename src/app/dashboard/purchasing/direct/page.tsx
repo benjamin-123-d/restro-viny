@@ -4,12 +4,14 @@ import { getFoodCostPageContext } from "@/components/food-cost/page-context";
 import { QuickPurchaseSection } from "@/components/food-cost/quick-purchase-section";
 import { NewButton } from "@/components/forms/doc-actions";
 import { HelpBox } from "@/components/forms/help-box";
+import { PurchaseMemoryList } from "@/components/purchasing/purchase-memory-list";
 import { DocDate, DocNumber, DocTable, Money } from "@/components/purchasing/purchasing-ui";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { paymentModeLabel } from "@/lib/payment-labels";
 import { CATEGORY_LABEL } from "@/lib/purchase-categories";
 import { listDirectPurchases } from "@/services/direct-purchase.service";
+import { listMemory } from "@/services/purchase-memory.service";
 
 export const metadata = { title: "Achats directs" };
 
@@ -23,6 +25,15 @@ export default async function DirectPurchasesPage() {
     );
   }
   const purchases = await listDirectPurchases(page.ctx);
+  const memory = await listMemory(page.ctx.restaurantId, 120);
+  const learned = memory.map((line) => ({
+    id: line.id,
+    label: line.key,
+    code: line.code,
+    category: line.category,
+    ingredient: line.stockItem?.name ?? null,
+    uses: line.uses,
+  }));
 
   return (
     <div className="flex flex-col gap-6 p-4 lg:p-6">
@@ -112,6 +123,11 @@ export default async function DirectPurchasesPage() {
       <section className="flex flex-col gap-3">
         <h2 className="text-base font-semibold">Achat marché</h2>
         <QuickPurchaseSection ctx={page.ctx} canEdit={page.canEdit} limit={5} helpOpen={false} />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-base font-semibold">Ce que l&apos;application a appris de vos tickets</h2>
+        <PurchaseMemoryList lines={learned} canEdit={page.canEdit} />
       </section>
     </div>
   );
