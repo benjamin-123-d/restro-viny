@@ -2,7 +2,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { addMonths, dayShort, hoursText, monthLabel, weekDays, type ShiftKind } from "@/lib/planning";
+import { addMonths, dayShort, hoursText, monthLabel, SHIFT_KINDS, weekDays, type ShiftKind } from "@/lib/planning";
 import { cn } from "@/lib/utils";
 import type { MonthCalendar } from "@/types/planning";
 
@@ -97,10 +97,10 @@ export function MonthCalendarBoard({ calendar, today }: { readonly calendar: Mon
       </div>
 
       <ul className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs">
-        {(["TRAVAIL", "FORMATION", "REPOS", "CONGE", "MALADIE", "ABSENCE"] as const).map((kind) => (
-          <li key={kind} className="flex items-center gap-1.5">
-            <span className={cn("size-2 rounded-full", DOT_STYLES[kind])} aria-hidden />
-            {kind.charAt(0) + kind.slice(1).toLowerCase()}
+        {SHIFT_KINDS.map((kind) => (
+          <li key={kind.id} className="flex items-center gap-1.5">
+            <span className={cn("size-2 rounded-full", DOT_STYLES[kind.id])} aria-hidden />
+            {kind.label}
           </li>
         ))}
       </ul>

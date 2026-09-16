@@ -68,7 +68,7 @@ export default async function MyPlanningPage({
           >
             <ChevronLeftIcon className="size-5" />
           </Link>
-          <span className="text-center text-base font-semibold capitalize">{weekLabel(week.monday)}</span>
+          <span className="text-center text-base font-semibold first-letter:uppercase">{weekLabel(week.monday)}</span>
           <Link
             href={href(addDays(week.monday, 7))}
             aria-label="Semaine suivante"
@@ -98,7 +98,7 @@ export default async function MyPlanningPage({
                 )}
               >
                 <p className="flex items-baseline justify-between gap-2">
-                  <span className="text-base font-semibold capitalize">{dayLong(day)}</span>
+                  <span className="text-base font-semibold first-letter:uppercase">{dayLong(day)}</span>
                   {day === today ? <span className="text-primary text-xs font-medium">aujourd&apos;hui</span> : null}
                 </p>
 

@@ -96,7 +96,11 @@ export function WeekRotaBoard({ rota, canEdit }: { readonly rota: WeekRota; read
           <Button variant="outline" size="icon" render={<Link href={href(addDays(rota.monday, -7))} aria-label="Semaine précédente" />}>
             <ChevronLeftIcon className="size-4" />
           </Button>
-          <span className="min-w-56 text-center text-sm font-semibold capitalize">{weekLabel(rota.monday)}</span>
+          {/* first-letter, not capitalize: « semaine du 14 au 20 septembre » is
+              one sentence, and French does not capitalise every word of it. */}
+          <span className="min-w-56 text-center text-sm font-semibold first-letter:uppercase">
+            {weekLabel(rota.monday)}
+          </span>
           <Button variant="outline" size="icon" render={<Link href={href(addDays(rota.monday, 7))} aria-label="Semaine suivante" />}>
             <ChevronRightIcon className="size-4" />
           </Button>
