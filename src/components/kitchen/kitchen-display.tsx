@@ -209,7 +209,7 @@ export function KitchenDisplay({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-muted-foreground text-sm">{restaurantName}</p>
-          <h1 className="text-xl font-bold">Kitchen · {staffName}</h1>
+          <h1 className="text-xl font-bold">Cuisine · {staffName}</h1>
         </div>
         <div className="flex items-center gap-1">
           <SoundToggle

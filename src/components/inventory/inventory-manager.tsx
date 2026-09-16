@@ -44,8 +44,11 @@ const groupByCategory = (
 export function InventoryManager({
   items,
   purchaseSection,
+  checksToReview = 0,
 }: {
   readonly items: StockItemDTO[];
+  /** Morning checks the kitchen sent, waiting for the manager's answer. */
+  readonly checksToReview?: number;
   /** The shared market purchase block, rendered on the server. */
   readonly purchaseSection?: React.ReactNode;
 }) {
@@ -115,6 +118,18 @@ export function InventoryManager({
           <Button onClick={openNew}>Ajouter un article</Button>
         </div>
       </div>
+
+      {checksToReview > 0 ? (
+        <Link
+          href="/dashboard/inventory/releves"
+          className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200 hover:bg-amber-100 dark:bg-amber-950 dark:text-amber-100 dark:ring-amber-900"
+        >
+          <span className="font-medium">
+            {checksToReview} relevé{checksToReview > 1 ? "s" : ""} du matin en attente de votre décision
+          </span>
+          <span className="underline underline-offset-2">Voir les écarts signalés</span>
+        </Link>
+      ) : null}
 
       {purchaseSection ? (
         <details className="group rounded-xl bg-card shadow-xs ring-1 ring-foreground/10" open={items.length > 0}>

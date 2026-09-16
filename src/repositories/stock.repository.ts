@@ -106,6 +106,8 @@ export interface MovementInput {
   /// Net cost of one unit at the time of the movement (food cost valuation).
   unitCost?: number | null;
   createdById: string | null;
+  /// Set when a cook or a waiter declared the movement from the staff app.
+  createdByStaffId?: string | null;
 }
 
 const writeMovement = (
@@ -130,6 +132,7 @@ const writeMovement = (
       stockReconciliationItemId: input.stockReconciliationItemId ?? null,
       unitCost: input.unitCost ?? null,
       createdById: input.createdById,
+      createdByStaffId: input.createdByStaffId ?? null,
     },
   });
 

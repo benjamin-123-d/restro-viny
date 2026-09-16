@@ -30,7 +30,7 @@ export function StaffHome({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-muted-foreground text-sm">{restaurantName}</p>
-          <h1 className="text-xl font-bold">Hi, {name}</h1>
+          <h1 className="text-xl font-bold">Bonjour {name}</h1>
           <p className="text-muted-foreground text-sm">
             Signed in as {ROLE_LABEL[role] ?? role}
           </p>

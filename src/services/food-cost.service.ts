@@ -504,7 +504,11 @@ export const deleteInventory = async (ctx: FoodCostContext, id: string): Promise
 
 // -------------------------------------------------------------- losses ---
 
-export const recordLoss = async (ctx: FoodCostContext, input: RecordLossInput): Promise<void> => {
+export const recordLoss = async (
+  ctx: FoodCostContext,
+  input: RecordLossInput,
+  declaredBy: { readonly staffId?: string } = {},
+): Promise<void> => {
   const { byId, costOf } = await ownedIngredients(ctx.restaurantId);
   const lossAt = input.lossAt ?? new Date();
   const movement = (stockItemId: string, quantity: number): MovementInput => ({
@@ -517,6 +521,7 @@ export const recordLoss = async (ctx: FoodCostContext, input: RecordLossInput): 
     orderId: null,
     unitCost: costOf(stockItemId),
     createdById: ctx.userId,
+    createdByStaffId: declaredBy.staffId ?? null,
   });
 
   if (input.kind === "INGREDIENT") {
@@ -525,7 +530,16 @@ export const recordLoss = async (ctx: FoodCostContext, input: RecordLossInput): 
     const value = round2(input.quantity * (costOf(item.id) ?? 0));
     await applyMovementsWith([movement(item.id, input.quantity)], (tx) =>
       tx.foodLoss.create({
-        data: { restaurantId: ctx.restaurantId, lossAt, stockItemId: item.id, quantity: input.quantity, value, reason: input.reason, createdById: ctx.userId },
+        data: {
+          restaurantId: ctx.restaurantId,
+          lossAt,
+          stockItemId: item.id,
+          quantity: input.quantity,
+          value,
+          reason: input.reason,
+          createdById: ctx.userId,
+          createdByStaffId: declaredBy.staffId ?? null,
+        },
       }),
     );
     return;
@@ -543,6 +557,7 @@ export const recordLoss = async (ctx: FoodCostContext, input: RecordLossInput): 
         value: round2(card.portionCost * input.quantity),
         reason: input.reason,
         createdById: ctx.userId,
+        createdByStaffId: declaredBy.staffId ?? null,
       },
     }),
   );

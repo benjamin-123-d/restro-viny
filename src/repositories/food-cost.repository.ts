@@ -31,6 +31,7 @@ export const INGREDIENT_SELECT = {
   unit: true,
   category: true,
   onHand: true,
+  reorderLevel: true,
   costPerUnit: true,
   purchaseUnit: true,
   purchaseFactor: true,

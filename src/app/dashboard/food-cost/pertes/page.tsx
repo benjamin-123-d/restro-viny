@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { formatQuantity } from "@/lib/food-cost-format";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { listIngredients, listLosses, listRecipeCards } from "@/services/food-cost.service";
+import { listBreakages } from "@/services/staff-declarations.service";
 
 export const metadata = { title: "Pertes — Food cost" };
 
@@ -18,11 +19,13 @@ export default async function FoodLossesPage() {
       </div>
     );
   }
-  const [ingredients, cards, losses] = await Promise.all([
+  const [ingredients, cards, losses, breakages] = await Promise.all([
     listIngredients(page.ctx),
     listRecipeCards(page.ctx),
     listLosses(page.ctx),
+    listBreakages(page.ctx.restaurantId),
   ]);
+  const breakageTotal = breakages.reduce((s, b) => s + b.value, 0);
   const total = losses.reduce((s, l) => s + l.value, 0);
 
   return (
@@ -74,6 +77,49 @@ export default async function FoodLossesPage() {
                       {l.unit ? formatQuantity(l.quantity, l.unit) : `${l.quantity.toLocaleString("fr-FR")} portion(s)`}
                     </td>
                     <td className="px-3 py-2 text-right font-medium tabular-nums">{formatCurrency(l.value)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    <section className="overflow-hidden rounded-xl bg-card shadow-xs ring-1 ring-foreground/10">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-muted/40 px-4 py-2 text-sm">
+          <h2 className="font-semibold">Casse matériel</h2>
+          <span className="text-muted-foreground">
+            Vaisselle et matériel cassés en salle — hors food cost
+            {breakageTotal > 0 ? ` · ${formatCurrency(breakageTotal)}` : ""}
+          </span>
+        </div>
+        {breakages.length === 0 ? (
+          <p className="p-6 text-center text-sm text-muted-foreground">
+            Aucune casse déclarée. Les serveurs la déclarent depuis leur téléphone, écran « Casse ».
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] text-sm">
+              <thead className="text-xs text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-2 text-left font-medium">Date</th>
+                  <th className="px-3 py-2 text-left font-medium">Objet</th>
+                  <th className="px-3 py-2 text-left font-medium">Déclaré par</th>
+                  <th className="px-3 py-2 text-left font-medium">Motif</th>
+                  <th className="px-3 py-2 text-right font-medium">Quantité</th>
+                  <th className="px-3 py-2 text-right font-medium">Valeur</th>
+                </tr>
+              </thead>
+              <tbody>
+                {breakages.map((row) => (
+                  <tr key={row.id} className="border-t">
+                    <td className="px-4 py-2 text-muted-foreground">{formatDateTime(row.brokeAt)}</td>
+                    <td className="px-3 py-2 font-medium">{row.label}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{row.declaredBy ?? "—"}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{row.reason ?? "—"}</td>
+                    <td className="px-3 py-2 text-right tabular-nums">{row.quantity.toLocaleString("fr-FR")}</td>
+                    <td className="px-3 py-2 text-right tabular-nums">
+                      {row.value > 0 ? formatCurrency(row.value) : "—"}
+                    </td>
                   </tr>
                 ))}
               </tbody>

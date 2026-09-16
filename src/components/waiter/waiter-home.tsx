@@ -99,7 +99,7 @@ export function WaiterHome({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-muted-foreground text-sm">{restaurantName}</p>
-          <h1 className="text-xl font-bold">Hi, {staffName}</h1>
+          <h1 className="text-xl font-bold">Bonjour {staffName}</h1>
         </div>
         <div className="flex items-center gap-1">
           <SoundToggle

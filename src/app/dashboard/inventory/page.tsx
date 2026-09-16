@@ -4,6 +4,7 @@ import { InventoryManager } from "@/components/inventory/inventory-manager";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { getManagerContextOrNull } from "@/lib/manager-auth";
+import { countStockChecksToReview } from "@/services/staff-declarations.service";
 import { listStock } from "@/services/stock.service";
 
 export default async function InventoryPage() {
@@ -24,10 +25,14 @@ export default async function InventoryPage() {
     );
   }
 
-  const items = await listStock(ctx.restaurantId);
+  const [items, toReview] = await Promise.all([
+    listStock(ctx.restaurantId),
+    countStockChecksToReview(ctx.restaurantId),
+  ]);
   return (
     <InventoryManager
       items={items}
+      checksToReview={toReview}
       purchaseSection={page ? <QuickPurchaseSection ctx={page.ctx} canEdit={page.canEdit} limit={5} helpOpen={false} /> : null}
     />
   );
