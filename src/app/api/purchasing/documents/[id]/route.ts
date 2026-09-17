@@ -14,8 +14,10 @@ export async function GET(
 ): Promise<Response> {
   const ctx = await getManagerContextOrNull();
   if (!ctx) return new Response("Non connecté", { status: 401 });
+  // The accountant reads the same files from their own desk without being given
+  // the purchasing module: the document *is* the justification of the entry.
   const access = await resolveAccess(ctx.userId, ctx.restaurantId);
-  if (!access || !can(access, "PURCHASING", "READ")) {
+  if (!access || (!can(access, "PURCHASING", "READ") && !can(access, "ACCOUNTING", "READ"))) {
     return new Response("Accès refusé", { status: 403 });
   }
 

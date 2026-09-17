@@ -291,6 +291,51 @@ Next 16.2.10 · React 19.2.4 · TypeScript 5 · Tailwind v4 · shadcn/ui + `@bas
 ---
 
 
+## Espace comptable — encodage des factures (2026-09-17, SHIPPED)
+
+Un espace séparé pour l'expert-comptable, calqué sur l'écran d'encodage de **Regate** (arrêté par
+Qonto fin de l'été 2026). Périmètre voulu par le gérant : **l'encodage seul** — pas de grand livre,
+pas de balance, pas d'export FEC ; la façon d'exporter sera décidée plus tard.
+
+- **Écrans :** `/comptable` (la bannette, la plus ancienne facture en haut) et
+  `/comptable/piece/[id]` (l'encodage : pièce à gauche, saisie à droite, `‹ ›` pour enchaîner).
+  Layout propre, sans la barre latérale du restaurant. Accès par le module **ACCOUNTING** du système
+  de rôles existant : le gérant crée un rôle « Comptable » dans `/dashboard/settings/roles` et invite
+  le comptable (`inviteMember`) — aucun nouveau système de connexion.
+- **Les règles, en pur et testé** — `lib/accounting-rules.ts` (22 specs) : partie double au centime,
+  non-compensation, ventilation qui doit totaliser le TTC, justificatif obligatoire, exercice clos
+  refusé, **intangibilité** (une pièce comptabilisée ne se modifie pas — `reverseLines` écrit le
+  miroir), **numéro attribué à la comptabilisation** (`AAAAMM` + 6 chiffres) pour que la séquence
+  n'ait pas de trous. `blockingReasons()` rend des phrases françaises, pas un booléen.
+- **Plan comptable** — `lib/chart-of-accounts.ts` (16 specs) : sous-ensemble PCG restauration semé
+  au premier accès *si le restaurant n'a aucun compte*, et surtout `rootTypeForCode`/`subTypeForCode`
+  qui lisent la nature dans le numéro — c'est ce qui permet au comptable de **créer un compte en
+  tapant son numéro** au milieu d'une saisie, et d'en renommer un sans quitter l'écran.
+- **Couches :** `AccountingPiece` / `AccountingPieceEvent` / `AccountingRule` (migrations
+  `accounting_encoding` + `accounting_piece_links`, additives) ; `JournalEntryLine` gagne
+  `auxiliaryCode`/`auxiliaryName` (le `FAUCH01` sous le 401) ; `Supplier`/`Customer` gagnent
+  `accountingCode`. `repositories/accounting-encoding.repository.ts` →
+  `services/accounting-encoding.service.ts` (18 specs) → `actions/accounting-encoding.actions.ts`
+  (`withPermission("ACCOUNTING", …)`).
+- **Réutilisé plutôt que refait :** `postJournal` et `cancelJournal` du repository comptable existant
+  (le miroir et le grand livre y étaient déjà), `createChart`, la route
+  `/api/purchasing/documents/[id]` pour la visionneuse (élargie au droit ACCOUNTING), et la
+  `ReceiptReading` de la lecture de tickets pour pré-remplir l'en-tête.
+- **La mémoire :** `AccountingRule` retient tiers → compte de charge **à la comptabilisation
+  seulement** — une réponse qu'une personne a validée. C'est la permanence des méthodes rendue
+  concrète, et le même mécanisme que `PurchaseLineMemory` côté achats.
+- **Gotcha :** `src/repositories/accounting.repository.ts` existait déjà et je l'ai écrasé au
+  premier jet — restauré par `git checkout`, le nouveau code vit dans
+  `accounting-encoding.repository.ts`. Vérifier l'existence d'un fichier avant d'écrire.
+- **Vérifié :** `scripts/e2e-encodage.ts` sur la vraie base — 10 contrôles (ventilation équilibrée,
+  numéro `202607000001`, écriture POSTED, pièce verrouillée, deuxième comptabilisation refusée,
+  contre-passation qui rouvre), puis nettoyage complet. Suite **1182 verte**, tsc/eslint propres.
+- **Hors périmètre assumé :** grand livre, balance, FEC, lettrage, rapprochement bancaire (le champ
+  « Rechercher une transaction » de Regate suppose une connexion bancaire). L'onglet *Commentaires*
+  est posé mais vide.
+
+---
+
 ## Notes / Gotchas
 
 - **`AGENT.md` vs `AGENTS.md`:** `.github/copilot-instructions.md` says "AGENT.md", but the live file imported by `CLAUDE.md` is **`AGENTS.md`**. Treat `AGENTS.md` as the source of truth.

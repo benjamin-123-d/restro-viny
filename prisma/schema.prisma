@@ -243,6 +243,8 @@ model Restaurant {
   equipmentBreakages   EquipmentBreakage[]
   purchaseLineMemories PurchaseLineMemory[]
   shifts               Shift[]
+  accountingPieces     AccountingPiece[]
+  accountingRules      AccountingRule[]
   foodInventories      FoodInventory[]
   foodLosses           FoodLoss[]
   foodProductions      FoodProduction[]
@@ -1017,6 +1019,8 @@ model Supplier {
   restaurantId     String
   code             String
   name             String
+  /// Its auxiliary account under 401 — « FAUCH01 ». Given by the accountant.
+  accountingCode   String?
   supplierGroupId  String?
   taxId            String?
   contactPerson    String?
@@ -1360,6 +1364,7 @@ model PurchaseInvoice {
   documents           PurchaseDocument[]
   expenseLines        PurchaseExpenseLine[]
   ingredientPurchases IngredientPurchase[]
+  accountingPieces    AccountingPiece[]
   restaurant          Restaurant                  @relation(fields: [restaurantId], references: [id])
   supplier            Supplier                    @relation(fields: [supplierId], references: [id])
   purchaseOrder       PurchaseOrder?              @relation(fields: [purchaseOrderId], references: [id])
@@ -1570,6 +1575,8 @@ model Customer {
   restaurantId       String
   code               String
   name               String
+  /// Its auxiliary account under 411 — « CMAIR01 ». Given by the accountant.
+  accountingCode     String?
   customerGroupId    String?
   territoryId        String?
   taxId              String?
@@ -1833,15 +1840,16 @@ model SalesInvoice {
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
-  restaurant    Restaurant                  @relation(fields: [restaurantId], references: [id])
-  customer      Customer                    @relation(fields: [customerId], references: [id])
-  salesOrder    SalesOrder?                 @relation(fields: [salesOrderId], references: [id])
-  deliveryNote  DeliveryNote?               @relation(fields: [deliveryNoteId], references: [id])
-  returnAgainst SalesInvoice?               @relation("SalesInvoiceReturn", fields: [returnAgainstId], references: [id])
-  returns       SalesInvoice[]              @relation("SalesInvoiceReturn")
-  items         SalesInvoiceItem[]
-  schedule      SalesPaymentSchedule[]
-  allocations   CustomerPaymentAllocation[]
+  restaurant       Restaurant                  @relation(fields: [restaurantId], references: [id])
+  customer         Customer                    @relation(fields: [customerId], references: [id])
+  salesOrder       SalesOrder?                 @relation(fields: [salesOrderId], references: [id])
+  deliveryNote     DeliveryNote?               @relation(fields: [deliveryNoteId], references: [id])
+  returnAgainst    SalesInvoice?               @relation("SalesInvoiceReturn", fields: [returnAgainstId], references: [id])
+  returns          SalesInvoice[]              @relation("SalesInvoiceReturn")
+  items            SalesInvoiceItem[]
+  schedule         SalesPaymentSchedule[]
+  allocations      CustomerPaymentAllocation[]
+  accountingPieces AccountingPiece[]
 
   @@unique([restaurantId, number])
   @@index([restaurantId, status])
@@ -2409,9 +2417,10 @@ model JournalEntry {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  restaurant Restaurant         @relation(fields: [restaurantId], references: [id])
-  lines      JournalEntryLine[]
-  glEntries  GLEntry[]
+  restaurant      Restaurant         @relation(fields: [restaurantId], references: [id])
+  lines           JournalEntryLine[]
+  glEntries       GLEntry[]
+  accountingPiece AccountingPiece?
 
   @@unique([restaurantId, number])
   @@index([restaurantId, status])
@@ -2426,6 +2435,10 @@ model JournalEntryLine {
   credit         Decimal @default(0) @db.Decimal(14, 2)
   description    String?
   sortOrder      Int     @default(0)
+  /// The third party's own sub-account under a collective one — « FAUCH01 »
+  /// beneath 401000. The collective says what is owed; the auxiliary says to whom.
+  auxiliaryCode  String?
+  auxiliaryName  String?
 
   journalEntry JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
   account      Account      @relation(fields: [accountId], references: [id])
@@ -2457,6 +2470,121 @@ model GLEntry {
   @@index([restaurantId, postingDate])
   @@index([accountId, postingDate])
   @@index([journalEntryId])
+}
+
+// ===========================================================================
+//  ENCODAGE COMPTABLE — the accountant's desk
+// ===========================================================================
+
+enum AccountingPieceKind {
+  ACHAT
+  VENTE
+}
+
+enum AccountingPieceStatus {
+  A_TRAITER
+  ENREGISTREE
+  COMPTABILISEE
+}
+
+/// Une pièce à encoder: the document on the accountant's desk, and what they
+/// have typed about it so far.
+///
+/// It is kept apart from the JournalEntry it produces because the two answer
+/// different questions. The piece is what the invoice says — a supplier, a due
+/// date, a VAT rate, a scan someone photographed; the entry is what the
+/// accounts say. Merging them would mean either an entry carrying fields no
+/// ledger wants, or an invoice losing what it was read from.
+model AccountingPiece {
+  id           String                @id @default(cuid())
+  restaurantId String
+  kind         AccountingPieceKind
+  status       AccountingPieceStatus @default(A_TRAITER)
+
+  /// The proof. A piece cannot be posted without one.
+  documentId        String?
+  /// Where it came from, when the application had already captured it.
+  purchaseInvoiceId String?
+  salesInvoiceId    String?
+  supplierId        String?
+  customerId        String?
+
+  /// The header, as read or as typed.
+  thirdPartyName String?
+  auxiliaryCode  String?
+  invoiceNumber  String?
+  invoiceDate    DateTime?
+  dueDate        DateTime?
+  /// The date that decides the period — never assumed to be the invoice date.
+  entryDate      DateTime?
+  amountTTC      Decimal   @default(0) @db.Decimal(14, 2)
+  amountHT       Decimal   @default(0) @db.Decimal(14, 2)
+  vatRate        Decimal?  @db.Decimal(5, 2)
+  amountVAT      Decimal   @default(0) @db.Decimal(14, 2)
+  label          String?
+  /// Charges constatées d'avance: the charge belongs to a later period.
+  isCca          Boolean   @default(false)
+
+  isPaid      Boolean      @default(false)
+  paymentMode PaymentMode?
+  paidOn      DateTime?
+
+  /// Which header fields the automatic reading filled in — the green ticks.
+  readFields String[] @default([])
+
+  journalEntryId String?   @unique
+  postedAt       DateTime?
+  createdById    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  restaurant      Restaurant             @relation(fields: [restaurantId], references: [id])
+  document        PurchaseDocument?      @relation(fields: [documentId], references: [id])
+  journalEntry    JournalEntry?          @relation(fields: [journalEntryId], references: [id])
+  purchaseInvoice PurchaseInvoice?       @relation(fields: [purchaseInvoiceId], references: [id])
+  salesInvoice    SalesInvoice?          @relation(fields: [salesInvoiceId], references: [id])
+  events          AccountingPieceEvent[]
+
+  @@index([restaurantId, status])
+  @@index([restaurantId, kind])
+  @@index([purchaseInvoiceId])
+  @@index([salesInvoiceId])
+}
+
+/// The trail intangibility requires: who touched the piece, when, and what for.
+/// Nothing here is ever updated or deleted — that is the whole point of it.
+model AccountingPieceEvent {
+  id        String   @id @default(cuid())
+  pieceId   String
+  kind      String
+  detail    String?
+  actorId   String?
+  actorName String?
+  createdAt DateTime @default(now())
+
+  piece AccountingPiece @relation(fields: [pieceId], references: [id], onDelete: Cascade)
+
+  @@index([pieceId, createdAt])
+}
+
+/// « Ce fournisseur va sur ce compte » — permanence des méthodes, written down
+/// so the next invoice from the same shop lands where the last one did.
+model AccountingRule {
+  id            String              @id @default(cuid())
+  restaurantId  String
+  kind          AccountingPieceKind
+  /// The third party's name, folded: what the rule is found by.
+  key           String
+  accountCode   String
+  auxiliaryCode String?
+  uses          Int                 @default(1)
+  lastUsedAt    DateTime            @default(now())
+  createdAt     DateTime            @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@unique([restaurantId, kind, key])
+  @@index([restaurantId])
 }
 
 // ===========================================================================
@@ -2518,9 +2646,10 @@ model PurchaseDocument {
   uploadedById String?
   createdAt    DateTime               @default(now())
 
-  restaurant Restaurant         @relation(fields: [restaurantId], references: [id])
-  quotation  SupplierQuotation? @relation(fields: [quotationId], references: [id], onDelete: Cascade)
-  invoice    PurchaseInvoice?   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  restaurant       Restaurant         @relation(fields: [restaurantId], references: [id])
+  quotation        SupplierQuotation? @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  invoice          PurchaseInvoice?   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  accountingPieces AccountingPiece[]
 
   @@index([restaurantId, kind])
   @@index([quotationId])
